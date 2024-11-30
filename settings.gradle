@@ -1,0 +1,4 @@
+rootProject.name = 'advancedgui'
+include 'advancedgui-api'
+include 'advancedgui-api-loader'
+

@@ -1,0 +1,62 @@
+package me.supcheg.advancedgui.api.layout.template;
+
+import me.supcheg.advancedgui.api.builder.Buildable;
+import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
+import me.supcheg.advancedgui.api.coordinate.CoordinateTranslators;
+import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.SortedSet;
+import java.util.function.Consumer;
+
+public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayoutTemplate, AnvilLayoutTemplate.Builder> {
+
+    @NotNull
+    @Contract("-> new")
+    static Builder anvilLayout() {
+        return new AnvilLayoutTemplateImpl.BuilderImpl();
+    }
+
+    @NotNull
+    @Contract("_ -> new")
+    static AnvilLayoutTemplate anvilLayout(@NotNull Consumer<Builder> consumer) {
+        return Buildable.configureAndBuild(anvilLayout(), consumer);
+    }
+
+    @NotNull
+    @Unmodifiable
+    SortedSet<InputUpdateListener> inputUpdateListeners();
+
+    @NotNull
+    @Override
+    default CoordinateTranslator coordinateTranslator() {
+        return CoordinateTranslators.anvilCoordinateTranslator();
+    }
+
+    interface Builder extends LayoutTemplate.Builder<AnvilLayoutTemplate, Builder> {
+
+        @NotNull
+        @Contract("_ -> this")
+        Builder addInputUpdateListener(@NotNull InputUpdateListener inputUpdateListener);
+
+        @NotNull
+        @Contract("_ -> this")
+        default Builder addInputUpdateListener(@NotNull InputUpdateListener.Builder inputUpdateListener) {
+            return addInputUpdateListener(inputUpdateListener.build());
+        }
+
+        @NotNull
+        @Contract("_ -> this")
+        default Builder addInputUpdateListener(@NotNull Consumer<InputUpdateListener.Builder> consumer) {
+            return addInputUpdateListener(InputUpdateListener.inputUpdateListener(consumer));
+        }
+
+        @NotNull
+        Builder inputUpdateListeners(@NotNull SortedSet<InputUpdateListener> inputUpdateListeners);
+
+        @NotNull
+        SortedSet<InputUpdateListener> inputUpdateListeners();
+    }
+}
