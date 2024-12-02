@@ -11,5 +11,5 @@ public interface ActionInterpreter<C extends ActionInterpretContext> {
      * return type must be void
      */
     @NotNull
-    MethodHandle interpret(@NotNull C ctx);
+    MethodHandle interpretMethodHandle(@NotNull C ctx);
 }

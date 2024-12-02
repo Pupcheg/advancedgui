@@ -12,29 +12,25 @@ public interface GenericActionInterpreter<C extends ActionInterpretContext> exte
 
     @NotNull
     @Override
-    default MethodHandle interpret(@NotNull C ctx) {
-        return MethodHandleAccessor.genericLambda_handle.bindTo(interpretLambda(ctx));
+    default MethodHandle interpretMethodHandle(@NotNull C ctx) {
+        return MethodHandleAccessor.genericLambda_handle.bindTo(interpretGenericAction(ctx));
     }
 
     @NotNull
-    GenericLambda interpretLambda(@NotNull C ctx);
+    GenericAction interpretGenericAction(@NotNull C ctx);
 
     @FunctionalInterface
-    interface GenericLambda {
+    interface GenericAction {
         void handle(@NotNull ActionContext ctx);
     }
 
     class MethodHandleAccessor {
         private static final MethodHandle genericLambda_handle;
 
-        int a() {
-            return 0;
-        }
-
         static {
             try {
                 genericLambda_handle = MethodHandles.publicLookup()
-                        .findVirtual(GenericLambda.class, "handle", methodType(void.class, ActionContext.class));
+                        .findVirtual(GenericAction.class, "handle", methodType(void.class, ActionContext.class));
             } catch (NoSuchMethodException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.loader.configurate.serializer.sequence;
 
+import me.supcheg.advancedgui.api.sequence.NamedPriority;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import org.spongepowered.configurate.serialize.ScalarSerializer;
 import org.spongepowered.configurate.serialize.SerializationException;
@@ -15,7 +16,7 @@ public final class PriorityTypeSerializer extends ScalarSerializer<Priority> {
     @Override
     public Priority deserialize(Type type, Object obj) throws SerializationException {
         if (obj instanceof String name) {
-            return Priority.namedPriority(name);
+            return NamedPriority.namedPriority(name);
         }
 
         if (obj instanceof Integer value) {

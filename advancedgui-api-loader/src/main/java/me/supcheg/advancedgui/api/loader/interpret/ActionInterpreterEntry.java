@@ -19,7 +19,7 @@ public record ActionInterpreterEntry<C extends ActionInterpretContext>(
         C ctx = contextParser.deserialize(node);
         return new InterpretedContext(
                 ctx,
-                actionInterpreter.interpret(ctx)
+                actionInterpreter.interpretMethodHandle(ctx)
         );
     }
 }

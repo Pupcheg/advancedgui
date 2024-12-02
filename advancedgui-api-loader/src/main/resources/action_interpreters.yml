@@ -1,3 +1,0 @@
-- name: print
-  context-parser: me.supcheg.advancedgui.api.loader.builtin.PrintingActionInterpretContextParser
-  interpreter: me.supcheg.advancedgui.api.loader.builtin.PrintingActionInterpreter

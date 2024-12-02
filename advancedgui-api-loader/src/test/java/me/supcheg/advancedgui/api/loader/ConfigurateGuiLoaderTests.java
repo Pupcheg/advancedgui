@@ -1,11 +1,13 @@
-package me.sucheg.advancedgui.api.loader;
+package me.supcheg.advancedgui.api.loader;
 
 import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
-import me.supcheg.advancedgui.api.loader.GuiLoader;
+import me.supcheg.advancedgui.api.gui.tick.GuiTicker;
 import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
 import me.supcheg.advancedgui.api.sequence.At;
-import me.supcheg.advancedgui.api.sequence.Priority;
+import me.supcheg.advancedgui.api.sequence.NamedPriority;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,7 @@ import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
 import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anvilLayout;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.Style.style;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ConfigurateGuiLoaderTests {
@@ -30,55 +33,56 @@ class ConfigurateGuiLoaderTests {
         loader = new ConfigurateGuiLoader(YamlConfigurationLoader::builder);
 
         rawYamlTemplate = """
-                key: 'advancedgui:search'
+                key: 'advancedgui:yaml_test'
                 tickers:
-                  - at: 'tick_end'
+                  - at: 'tick_start'
                     priority: 'normal'
-                    action:
-                      type: 'print'
-                      message: 'gui tick'
+                    action: 'dummy'
+                  - at: 'tick_end'
+                    priority: 'low'
+                    action: 'dummy'
                 layout:
                   type: 'anvil'
                   input-update-listeners:
                     - priority: 'normal'
-                      action:
-                        type: 'print'
-                        message: 'input update'
+                      action: 'dummy'
                   buttons:
                     - coordinates: [ [0, 0] ]
                       enabled: 'true'
                       shown: 'true'
                       interactions:
                         - priority: 'normal'
-                          action:
-                            type: 'print'
-                            message: 'button interaction'
-                      texture: 'advancedgui:search/interaction'
-                      name: 'Hi!'
+                          action: 'dummy'
+                      texture: 'advancedgui:yaml_test/interaction'
+                      name: '<bold>Hi!'
                       lore:
-                        - 'eee'
+                        - '<red>eee'
+                        - 'eEe'
                       tickers:
                         - at: 'tick_end'
                           priority: 'normal'
-                          action:
-                            type: 'print'
-                            message: 'button tick'
+                          action: 'dummy'
                       enchanted: 'true'
                 background:
                   locations:
-                    - 'advancedgui:search/background'
+                    - 'advancedgui:yaml_test/background'
                 """;
 
         template = gui(gui -> gui
-                .key(key("advancedgui", "search"))
+                .key(key("advancedgui", "yaml_test"))
+                .addTicker(ticker -> ticker
+                        .at(At.TICK_START)
+                        .priority(NamedPriority.NORMAL)
+                        .action(System.out::println)
+                )
                 .addTicker(ticker -> ticker
                         .at(At.TICK_END)
-                        .priority(Priority.NORMAL)
+                        .priority(NamedPriority.LOW)
                         .action(System.out::println)
                 )
                 .layout(anvilLayout(), anvilLayout -> anvilLayout
                         .addInputUpdateListener(inputUpdateListener -> inputUpdateListener
-                                .priority(Priority.NORMAL)
+                                .priority(NamedPriority.NORMAL)
                                 .action(System.out::println)
                         )
                         .addButton(button -> button
@@ -86,24 +90,25 @@ class ConfigurateGuiLoaderTests {
                                 .enabled(true)
                                 .shown(true)
                                 .addInteraction(interaction -> interaction
-                                        .priority(Priority.NORMAL)
+                                        .priority(NamedPriority.NORMAL)
                                         .action(System.out::println)
                                 )
-                                .texture(key("advancedgui", "search/interaction"))
-                                .name(text("Hi!"))
+                                .texture(key("advancedgui", "yaml_test/interaction"))
+                                .name(text("Hi!", style(TextDecoration.BOLD)))
                                 .lore(
-                                        text("eee")
+                                        text("eee", NamedTextColor.RED),
+                                        text("eEe")
                                 )
                                 .addTicker(ticker -> ticker
                                         .at(At.TICK_END)
-                                        .priority(Priority.NORMAL)
+                                        .priority(NamedPriority.NORMAL)
                                         .action(System.out::println)
                                 )
                                 .enchanted(true)
                         )
                 )
                 .background(background -> background
-                        .addLocation(key("advancedgui", "search/background"))
+                        .addLocation(key("advancedgui", "yaml_test/background"))
                 )
         );
     }
@@ -114,6 +119,14 @@ class ConfigurateGuiLoaderTests {
                 .usingRecursiveComparison()
                 .ignoringFieldsOfTypes(Action.class)
                 .ignoringCollectionOrder()
-                .isEqualTo(template);
+                .isEqualTo(template)
+                .satisfies(o -> {
+                    ((GuiTemplate) o)
+                            .tickers()
+                            .allElements()
+                            .stream()
+                            .map(GuiTicker::action)
+                            .forEach(guiTickAction -> guiTickAction.handleGuiTick(null));
+                });
     }
 }

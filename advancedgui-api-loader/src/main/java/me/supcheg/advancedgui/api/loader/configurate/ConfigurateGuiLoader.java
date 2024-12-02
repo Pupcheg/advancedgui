@@ -13,7 +13,7 @@ import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.Positio
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PriorityTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.SequencedSortedSetTypeSerializer;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
-import me.supcheg.advancedgui.api.loader.interpret.YamlClasspathActionInterpreterSource;
+import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationOptions;

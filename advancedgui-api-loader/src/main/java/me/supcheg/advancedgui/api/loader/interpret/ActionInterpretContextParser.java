@@ -19,7 +19,7 @@ public interface ActionInterpretContextParser<C> {
     boolean isAcceptable(@NotNull ConfigurationNode node);
 
     @NotNull
-    C deserialize(ConfigurationNode node) throws SerializationException;
+    C deserialize(@NotNull ConfigurationNode node) throws SerializationException;
 
     default void serialize(@NotNull Type type, @Nullable C obj, @NotNull ConfigurationNode node) throws SerializationException {
         node.set(type, obj);

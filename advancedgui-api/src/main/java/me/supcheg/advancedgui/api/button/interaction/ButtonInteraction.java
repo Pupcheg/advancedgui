@@ -15,13 +15,13 @@ public interface ButtonInteraction extends Sequenced<ButtonInteraction>,
 
     @NotNull
     @Contract("-> new")
-    static  Builder buttonInteraction() {
+    static Builder buttonInteraction() {
         return new ButtonInteractionImpl.BuilderImpl();
     }
 
     @NotNull
     @Contract("_ -> new")
-    static  ButtonInteraction buttonInteraction(@NotNull Consumer<ButtonInteraction.Builder> consumer) {
+    static ButtonInteraction buttonInteraction(@NotNull Consumer<ButtonInteraction.Builder> consumer) {
         return Buildable.configureAndBuild(buttonInteraction(), consumer);
     }
 
@@ -36,6 +36,12 @@ public interface ButtonInteraction extends Sequenced<ButtonInteraction>,
         @NotNull
         @Contract("_ -> this")
         Builder priority(@NotNull Priority priority);
+
+        @NotNull
+        @Contract("_ -> this")
+        default Builder priority(int value) {
+            return priority(Priority.priority(value));
+        }
 
         @Nullable
         Priority priority();
