@@ -66,7 +66,7 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
     @NotNull
     Description description();
 
-    boolean enchanted();
+    boolean glowing();
 
     @NotNull
     @Unmodifiable
@@ -185,10 +185,10 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
 
         @NotNull
         @Contract("_ -> this")
-        Builder enchanted(boolean value);
+        Builder glowing(boolean value);
 
         @Nullable
-        Boolean enchanted();
+        Boolean glowing();
 
         @NotNull
         @Contract("-> new")

@@ -62,7 +62,7 @@ class ConfigurateGuiLoaderTests {
                         - at: 'tick_end'
                           priority: 'normal'
                           action: 'dummy'
-                      enchanted: 'true'
+                      glowing: 'true'
                 background:
                   locations:
                     - 'advancedgui:yaml_test/background'
@@ -106,7 +106,7 @@ class ConfigurateGuiLoaderTests {
                                         .priority(NamedPriority.NORMAL)
                                         .action(System.out::println)
                                 )
-                                .enchanted(true)
+                                .glowing(true)
                         )
                 )
                 .background(background -> background

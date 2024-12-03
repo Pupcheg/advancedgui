@@ -29,7 +29,7 @@ record ButtonTemplateImpl(
         @NotNull Component name,
         @NotNull Description description,
         @NotNull PositionedCollection<ButtonTicker> tickers,
-        boolean enchanted
+        boolean glowing
 ) implements ButtonTemplate {
     @NotNull
     @Override
@@ -46,7 +46,7 @@ record ButtonTemplateImpl(
         private Component name;
         private Description description;
         private final MutablePositionedCollection<ButtonTicker> tickers;
-        private Boolean enchanted;
+        private Boolean glowing;
 
         BuilderImpl() {
             this.coordinates = new HashSet<>();
@@ -63,7 +63,7 @@ record ButtonTemplateImpl(
             this.name = impl.name;
             this.description = impl.description;
             this.tickers = MutablePositionedCollection.mutableCopyOf(impl.tickers);
-            this.enchanted = impl.enchanted;
+            this.glowing = impl.glowing;
         }
 
         @NotNull
@@ -198,15 +198,15 @@ record ButtonTemplateImpl(
 
         @NotNull
         @Override
-        public Builder enchanted(boolean value) {
-            this.enchanted = value;
+        public Builder glowing(boolean value) {
+            this.glowing = value;
             return this;
         }
 
         @Nullable
         @Override
-        public Boolean enchanted() {
-            return enchanted;
+        public Boolean glowing() {
+            return glowing;
         }
 
         @NotNull
@@ -221,7 +221,7 @@ record ButtonTemplateImpl(
                     Objects.requireNonNull(name, "name"),
                     Objects.requireNonNull(description, "description"),
                     PositionedCollection.copyOf(tickers),
-                    Objects.requireNonNull(enchanted, "enchanted")
+                    Objects.requireNonNull(glowing, "glowing")
             );
         }
     }
