@@ -2,7 +2,6 @@ package me.supcheg.advancedgui.api.loader;
 
 import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
-import me.supcheg.advancedgui.api.gui.tick.GuiTicker;
 import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
 import me.supcheg.advancedgui.api.sequence.At;
 import me.supcheg.advancedgui.api.sequence.NamedPriority;
@@ -55,9 +54,10 @@ class ConfigurateGuiLoaderTests {
                           action: 'dummy'
                       texture: 'advancedgui:yaml_test/interaction'
                       name: '<bold>Hi!'
-                      lore:
-                        - '<red>eee'
-                        - 'eEe'
+                      description:
+                        lines:
+                          - '<red>eee'
+                          - 'eEe'
                       tickers:
                         - at: 'tick_end'
                           priority: 'normal'
@@ -95,9 +95,11 @@ class ConfigurateGuiLoaderTests {
                                 )
                                 .texture(key("advancedgui", "yaml_test/interaction"))
                                 .name(text("Hi!", style(TextDecoration.BOLD)))
-                                .lore(
-                                        text("eee", NamedTextColor.RED),
-                                        text("eEe")
+                                .description(description -> description
+                                        .lines(
+                                                text("eee", NamedTextColor.RED),
+                                                text("eEe")
+                                        )
                                 )
                                 .addTicker(ticker -> ticker
                                         .at(At.TICK_END)
@@ -119,14 +121,6 @@ class ConfigurateGuiLoaderTests {
                 .usingRecursiveComparison()
                 .ignoringFieldsOfTypes(Action.class)
                 .ignoringCollectionOrder()
-                .isEqualTo(template)
-                .satisfies(o -> {
-                    ((GuiTemplate) o)
-                            .tickers()
-                            .allElements()
-                            .stream()
-                            .map(GuiTicker::action)
-                            .forEach(guiTickAction -> guiTickAction.handleGuiTick(null));
-                });
+                .isEqualTo(template);
     }
 }

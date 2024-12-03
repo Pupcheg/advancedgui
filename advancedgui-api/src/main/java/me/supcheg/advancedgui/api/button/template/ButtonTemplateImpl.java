@@ -1,6 +1,7 @@
 package me.supcheg.advancedgui.api.button.template;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
+import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.button.tick.ButtonTicker;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
@@ -14,8 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
@@ -28,7 +27,7 @@ record ButtonTemplateImpl(
         @NotNull SortedSet<ButtonInteraction> interactions,
         @NotNull Key texture,
         @NotNull Component name,
-        @NotNull List<Component> lore,
+        @NotNull Description description,
         @NotNull PositionedCollection<ButtonTicker> tickers,
         boolean enchanted
 ) implements ButtonTemplate {
@@ -45,14 +44,13 @@ record ButtonTemplateImpl(
         private final SortedSet<ButtonInteraction> interactions;
         private Key texture;
         private Component name;
-        private final List<Component> lore;
+        private Description description;
         private final MutablePositionedCollection<ButtonTicker> tickers;
         private Boolean enchanted;
 
         BuilderImpl() {
             this.coordinates = new HashSet<>();
             this.interactions = new TreeSet<>();
-            this.lore = new LinkedList<>();
             this.tickers = MutablePositionedCollection.mutableEmpty();
         }
 
@@ -63,7 +61,7 @@ record ButtonTemplateImpl(
             this.interactions = new TreeSet<>(impl.interactions);
             this.texture = impl.texture;
             this.name = impl.name;
-            this.lore = new LinkedList<>(impl.lore);
+            this.description = impl.description;
             this.tickers = MutablePositionedCollection.mutableCopyOf(impl.tickers);
             this.enchanted = impl.enchanted;
         }
@@ -172,22 +170,16 @@ record ButtonTemplateImpl(
 
         @NotNull
         @Override
-        public Builder addLore(@NotNull List<Component> lore) {
-            this.lore.addAll(lore);
+        public Builder description(@NotNull Description description) {
+            Objects.requireNonNull(description, "description");
+            this.description = description;
             return this;
         }
 
-        @NotNull
+        @Nullable
         @Override
-        public Builder lore(@NotNull List<Component> lore) {
-            AbstractBuilder.replaceCollectionContents(this.lore, lore);
-            return this;
-        }
-
-        @NotNull
-        @Override
-        public List<Component> lore() {
-            return lore;
+        public Description description() {
+            return description;
         }
 
         @NotNull
@@ -227,7 +219,7 @@ record ButtonTemplateImpl(
                     Collections.unmodifiableSortedSet(new TreeSet<>(interactions)),
                     Objects.requireNonNull(texture, "texture"),
                     Objects.requireNonNull(name, "name"),
-                    List.copyOf(lore),
+                    Objects.requireNonNull(description, "description"),
                     PositionedCollection.copyOf(tickers),
                     Objects.requireNonNull(enchanted, "enchanted")
             );

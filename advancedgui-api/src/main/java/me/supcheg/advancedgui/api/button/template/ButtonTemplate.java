@@ -2,6 +2,7 @@ package me.supcheg.advancedgui.api.button.template;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
+import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.button.tick.ButtonTicker;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
@@ -15,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Consumer;
@@ -64,8 +64,7 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
     Component name();
 
     @NotNull
-    @Unmodifiable
-    List<Component> lore();
+    Description description();
 
     boolean enchanted();
 
@@ -153,38 +152,17 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
         Component name();
 
         @NotNull
-        Builder addLore(@NotNull List<Component> lore);
-
-        @NotNull
-        default Builder addLore(@NotNull Component single) {
-            return addLore(List.of(single));
-        }
-
-        @NotNull
-        default Builder addLore(@NotNull Component first, @NotNull Component second,
-                                @NotNull Component @NotNull ... other) {
-            return addLore(makeNoNullsList(first, second, other));
-        }
+        @Contract("_ -> this")
+        Builder description(@NotNull Description description);
 
         @NotNull
         @Contract("_ -> this")
-        default Builder lore(@NotNull Component single) {
-            return lore(List.of(single));
+        default Builder description(@NotNull Consumer<Description.Builder> consumer) {
+            return description(Description.description(consumer));
         }
 
-        @NotNull
-        @Contract("_, _, _ -> this")
-        default Builder lore(@NotNull Component first, @NotNull Component second,
-                             @NotNull Component @NotNull ... other) {
-            return lore(makeNoNullsList(first, second, other));
-        }
-
-        @NotNull
-        @Contract("_ -> this")
-        Builder lore(@NotNull List<Component> lore);
-
-        @NotNull
-        List<Component> lore();
+        @Nullable
+        Description description();
 
         @NotNull
         @Contract("_ -> this")
