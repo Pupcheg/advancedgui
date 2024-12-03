@@ -1,15 +1,15 @@
 package me.supcheg.advancedgui.api.gui.tick;
 
 import lombok.NoArgsConstructor;
-import me.supcheg.advancedgui.api.sequence.At;
 import me.supcheg.advancedgui.api.sequence.Priority;
+import me.supcheg.advancedgui.api.sequence.pointcut.PointCut;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 record GuiTickerImpl(
-        @NotNull At at,
+        @NotNull PointCut at,
         @NotNull Priority priority,
         @NotNull GuiTickAction action
 ) implements GuiTicker {
@@ -21,7 +21,7 @@ record GuiTickerImpl(
 
     @NoArgsConstructor
     static class BuilderImpl implements GuiTicker.Builder {
-        private At at;
+        private PointCut at;
         private Priority priority;
         private GuiTickAction action;
 
@@ -33,14 +33,14 @@ record GuiTickerImpl(
 
         @NotNull
         @Override
-        public Builder at(@Nullable At at) {
+        public Builder at(@Nullable PointCut at) {
             this.at = at;
             return this;
         }
 
         @Nullable
         @Override
-        public At at() {
+        public PointCut at() {
             return at;
         }
 

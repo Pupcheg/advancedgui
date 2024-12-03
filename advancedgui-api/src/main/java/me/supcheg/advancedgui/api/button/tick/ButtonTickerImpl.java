@@ -1,15 +1,15 @@
 package me.supcheg.advancedgui.api.button.tick;
 
 import lombok.NoArgsConstructor;
-import me.supcheg.advancedgui.api.sequence.At;
 import me.supcheg.advancedgui.api.sequence.Priority;
+import me.supcheg.advancedgui.api.sequence.pointcut.PointCut;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 record ButtonTickerImpl(
-        @NotNull At at,
+        @NotNull PointCut at,
         @NotNull Priority priority,
         @NotNull ButtonTickAction action
 ) implements ButtonTicker {
@@ -22,7 +22,7 @@ record ButtonTickerImpl(
 
     @NoArgsConstructor
     static class BuilderImpl implements ButtonTicker.Builder {
-        private At at;
+        private PointCut at;
         private Priority priority;
         private ButtonTickAction action;
 
@@ -34,7 +34,7 @@ record ButtonTickerImpl(
 
         @NotNull
         @Override
-        public Builder at(@NotNull At at) {
+        public Builder at(@NotNull PointCut at) {
             Objects.requireNonNull(at, "at");
             this.at = at;
             return this;
@@ -42,7 +42,7 @@ record ButtonTickerImpl(
 
         @Nullable
         @Override
-        public At at() {
+        public PointCut at() {
             return at;
         }
 

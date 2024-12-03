@@ -2,9 +2,9 @@ package me.supcheg.advancedgui.api.gui.tick;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
-import me.supcheg.advancedgui.api.sequence.At;
 import me.supcheg.advancedgui.api.sequence.Positioned;
 import me.supcheg.advancedgui.api.sequence.Priority;
+import me.supcheg.advancedgui.api.sequence.pointcut.PointCut;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,23 +26,15 @@ public interface GuiTicker extends Positioned<GuiTicker>, Buildable<GuiTicker, G
     }
 
     @NotNull
-    @Override
-    At at();
-
-    @NotNull
-    @Override
-    Priority priority();
-
-    @NotNull
     GuiTickAction action();
 
     interface Builder extends AbstractBuilder<GuiTicker> {
         @NotNull
         @Contract("_ -> this")
-        Builder at(@NotNull At at);
+        Builder at(@NotNull PointCut at);
 
         @Nullable
-        At at();
+        PointCut at();
 
         @NotNull
         @Contract("_ -> this")

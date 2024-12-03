@@ -1,7 +1,7 @@
 package me.supcheg.advancedgui.api.sequence.collection;
 
-import me.supcheg.advancedgui.api.sequence.At;
 import me.supcheg.advancedgui.api.sequence.Positioned;
+import me.supcheg.advancedgui.api.sequence.pointcut.PointCut;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -35,7 +35,7 @@ public interface PositionedCollection<P extends Positioned<P>> {
 
     @NotNull
     @Unmodifiable
-    SortedSet<P> allElementsWith(@NotNull At at);
+    SortedSet<P> allElementsWith(@NotNull PointCut at);
 
     @NotNull
     @Unmodifiable

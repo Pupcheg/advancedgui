@@ -3,8 +3,8 @@ package me.supcheg.advancedgui.api.loader;
 import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
-import me.supcheg.advancedgui.api.sequence.At;
 import me.supcheg.advancedgui.api.sequence.NamedPriority;
+import me.supcheg.advancedgui.api.sequence.pointcut.TickPointCut;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.intellij.lang.annotations.Language;
@@ -71,12 +71,12 @@ class ConfigurateGuiLoaderTests {
         template = gui(gui -> gui
                 .key(key("advancedgui", "yaml_test"))
                 .addTicker(ticker -> ticker
-                        .at(At.TICK_START)
+                        .at(TickPointCut.START)
                         .priority(NamedPriority.NORMAL)
                         .action(System.out::println)
                 )
                 .addTicker(ticker -> ticker
-                        .at(At.TICK_END)
+                        .at(TickPointCut.END)
                         .priority(NamedPriority.LOW)
                         .action(System.out::println)
                 )
@@ -102,7 +102,7 @@ class ConfigurateGuiLoaderTests {
                                         )
                                 )
                                 .addTicker(ticker -> ticker
-                                        .at(At.TICK_END)
+                                        .at(TickPointCut.START)
                                         .priority(NamedPriority.NORMAL)
                                         .action(System.out::println)
                                 )

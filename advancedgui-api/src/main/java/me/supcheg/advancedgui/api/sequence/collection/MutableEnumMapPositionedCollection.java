@@ -1,13 +1,13 @@
 package me.supcheg.advancedgui.api.sequence.collection;
 
-import me.supcheg.advancedgui.api.sequence.At;
 import me.supcheg.advancedgui.api.sequence.Positioned;
+import me.supcheg.advancedgui.api.sequence.pointcut.PointCut;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -16,20 +16,20 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toCollection;
 
 class MutableEnumMapPositionedCollection<P extends Positioned<P>> implements MutablePositionedCollection<P> {
-    protected final Map<At, SortedSet<P>> map;
+    protected final Map<PointCut, SortedSet<P>> map;
 
     MutableEnumMapPositionedCollection(@NotNull Collection<P> collection) {
         this.map = collection
                 .stream()
                 .collect(Collectors.groupingBy(
                         Positioned::at,
-                        () -> new EnumMap<>(At.class),
+                        HashMap::new,
                         toCollection(TreeSet::new)
                 ));
     }
 
     MutableEnumMapPositionedCollection() {
-        this.map = new EnumMap<>(At.class);
+        this.map = new HashMap<>();
     }
 
     @Override
@@ -49,7 +49,7 @@ class MutableEnumMapPositionedCollection<P extends Positioned<P>> implements Mut
     @NotNull
     @Unmodifiable
     @Override
-    public SortedSet<P> allElementsWith(@NotNull At at) {
+    public SortedSet<P> allElementsWith(@NotNull PointCut at) {
         return Collections.unmodifiableSortedSet(map.getOrDefault(at, Collections.emptySortedSet()));
     }
 
