@@ -72,10 +72,6 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
     @Unmodifiable
     PositionedCollection<ButtonTicker> tickers();
 
-    @NotNull
-    @Contract("-> new")
-    Builder toBuilder();
-
     interface Builder extends AbstractBuilder<ButtonTemplate> {
 
         @NotNull
@@ -189,10 +185,5 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
 
         @Nullable
         Boolean glowing();
-
-        @NotNull
-        @Contract("-> new")
-        @Override
-        ButtonTemplate build();
     }
 }

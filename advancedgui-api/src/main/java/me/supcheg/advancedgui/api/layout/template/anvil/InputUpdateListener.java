@@ -25,10 +25,6 @@ public interface InputUpdateListener extends Sequenced<InputUpdateListener>, Bui
     }
 
     @NotNull
-    @Override
-    Priority priority();
-
-    @NotNull
     InputUpdateAction action();
 
     interface Builder extends AbstractBuilder<InputUpdateListener> {
@@ -45,9 +41,5 @@ public interface InputUpdateListener extends Sequenced<InputUpdateListener>, Bui
 
         @Nullable
         InputUpdateAction action();
-
-        @NotNull
-        @Override
-        InputUpdateListener build();
     }
 }

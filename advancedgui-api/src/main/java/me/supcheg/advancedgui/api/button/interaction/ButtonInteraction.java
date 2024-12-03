@@ -26,10 +26,6 @@ public interface ButtonInteraction extends Sequenced<ButtonInteraction>,
     }
 
     @NotNull
-    @Override
-    Priority priority();
-
-    @NotNull
     ButtonInteractionAction action();
 
     interface Builder extends AbstractBuilder<ButtonInteraction> {
@@ -52,9 +48,5 @@ public interface ButtonInteraction extends Sequenced<ButtonInteraction>,
 
         @Nullable
         ButtonInteractionAction action();
-
-        @NotNull
-        @Override
-        ButtonInteraction build();
     }
 }

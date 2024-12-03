@@ -39,7 +39,7 @@ public interface GuiController<S, T extends GuiController<S, T, B>, B extends Gu
     Gui gui(@NotNull Key key);
 
     @NotNull
-    @Contract("_, _ -> new")
+    @Contract("_ -> new")
     Gui register(@NotNull GuiTemplate template);
 
     void unregister(@NotNull Key key);

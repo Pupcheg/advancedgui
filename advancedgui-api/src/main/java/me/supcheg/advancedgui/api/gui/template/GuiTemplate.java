@@ -32,10 +32,6 @@ public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.B
     }
 
     @NotNull
-    @Override
-    Key key();
-
-    @NotNull
     Background background();
 
     @NotNull
@@ -43,10 +39,6 @@ public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.B
 
     @NotNull
     LayoutTemplate<?, ?> layout();
-
-    @NotNull
-    @Contract("-> new")
-    Builder toBuilder();
 
     interface Builder extends AbstractBuilder<GuiTemplate> {
 
@@ -104,9 +96,5 @@ public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.B
 
         @Nullable
         Background background();
-
-        @NotNull
-        @Override
-        GuiTemplate build();
     }
 }
