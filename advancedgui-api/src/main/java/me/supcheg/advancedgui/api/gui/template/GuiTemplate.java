@@ -2,11 +2,11 @@ package me.supcheg.advancedgui.api.gui.template;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
+import me.supcheg.advancedgui.api.gui.Gui;
 import me.supcheg.advancedgui.api.gui.background.Background;
-import me.supcheg.advancedgui.api.gui.tick.GuiTicker;
+import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.api.layout.template.LayoutTemplate;
-import me.supcheg.advancedgui.api.sequence.collection.MutablePositionedCollection;
-import me.supcheg.advancedgui.api.sequence.collection.PositionedCollection;
+import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
 import org.jetbrains.annotations.Contract;
@@ -15,9 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-import static me.supcheg.advancedgui.api.gui.tick.GuiTicker.guiTicker;
-
-public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.Builder> {
+public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.Builder>, Lifecycled<Gui> {
 
     @NotNull
     @Contract("-> new")
@@ -35,12 +33,9 @@ public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.B
     Background background();
 
     @NotNull
-    PositionedCollection<GuiTicker> tickers();
+    LayoutTemplate<?, ?, ?> layout();
 
-    @NotNull
-    LayoutTemplate<?, ?> layout();
-
-    interface Builder extends AbstractBuilder<GuiTemplate> {
+    interface Builder extends AbstractBuilder<GuiTemplate>, Lifecycled.Builder<Gui, Builder> {
 
         @NotNull
         @Contract("_ -> this")
@@ -51,38 +46,19 @@ public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.B
 
         @NotNull
         @Contract("_ -> this")
-        <L extends LayoutTemplate<L, B>, B extends LayoutTemplate.Builder<L, B>> Builder layout(@NotNull L layout);
+        <L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull T layout);
 
         @NotNull
         @Contract("_, _ -> this")
-        default <L extends LayoutTemplate<L, B>, B extends LayoutTemplate.Builder<L, B>> Builder layout(@NotNull B builder, @NotNull Consumer<B> consumer) {
+        default<L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull B builder, @NotNull Consumer<B> consumer) {
             return layout(Buildable.configureAndBuild(builder, consumer));
         }
 
         @NotNull
         @Contract("_ -> this")
-        default <L extends LayoutTemplate<L, B>, B extends LayoutTemplate.Builder<L, B>> Builder layout(@NotNull B layout) {
+        default <L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull B layout) {
             return layout(layout.build());
         }
-
-        @NotNull
-        @Contract("_ -> this")
-        default Builder addTicker(@NotNull Consumer<GuiTicker.Builder> consumer) {
-            return addTicker(guiTicker(consumer));
-        }
-
-        @NotNull
-        @Contract("_ -> this")
-        default Builder addTicker(@NotNull GuiTicker.Builder ticker) {
-            return addTicker(ticker.build());
-        }
-
-        @NotNull
-        @Contract("_ -> this")
-        Builder addTicker(@NotNull GuiTicker ticker);
-
-        @NotNull
-        MutablePositionedCollection<GuiTicker> tickers();
 
         @NotNull
         @Contract("_ -> this")

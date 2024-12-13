@@ -3,6 +3,7 @@ package me.supcheg.advancedgui.api.layout.template;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslators;
+import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.SortedSet;
 import java.util.function.Consumer;
 
-public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayoutTemplate, AnvilLayoutTemplate.Builder> {
+public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayout, AnvilLayoutTemplate, AnvilLayoutTemplate.Builder> {
 
     @NotNull
     @Contract("-> new")
@@ -35,7 +36,7 @@ public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayo
         return CoordinateTranslators.anvilCoordinateTranslator();
     }
 
-    interface Builder extends LayoutTemplate.Builder<AnvilLayoutTemplate, Builder> {
+    interface Builder extends LayoutTemplate.Builder<AnvilLayout, AnvilLayoutTemplate, Builder> {
 
         @NotNull
         @Contract("_ -> this")

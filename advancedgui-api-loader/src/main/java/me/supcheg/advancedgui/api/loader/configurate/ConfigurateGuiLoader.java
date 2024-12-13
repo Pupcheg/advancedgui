@@ -2,23 +2,26 @@ package me.supcheg.advancedgui.api.loader.configurate;
 
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
+import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.loader.GuiLoader;
+import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.ComponentTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.KeyTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.ClasspathInterfaceImplLookup;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.InterfaceImplTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.layout.LayoutTemplateTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PositionedCollectionTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.LifecycleListenerRegistryTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.PointcutTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PriorityTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.SequencedSortedSetTypeSerializer;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
-import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 
 import java.io.BufferedReader;
@@ -26,8 +29,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.concurrent.Callable;
 
+import static io.leangen.geantyref.GenericTypeReflector.erase;
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
-import static org.spongepowered.configurate.objectmapping.ObjectMapper.factory;
 
 public final class ConfigurateGuiLoader implements GuiLoader {
     private final ConfigurationLoaderOpener loaderBuilder;
@@ -35,6 +38,8 @@ public final class ConfigurateGuiLoader implements GuiLoader {
     public ConfigurateGuiLoader(
             @NotNull ConfigurationLoaderBuilderFactory loaderFactory
     ) {
+        ObjectMapper.Factory objectFactory = ObjectMapper.factory();
+
         TypeSerializerCollection serializers = TypeSerializerCollection.defaults()
                 .childBuilder()
                 .register(
@@ -42,10 +47,6 @@ public final class ConfigurateGuiLoader implements GuiLoader {
                         new ActionTypeSerializer(
                                 new YamlClasspathActionInterpreterSource(getClass().getClassLoader())
                         )
-                )
-                .register(
-                        PositionedCollectionTypeSerializer::isPositionedCollection,
-                        new PositionedCollectionTypeSerializer()
                 )
                 .register(
                         SequencedSortedSetTypeSerializer::isSequencedSortedSet,
@@ -67,16 +68,24 @@ public final class ConfigurateGuiLoader implements GuiLoader {
                         new KeyTypeSerializer()
                 )
                 .register(
+                        new PointcutTypeSerializer()
+                )
+                .register(
+                        type -> LifecycleListenerRegistry.class.isAssignableFrom(erase(type)),
+                        new LifecycleListenerRegistryTypeSerializer()
+                )
+                .register(
                         Buildable.class,
                         new InterfaceImplTypeSerializer(
-                                factory().asTypeSerializer(),
+                                objectFactory.asTypeSerializer(),
                                 new ClasspathInterfaceImplLookup()
                         )
                 )
                 .register(
                         ActionInterpretContext.class,
-                        factory().asTypeSerializer()
+                        objectFactory.asTypeSerializer()
                 )
+                .registerAnnotatedObjects(objectFactory)
                 .build();
 
         ConfigurationOptions configurationOptions = ConfigurationOptions.defaults()

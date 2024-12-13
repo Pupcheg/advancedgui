@@ -2,8 +2,11 @@ package me.supcheg.advancedgui.api.layout.template;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
+import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
+import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,7 +17,8 @@ import java.util.TreeSet;
 
 record AnvilLayoutTemplateImpl(
         @NotNull SortedSet<InputUpdateListener> inputUpdateListeners,
-        @NotNull Set<ButtonTemplate> buttons
+        @NotNull Set<ButtonTemplate> buttons,
+        @NotNull LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry
 ) implements AnvilLayoutTemplate {
     @NotNull
     @Override
@@ -25,10 +29,12 @@ record AnvilLayoutTemplateImpl(
     static class BuilderImpl implements Builder {
         private final SortedSet<InputUpdateListener> inputUpdateListeners;
         private final Set<ButtonTemplate> buttons;
+        private LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry;
 
         BuilderImpl(@NotNull AnvilLayoutTemplateImpl impl) {
             this.inputUpdateListeners = new TreeSet<>(impl.inputUpdateListeners);
             this.buttons = new HashSet<>(impl.buttons);
+            this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
         }
 
         BuilderImpl() {
@@ -78,12 +84,27 @@ record AnvilLayoutTemplateImpl(
             return buttons;
         }
 
+        @Nullable
+        @Override
+        public LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry() {
+            return lifecycleListenerRegistry;
+        }
+
+        @NotNull
+        @Override
+        public Builder lifecycleListenerRegistry(@NotNull LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry) {
+            Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry");
+            this.lifecycleListenerRegistry = lifecycleListenerRegistry;
+            return this;
+        }
+
         @NotNull
         @Override
         public AnvilLayoutTemplate build() {
             return new AnvilLayoutTemplateImpl(
                     Collections.unmodifiableSortedSet(new TreeSet<>(inputUpdateListeners)),
-                    Set.copyOf(buttons)
+                    Set.copyOf(buttons),
+                    lifecycleListenerRegistry
             );
         }
     }

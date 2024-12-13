@@ -1,10 +1,11 @@
 package me.supcheg.advancedgui.api.gui.template;
 
+import lombok.NoArgsConstructor;
+import me.supcheg.advancedgui.api.gui.Gui;
 import me.supcheg.advancedgui.api.gui.background.Background;
-import me.supcheg.advancedgui.api.gui.tick.GuiTicker;
+import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.api.layout.template.LayoutTemplate;
-import me.supcheg.advancedgui.api.sequence.collection.MutablePositionedCollection;
-import me.supcheg.advancedgui.api.sequence.collection.PositionedCollection;
+import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,8 +14,8 @@ import java.util.Objects;
 
 record GuiTemplateImpl(
         @NotNull Key key,
-        @NotNull PositionedCollection<GuiTicker> tickers,
-        @NotNull LayoutTemplate<?, ?> layout,
+        @NotNull LifecycleListenerRegistry<Gui> lifecycleListenerRegistry,
+        @NotNull LayoutTemplate<?, ?, ?> layout,
         @NotNull Background background
 ) implements GuiTemplate {
     @NotNull
@@ -23,19 +24,16 @@ record GuiTemplateImpl(
         return new BuilderImpl(this);
     }
 
+    @NoArgsConstructor
     static final class BuilderImpl implements GuiTemplate.Builder {
         private Key key;
-        private final MutablePositionedCollection<GuiTicker> tickers;
-        private LayoutTemplate<?, ?> layout;
+        private LifecycleListenerRegistry<Gui> lifecycleListenerRegistry;
+        private LayoutTemplate<?, ?, ?> layout;
         private Background background;
-
-        BuilderImpl() {
-            this.tickers = MutablePositionedCollection.mutableEmpty();
-        }
 
         BuilderImpl(@NotNull GuiTemplateImpl impl) {
             this.key = impl.key;
-            this.tickers = MutablePositionedCollection.mutableCopyOf(impl.tickers);
+            this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
             this.layout = impl.layout;
             this.background = impl.background;
         }
@@ -56,24 +54,24 @@ record GuiTemplateImpl(
 
         @NotNull
         @Override
-        public <L extends LayoutTemplate<L, B>, B extends LayoutTemplate.Builder<L, B>> Builder layout(@NotNull L layout) {
+        public <L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull T layout) {
             Objects.requireNonNull(layout, "layout");
             this.layout = layout;
             return this;
         }
 
-        @NotNull
+        @Nullable
         @Override
-        public Builder addTicker(@NotNull GuiTicker ticker) {
-            Objects.requireNonNull(ticker, "ticker");
-            this.tickers.add(ticker);
-            return this;
+        public LifecycleListenerRegistry<Gui> lifecycleListenerRegistry() {
+            return lifecycleListenerRegistry;
         }
 
         @NotNull
         @Override
-        public MutablePositionedCollection<GuiTicker> tickers() {
-            return tickers;
+        public Builder lifecycleListenerRegistry(@NotNull LifecycleListenerRegistry<Gui> lifecycleListenerRegistry) {
+            Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry");
+            this.lifecycleListenerRegistry = lifecycleListenerRegistry;
+            return this;
         }
 
         @NotNull
@@ -95,7 +93,7 @@ record GuiTemplateImpl(
         public GuiTemplate build() {
             return new GuiTemplateImpl(
                     key,
-                    PositionedCollection.copyOf(tickers),
+                    lifecycleListenerRegistry,
                     layout,
                     background
             );

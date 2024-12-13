@@ -4,82 +4,150 @@ import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
 import me.supcheg.advancedgui.api.sequence.NamedPriority;
-import me.supcheg.advancedgui.api.sequence.pointcut.TickPointCut;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.intellij.lang.annotations.Language;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.IOException;
 
 import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
+import static me.supcheg.advancedgui.api.key.AdvancedGuiKeys.advancedguiKey;
 import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anvilLayout;
-import static net.kyori.adventure.key.Key.key;
+import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.afterTickPointcut;
+import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.beforeTickPointcut;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.Style.style;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ConfigurateGuiLoaderTests {
-    GuiLoader loader;
     @Language("yaml")
-    String rawYamlTemplate;
-    GuiTemplate template;
+    static String rawYamlTemplate;
+    @Language("json")
+    static String rawJsonTemplate;
 
-    @BeforeEach
-    void setup() {
-        loader = new ConfigurateGuiLoader(YamlConfigurationLoader::builder);
+    static GuiTemplate template;
 
+    @BeforeAll
+    static void setup() {
         rawYamlTemplate = """
-                key: 'advancedgui:yaml_test'
-                tickers:
-                  - at: 'tick_start'
-                    priority: 'normal'
-                    action: 'dummy'
-                  - at: 'tick_end'
-                    priority: 'low'
-                    action: 'dummy'
+                key: 'yaml_test'
                 layout:
                   type: 'anvil'
                   input-update-listeners:
                     - priority: 'normal'
                       action: 'dummy'
                   buttons:
-                    - coordinates: [ [0, 0] ]
+                    - coordinates: [ [ 0, 0 ] ]
                       enabled: 'true'
                       shown: 'true'
                       interactions:
                         - priority: 'normal'
                           action: 'dummy'
-                      texture: 'advancedgui:yaml_test/interaction'
+                      texture: 'yaml_test/interaction'
                       name: '<bold>Hi!'
                       description:
                         lines:
                           - '<red>eee'
                           - 'eEe'
-                      tickers:
-                        - at: 'tick_end'
-                          priority: 'normal'
-                          action: 'dummy'
+                      lifecycle-listener-registry:
+                        before_tick:
+                          - priority: 'normal'
+                            action: 'dummy'
                       glowing: 'true'
+                  lifecycle-listener-registry:
+                    after_tick:
+                      - priority: 'highest'
+                        action: 'dummy'
+                lifecycle-listener-registry:
+                  before_tick:
+                    - priority: 'normal'
+                      action: 'dummy'
+                  after_tick:
+                    - priority: 'low'
+                      action: 'dummy'
                 background:
                   locations:
-                    - 'advancedgui:yaml_test/background'
+                    - 'yaml_test/background'
+                """;
+
+        rawJsonTemplate = """
+                {
+                  "key": "yaml_test",
+                  "layout": {
+                    "type": "anvil",
+                    "input-update-listeners": [
+                      {
+                        "priority": "normal",
+                        "action": "dummy"
+                      }
+                    ],
+                    "buttons": [
+                      {
+                        "coordinates": [ [0, 0] ],
+                        "enabled": "true",
+                        "shown": "true",
+                        "interactions": [
+                          {
+                            "priority": "normal",
+                            "action": "dummy"
+                          }
+                        ],
+                        "texture": "yaml_test/interaction",
+                        "name": "<bold>Hi!",
+                        "description": {
+                          "lines": [
+                            "<red>eee",
+                            "eEe"
+                          ]
+                        },
+                        "lifecycle-listener-registry": {
+                          "before_tick": [
+                            {
+                              "priority": "normal",
+                              "action": "dummy"
+                            }
+                          ]
+                        },
+                        "glowing": "true"
+                      }
+                    ],
+                    "lifecycle-listener-registry": {
+                      "after_tick": [
+                        {
+                          "priority": "highest",
+                          "action": "dummy"
+                        }
+                      ]
+                    }
+                  },
+                  "lifecycle-listener-registry": {
+                    "before_tick": [
+                      {
+                        "priority": "normal",
+                        "action": "dummy"
+                      }
+                    ],
+                    "after_tick": [
+                      {
+                        "priority": "low",
+                        "action": "dummy"
+                      }
+                    ]
+                  },
+                  "background": {
+                    "locations": [
+                      "yaml_test/background"
+                    ]
+                  }
+                }
                 """;
 
         template = gui(gui -> gui
-                .key(key("advancedgui", "yaml_test"))
-                .addTicker(ticker -> ticker
-                        .at(TickPointCut.START)
-                        .priority(NamedPriority.NORMAL)
-                        .action(System.out::println)
-                )
-                .addTicker(ticker -> ticker
-                        .at(TickPointCut.END)
-                        .priority(NamedPriority.LOW)
-                        .action(System.out::println)
-                )
+                .key(advancedguiKey("yaml_test"))
                 .layout(anvilLayout(), anvilLayout -> anvilLayout
                         .addInputUpdateListener(inputUpdateListener -> inputUpdateListener
                                 .priority(NamedPriority.NORMAL)
@@ -93,7 +161,7 @@ class ConfigurateGuiLoaderTests {
                                         .priority(NamedPriority.NORMAL)
                                         .action(System.out::println)
                                 )
-                                .texture(key("advancedgui", "yaml_test/interaction"))
+                                .texture(advancedguiKey("yaml_test/interaction"))
                                 .name(text("Hi!", style(TextDecoration.BOLD)))
                                 .description(description -> description
                                         .lines(
@@ -101,26 +169,54 @@ class ConfigurateGuiLoaderTests {
                                                 text("eEe")
                                         )
                                 )
-                                .addTicker(ticker -> ticker
-                                        .at(TickPointCut.START)
-                                        .priority(NamedPriority.NORMAL)
+                                .glowing(true)
+                                .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
+                                        .add(beforeTickPointcut(), lifecycleListener -> lifecycleListener
+                                                .priority(NamedPriority.NORMAL)
+                                                .action(System.out::println)
+                                        )
+                                )
+                        )
+                        .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
+                                .add(afterTickPointcut(), lifecycleListener -> lifecycleListener
+                                        .priority(NamedPriority.HIGHEST)
                                         .action(System.out::println)
                                 )
-                                .glowing(true)
                         )
                 )
                 .background(background -> background
-                        .addLocation(key("advancedgui", "yaml_test/background"))
+                        .addLocation(advancedguiKey("yaml_test/background"))
+                )
+                .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
+                        .add(beforeTickPointcut(), lifecycleListener -> lifecycleListener
+                                .priority(NamedPriority.NORMAL)
+                                .action(System.out::println)
+                        )
+                        .add(afterTickPointcut(), lifecycleListener -> lifecycleListener
+                                .priority(NamedPriority.LOW)
+                                .action(System.out::println)
+                        )
                 )
         );
     }
 
     @Test
     void yamlLoad() throws IOException {
-        assertThat(loader.loadString(rawYamlTemplate))
+        GuiLoader yamlLoader = new ConfigurateGuiLoader(YamlConfigurationLoader::builder);
+
+        assertThat(yamlLoader.loadString(rawYamlTemplate))
                 .usingRecursiveComparison()
                 .ignoringFieldsOfTypes(Action.class)
-                .ignoringCollectionOrder()
+                .isEqualTo(template);
+    }
+
+    @Test
+    void jsonLoad() throws IOException {
+        GuiLoader jsonLoader = new ConfigurateGuiLoader(GsonConfigurationLoader::builder);
+
+        assertThat(jsonLoader.loadString(rawJsonTemplate))
+                .usingRecursiveComparison()
+                .ignoringFieldsOfTypes(Action.class)
                 .isEqualTo(template);
     }
 }

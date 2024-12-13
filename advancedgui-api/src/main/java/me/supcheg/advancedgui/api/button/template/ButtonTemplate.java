@@ -2,12 +2,11 @@ package me.supcheg.advancedgui.api.button.template;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
+import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
-import me.supcheg.advancedgui.api.button.tick.ButtonTicker;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
-import me.supcheg.advancedgui.api.sequence.collection.MutablePositionedCollection;
-import me.supcheg.advancedgui.api.sequence.collection.PositionedCollection;
+import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Contract;
@@ -20,11 +19,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Consumer;
 
-import static me.supcheg.advancedgui.api.button.tick.ButtonTicker.buttonTicker;
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 import static me.supcheg.advancedgui.api.util.CollectionUtil.makeNoNullsList;
 
-public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate.Builder> {
+public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
     @NotNull
     @Contract("-> new")
     static Builder button() {
@@ -68,11 +66,7 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
 
     boolean glowing();
 
-    @NotNull
-    @Unmodifiable
-    PositionedCollection<ButtonTicker> tickers();
-
-    interface Builder extends AbstractBuilder<ButtonTemplate> {
+    interface Builder extends AbstractBuilder<ButtonTemplate>, Lifecycled.Builder<Button, Builder> {
 
         @NotNull
         @Contract("_ -> this")
@@ -159,25 +153,6 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
 
         @Nullable
         Description description();
-
-        @NotNull
-        @Contract("_ -> this")
-        default Builder addTicker(@NotNull ButtonTicker.Builder builder) {
-            return addTicker(builder.build());
-        }
-
-        @NotNull
-        @Contract("_ -> this")
-        default Builder addTicker(@NotNull Consumer<ButtonTicker.Builder> consumer) {
-            return addTicker(buttonTicker(consumer));
-        }
-
-        @NotNull
-        @Contract("_ -> this")
-        Builder addTicker(@NotNull ButtonTicker ticker);
-
-        @NotNull
-        MutablePositionedCollection<ButtonTicker> tickers();
 
         @NotNull
         @Contract("_ -> this")

@@ -1,20 +1,20 @@
 package me.supcheg.advancedgui.api.layout.template;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
+import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
-import me.supcheg.advancedgui.api.builder.Buildable;
+import me.supcheg.advancedgui.api.layout.Layout;
+import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 import java.util.function.Consumer;
 
-public sealed interface LayoutTemplate<T, B extends LayoutTemplate.Builder<T, B>> extends Buildable<T, B>
-        permits AnvilLayoutTemplate, BeaconLayoutTemplate, BrewingLayoutTemplate, CartographyLayoutTemplate,
-                ChestLayoutTemplate, CraftingLayoutTemplate, DispenserLayoutTemplate, EnchantmentLayoutTemplate,
-                FurnaceLayoutTemplate, GrindstoneLayoutTemplate, HopperLayoutTemplate, HorseLayoutTemplate, LoomLayoutTemplate,
-                SmithingLayoutTemplate, StonecutterLayoutTemplate, TradingLayoutTemplate {
+public sealed interface LayoutTemplate<L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>>
+        extends Buildable<T, B>, Lifecycled<L>
+        permits AnvilLayoutTemplate {
 
     @NotNull
     @Unmodifiable
@@ -23,7 +23,7 @@ public sealed interface LayoutTemplate<T, B extends LayoutTemplate.Builder<T, B>
     @NotNull
     CoordinateTranslator coordinateTranslator();
 
-    interface Builder<T, B extends Builder<T, B>> extends AbstractBuilder<T> {
+    interface Builder<L, T, B extends Builder<L, T, B>> extends AbstractBuilder<T>, Lifecycled.Builder<L, B> {
 
         @NotNull
         B addButton(@NotNull ButtonTemplate button);

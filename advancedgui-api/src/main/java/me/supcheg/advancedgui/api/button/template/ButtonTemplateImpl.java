@@ -1,12 +1,11 @@
 package me.supcheg.advancedgui.api.button.template;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
+import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
-import me.supcheg.advancedgui.api.button.tick.ButtonTicker;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
-import me.supcheg.advancedgui.api.sequence.collection.MutablePositionedCollection;
-import me.supcheg.advancedgui.api.sequence.collection.PositionedCollection;
+import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +27,7 @@ record ButtonTemplateImpl(
         @NotNull Key texture,
         @NotNull Component name,
         @NotNull Description description,
-        @NotNull PositionedCollection<ButtonTicker> tickers,
+        @NotNull LifecycleListenerRegistry<Button> lifecycleListenerRegistry,
         boolean glowing
 ) implements ButtonTemplate {
     @NotNull
@@ -45,13 +44,12 @@ record ButtonTemplateImpl(
         private Key texture;
         private Component name;
         private Description description;
-        private final MutablePositionedCollection<ButtonTicker> tickers;
+        private LifecycleListenerRegistry<Button> lifecycleListenerRegistry;
         private Boolean glowing;
 
         BuilderImpl() {
             this.coordinates = new HashSet<>();
             this.interactions = new TreeSet<>();
-            this.tickers = MutablePositionedCollection.mutableEmpty();
         }
 
         BuilderImpl(@NotNull ButtonTemplateImpl impl) {
@@ -62,7 +60,7 @@ record ButtonTemplateImpl(
             this.texture = impl.texture;
             this.name = impl.name;
             this.description = impl.description;
-            this.tickers = MutablePositionedCollection.mutableCopyOf(impl.tickers);
+            this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
             this.glowing = impl.glowing;
         }
 
@@ -182,18 +180,18 @@ record ButtonTemplateImpl(
             return description;
         }
 
-        @NotNull
+        @Nullable
         @Override
-        public Builder addTicker(@NotNull ButtonTicker ticker) {
-            Objects.requireNonNull(ticker, "ticker");
-            this.tickers.add(ticker);
-            return this;
+        public LifecycleListenerRegistry<Button> lifecycleListenerRegistry() {
+            return lifecycleListenerRegistry;
         }
 
         @NotNull
         @Override
-        public MutablePositionedCollection<ButtonTicker> tickers() {
-            return tickers;
+        public Builder lifecycleListenerRegistry(@NotNull LifecycleListenerRegistry<Button> lifecycleListenerRegistry) {
+            Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry");
+            this.lifecycleListenerRegistry = lifecycleListenerRegistry;
+            return this;
         }
 
         @NotNull
@@ -209,6 +207,7 @@ record ButtonTemplateImpl(
             return glowing;
         }
 
+
         @NotNull
         @Override
         public ButtonTemplate build() {
@@ -220,7 +219,7 @@ record ButtonTemplateImpl(
                     Objects.requireNonNull(texture, "texture"),
                     Objects.requireNonNull(name, "name"),
                     Objects.requireNonNull(description, "description"),
-                    PositionedCollection.copyOf(tickers),
+                    Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry"),
                     Objects.requireNonNull(glowing, "glowing")
             );
         }

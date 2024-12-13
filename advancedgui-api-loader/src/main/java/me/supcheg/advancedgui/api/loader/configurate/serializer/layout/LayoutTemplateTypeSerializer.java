@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
 
-public final class LayoutTemplateTypeSerializer implements TypeSerializer<LayoutTemplate<?, ?>> {
+public final class LayoutTemplateTypeSerializer implements TypeSerializer<LayoutTemplate<?, ?, ?>> {
     private final Map<String, Type> key2type = new HashMap<>();
 
     public static boolean isExactLayoutTemplate(Type type) {
@@ -25,7 +25,7 @@ public final class LayoutTemplateTypeSerializer implements TypeSerializer<Layout
     }
 
     @Override
-    public LayoutTemplate<?, ?> deserialize(Type type, ConfigurationNode node) throws SerializationException {
+    public LayoutTemplate<?, ?, ?> deserialize(Type type, ConfigurationNode node) throws SerializationException {
         String nodeType = node.node("type").getString();
         if (nodeType == null) {
             throw new SerializationException("Node type is required");
@@ -36,11 +36,11 @@ public final class LayoutTemplateTypeSerializer implements TypeSerializer<Layout
             throw new SerializationException("Node type '" + nodeType + "' does not exist");
         }
 
-        return (LayoutTemplate<?, ?>) node.require(exactType);
+        return (LayoutTemplate<?, ?, ?>) node.require(exactType);
     }
 
     @Override
-    public void serialize(Type type, @Nullable LayoutTemplate<?, ?> obj, ConfigurationNode node) throws SerializationException {
+    public void serialize(Type type, @Nullable LayoutTemplate<?, ?, ?> obj, ConfigurationNode node) throws SerializationException {
         throw new SerializationException("Not implemented yet");
     }
 }

@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.loader.configurate.serializer.adventure;
 
+import me.supcheg.advancedgui.api.key.AdvancedGuiKeys;
 import net.kyori.adventure.key.Key;
 import org.spongepowered.configurate.serialize.ScalarSerializer;
 
@@ -11,10 +12,9 @@ public final class KeyTypeSerializer extends ScalarSerializer<Key> {
         super(Key.class);
     }
 
-    @SuppressWarnings("PatternValidation")
     @Override
     public Key deserialize(Type type, Object obj) {
-        return Key.key(String.valueOf(obj));
+        return AdvancedGuiKeys.advancedguiKey(String.valueOf(obj));
     }
 
     @Override

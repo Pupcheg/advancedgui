@@ -8,8 +8,6 @@ import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import java.lang.reflect.Type;
 
-import static io.leangen.geantyref.GenericTypeReflector.erase;
-
 @RequiredArgsConstructor
 public final class InterfaceImplTypeSerializer implements TypeSerializer<Object> {
     private final TypeSerializer<Object> delegate;
@@ -17,7 +15,7 @@ public final class InterfaceImplTypeSerializer implements TypeSerializer<Object>
 
     @Override
     public Object deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        return delegate.deserialize(implLookup.findImpl(erase(type)), node);
+        return delegate.deserialize(implLookup.findImpl(type), node);
     }
 
     @Override
