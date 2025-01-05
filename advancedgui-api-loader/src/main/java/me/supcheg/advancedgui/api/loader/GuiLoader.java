@@ -1,7 +1,5 @@
 package me.supcheg.advancedgui.api.loader;
 
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
-import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,8 +7,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public interface GuiLoader extends Buildable<GuiLoader, GuiLoader.Builder> {
-
+public interface GuiLoader {
     @NotNull
     GuiTemplate loadResource(@NotNull Reader in) throws IOException;
 
@@ -19,8 +16,5 @@ public interface GuiLoader extends Buildable<GuiLoader, GuiLoader.Builder> {
         try (Reader reader = new StringReader(raw)) {
             return loadResource(reader);
         }
-    }
-
-    interface Builder extends AbstractBuilder<GuiLoader> {
     }
 }

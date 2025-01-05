@@ -114,19 +114,13 @@ public final class ConfigurateGuiLoader implements GuiLoader {
                 .require(GuiTemplate.class);
     }
 
-    @NotNull
-    @Override
-    public GuiLoader.Builder toBuilder() {
-        throw new UnsupportedOperationException();
-    }
-
     public interface ConfigurationLoaderBuilderFactory {
         @NotNull
         @Contract("-> new")
         AbstractConfigurationLoader.Builder<?, ?> newConfigurationLoader();
     }
 
-    public interface ConfigurationLoaderOpener {
+    private interface ConfigurationLoaderOpener {
         @NotNull
         @Contract("_ -> new")
         ConfigurationLoader<?> openLoader(@NotNull Reader in);
