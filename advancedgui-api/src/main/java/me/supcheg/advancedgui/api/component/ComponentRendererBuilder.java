@@ -25,8 +25,8 @@ public interface ComponentRendererBuilder extends AbstractBuilder<ComponentRende
     }
 
     @NotNull
-    default ComponentRendererBuilder noItalic() {
-        return addTail(NoItalicComponentRenderer.INSTANCE);
+    default ComponentRendererBuilder noItalicByDefault() {
+        return addTail(NoItalicByDefaultComponentRenderer.INSTANCE);
     }
 
     @NotNull
