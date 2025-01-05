@@ -18,6 +18,7 @@ public record ActionInterpreterEntry<C extends ActionInterpretContext>(
     public InterpretedContext parseAndInterpret(@NotNull ConfigurationNode node) throws SerializationException {
         C ctx = contextParser.deserialize(node);
         return new InterpretedContext(
+                contextParser,
                 ctx,
                 actionInterpreter.interpretMethodHandle(ctx)
         );

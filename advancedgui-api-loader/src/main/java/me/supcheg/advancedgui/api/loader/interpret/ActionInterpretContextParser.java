@@ -21,7 +21,7 @@ public interface ActionInterpretContextParser<C> {
     @NotNull
     C deserialize(@NotNull ConfigurationNode node) throws SerializationException;
 
-    default void serialize(@NotNull Type type, @Nullable C obj, @NotNull ConfigurationNode node) throws SerializationException {
-        node.set(type, obj);
+    default void serialize(@NotNull Type type, @Nullable C ctx, @NotNull ConfigurationNode node) throws SerializationException {
+        node.set(type, ctx);
     }
 }
