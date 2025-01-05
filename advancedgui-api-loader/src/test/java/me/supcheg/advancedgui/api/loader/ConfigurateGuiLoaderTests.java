@@ -1,6 +1,5 @@
 package me.supcheg.advancedgui.api.loader;
 
-import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
 import me.supcheg.advancedgui.api.sequence.NamedPriority;
@@ -15,10 +14,11 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import java.io.IOException;
 
 import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
-import static me.supcheg.advancedgui.api.key.AdvancedGuiKeys.advancedguiKey;
 import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anvilLayout;
 import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.afterTickPointcut;
 import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.beforeTickPointcut;
+import static me.supcheg.advancedgui.api.loader.interpret.DummyAction.dummyAction;
+import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.Style.style;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,7 @@ class ConfigurateGuiLoaderTests {
     @BeforeAll
     static void setup() {
         rawYamlTemplate = """
-                key: 'yaml_test'
+                key: 'advancedgui:test/test'
                 layout:
                   type: 'anvil'
                   input-update-listeners:
@@ -47,7 +47,7 @@ class ConfigurateGuiLoaderTests {
                       interactions:
                         - priority: 'normal'
                           action: 'dummy'
-                      texture: 'yaml_test/interaction'
+                      texture: 'advancedgui:test/interaction'
                       name: '<bold>Hi!'
                       description:
                         lines:
@@ -71,12 +71,12 @@ class ConfigurateGuiLoaderTests {
                       action: 'dummy'
                 background:
                   locations:
-                    - 'yaml_test/background'
+                    - 'advancedgui:test/background'
                 """;
 
         rawJsonTemplate = """
                 {
-                  "key": "yaml_test",
+                  "key": "advancedgui:test/test",
                   "layout": {
                     "type": "anvil",
                     "input-update-listeners": [
@@ -96,7 +96,7 @@ class ConfigurateGuiLoaderTests {
                             "action": "dummy"
                           }
                         ],
-                        "texture": "yaml_test/interaction",
+                        "texture": "advancedgui:test/interaction",
                         "name": "<bold>Hi!",
                         "description": {
                           "lines": [
@@ -140,18 +140,18 @@ class ConfigurateGuiLoaderTests {
                   },
                   "background": {
                     "locations": [
-                      "yaml_test/background"
+                      "advancedgui:test/background"
                     ]
                   }
                 }
                 """;
 
         template = gui(gui -> gui
-                .key(advancedguiKey("yaml_test"))
+                .key(key("advancedgui:test/test"))
                 .layout(anvilLayout(), anvilLayout -> anvilLayout
                         .addInputUpdateListener(inputUpdateListener -> inputUpdateListener
                                 .priority(NamedPriority.NORMAL)
-                                .action(System.out::println)
+                                .action(dummyAction())
                         )
                         .addButton(button -> button
                                 .addCoordinate(0, 0)
@@ -159,9 +159,9 @@ class ConfigurateGuiLoaderTests {
                                 .shown(true)
                                 .addInteraction(interaction -> interaction
                                         .priority(NamedPriority.NORMAL)
-                                        .action(System.out::println)
+                                        .action(dummyAction())
                                 )
-                                .texture(advancedguiKey("yaml_test/interaction"))
+                                .texture(key("advancedgui:test/interaction"))
                                 .name(text("Hi!", style(TextDecoration.BOLD)))
                                 .description(description -> description
                                         .lines(
@@ -173,28 +173,28 @@ class ConfigurateGuiLoaderTests {
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
                                         .add(beforeTickPointcut(), lifecycleListener -> lifecycleListener
                                                 .priority(NamedPriority.NORMAL)
-                                                .action(System.out::println)
+                                                .action(dummyAction())
                                         )
                                 )
                         )
                         .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
                                 .add(afterTickPointcut(), lifecycleListener -> lifecycleListener
                                         .priority(NamedPriority.HIGHEST)
-                                        .action(System.out::println)
+                                        .action(dummyAction())
                                 )
                         )
                 )
                 .background(background -> background
-                        .addLocation(advancedguiKey("yaml_test/background"))
+                        .addLocation(key("advancedgui:test/background"))
                 )
                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
                         .add(beforeTickPointcut(), lifecycleListener -> lifecycleListener
                                 .priority(NamedPriority.NORMAL)
-                                .action(System.out::println)
+                                .action(dummyAction())
                         )
                         .add(afterTickPointcut(), lifecycleListener -> lifecycleListener
                                 .priority(NamedPriority.LOW)
-                                .action(System.out::println)
+                                .action(dummyAction())
                         )
                 )
         );
@@ -202,21 +202,29 @@ class ConfigurateGuiLoaderTests {
 
     @Test
     void yamlLoad() throws IOException {
-        GuiLoader yamlLoader = new ConfigurateGuiLoader(YamlConfigurationLoader::builder);
-
-        assertThat(yamlLoader.loadString(rawYamlTemplate))
+        assertThat(yamlLoader().loadString(rawYamlTemplate))
                 .usingRecursiveComparison()
-                .ignoringFieldsOfTypes(Action.class)
                 .isEqualTo(template);
     }
 
     @Test
-    void jsonLoad() throws IOException {
-        GuiLoader jsonLoader = new ConfigurateGuiLoader(GsonConfigurationLoader::builder);
+    void yamlLoadAndSave() {
+        GuiLoader yamlLoader = yamlLoader();
 
-        assertThat(jsonLoader.loadString(rawJsonTemplate))
+    }
+
+    @Test
+    void jsonLoad() throws IOException {
+        assertThat(jsonLoader().loadString(rawJsonTemplate))
                 .usingRecursiveComparison()
-                .ignoringFieldsOfTypes(Action.class)
                 .isEqualTo(template);
+    }
+
+    private GuiLoader yamlLoader() {
+        return new ConfigurateGuiLoader(YamlConfigurationLoader::builder);
+    }
+
+    private GuiLoader jsonLoader() {
+        return new ConfigurateGuiLoader(GsonConfigurationLoader::builder);
     }
 }
