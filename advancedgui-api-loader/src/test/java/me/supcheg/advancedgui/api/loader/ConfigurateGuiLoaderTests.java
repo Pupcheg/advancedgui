@@ -13,6 +13,8 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.IOException;
 
+import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
+import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
 import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
 import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anvilLayout;
 import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.afterTickPointcut;
@@ -42,8 +44,6 @@ class ConfigurateGuiLoaderTests {
                       action: 'dummy'
                   buttons:
                     - coordinates: [ [ 0, 0 ] ]
-                      enabled: 'true'
-                      shown: 'true'
                       interactions:
                         - priority: 'normal'
                           action: 'dummy'
@@ -57,7 +57,9 @@ class ConfigurateGuiLoaderTests {
                         before_tick:
                           - priority: 'normal'
                             action: 'dummy'
-                      glowing: 'true'
+                      attributes:
+                        - 'glowing'
+                        - 'hidden'
                   lifecycle-listener-registry:
                     after_tick:
                       - priority: 'highest'
@@ -88,8 +90,6 @@ class ConfigurateGuiLoaderTests {
                     "buttons": [
                       {
                         "coordinates": [ [0, 0] ],
-                        "enabled": "true",
-                        "shown": "true",
                         "interactions": [
                           {
                             "priority": "normal",
@@ -112,7 +112,7 @@ class ConfigurateGuiLoaderTests {
                             }
                           ]
                         },
-                        "glowing": "true"
+                        "attributes": [ "glowing", "hidden" ]
                       }
                     ],
                     "lifecycle-listener-registry": {
@@ -155,8 +155,6 @@ class ConfigurateGuiLoaderTests {
                         )
                         .addButton(button -> button
                                 .addCoordinate(0, 0)
-                                .enabled(true)
-                                .shown(true)
                                 .addInteraction(interaction -> interaction
                                         .priority(NamedPriority.NORMAL)
                                         .action(dummyAction())
@@ -169,7 +167,7 @@ class ConfigurateGuiLoaderTests {
                                                 text("eEe")
                                         )
                                 )
-                                .glowing(true)
+                                .attributes(glowing(), hidden())
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
                                         .add(beforeTickPointcut(), lifecycleListener -> lifecycleListener
                                                 .priority(NamedPriority.NORMAL)

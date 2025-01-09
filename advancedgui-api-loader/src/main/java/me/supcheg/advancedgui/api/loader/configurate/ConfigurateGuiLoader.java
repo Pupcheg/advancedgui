@@ -2,10 +2,12 @@ package me.supcheg.advancedgui.api.loader.configurate;
 
 import me.supcheg.advancedgui.api.AdvancedGuiApi;
 import me.supcheg.advancedgui.api.builder.Buildable;
+import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.lifecycle.Pointcut;
 import me.supcheg.advancedgui.api.loader.GuiLoader;
+import me.supcheg.advancedgui.api.loader.configurate.button.ButtonAttributeTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.CustomNamespaceKeyTypeSerializer;
@@ -77,6 +79,10 @@ public final class ConfigurateGuiLoader implements GuiLoader {
                 )
                 .register(
                         new CustomNamespaceKeyTypeSerializer(AdvancedGuiApi.NAMESPACE)
+                )
+                .register(
+                        ButtonAttribute.class,
+                        new ButtonAttributeTypeSerializer()
                 )
                 .register(
                         Pointcut.class,

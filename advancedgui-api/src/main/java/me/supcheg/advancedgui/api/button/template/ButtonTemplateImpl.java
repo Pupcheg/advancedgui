@@ -2,6 +2,7 @@ package me.supcheg.advancedgui.api.button.template;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.button.Button;
+import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
 import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
@@ -21,14 +22,12 @@ import java.util.TreeSet;
 
 record ButtonTemplateImpl(
         @NotNull Set<Coordinate> coordinates,
-        boolean enabled,
-        boolean shown,
         @NotNull SortedSet<ButtonInteraction> interactions,
         @NotNull Key texture,
         @NotNull Component name,
         @NotNull Description description,
-        @NotNull LifecycleListenerRegistry<Button> lifecycleListenerRegistry,
-        boolean glowing
+        @NotNull Set<ButtonAttribute> attributes,
+        @NotNull LifecycleListenerRegistry<Button> lifecycleListenerRegistry
 ) implements ButtonTemplate {
     @NotNull
     @Override
@@ -38,30 +37,27 @@ record ButtonTemplateImpl(
 
     static final class BuilderImpl implements ButtonTemplate.Builder {
         private final Set<Coordinate> coordinates;
-        private Boolean enabled;
-        private Boolean shown;
         private final SortedSet<ButtonInteraction> interactions;
+        private final Set<ButtonAttribute> attributes;
         private Key texture;
         private Component name;
         private Description description;
         private LifecycleListenerRegistry<Button> lifecycleListenerRegistry;
-        private Boolean glowing;
 
         BuilderImpl() {
             this.coordinates = new HashSet<>();
             this.interactions = new TreeSet<>();
+            this.attributes = new HashSet<>();
         }
 
         BuilderImpl(@NotNull ButtonTemplateImpl impl) {
-            this.coordinates = impl.coordinates;
-            this.enabled = impl.enabled;
-            this.shown = impl.shown;
+            this.coordinates = new HashSet<>(impl.coordinates);
             this.interactions = new TreeSet<>(impl.interactions);
+            this.attributes = new HashSet<>(impl.attributes);
             this.texture = impl.texture;
             this.name = impl.name;
             this.description = impl.description;
             this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
-            this.glowing = impl.glowing;
         }
 
         @NotNull
@@ -90,32 +86,6 @@ record ButtonTemplateImpl(
         @Override
         public Set<Coordinate> coordinates() {
             return coordinates;
-        }
-
-        @NotNull
-        @Override
-        public Builder enabled(boolean value) {
-            this.enabled = value;
-            return this;
-        }
-
-        @Nullable
-        @Override
-        public Boolean enabled() {
-            return enabled;
-        }
-
-        @NotNull
-        @Override
-        public Builder shown(boolean value) {
-            shown = value;
-            return this;
-        }
-
-        @Nullable
-        @Override
-        public Boolean shown() {
-            return shown;
         }
 
         @NotNull
@@ -180,6 +150,26 @@ record ButtonTemplateImpl(
             return description;
         }
 
+        @NotNull
+        @Override
+        public Set<ButtonAttribute> attributes() {
+            return attributes;
+        }
+
+        @NotNull
+        @Override
+        public Builder attributes(@NotNull Set<ButtonAttribute> attributes) {
+            AbstractBuilder.replaceCollectionContents(this.attributes, attributes);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public Builder addAttributes(@NotNull Set<ButtonAttribute> attributes) {
+            this.attributes.addAll(attributes);
+            return this;
+        }
+
         @Nullable
         @Override
         public LifecycleListenerRegistry<Button> lifecycleListenerRegistry() {
@@ -196,31 +186,15 @@ record ButtonTemplateImpl(
 
         @NotNull
         @Override
-        public Builder glowing(boolean value) {
-            this.glowing = value;
-            return this;
-        }
-
-        @Nullable
-        @Override
-        public Boolean glowing() {
-            return glowing;
-        }
-
-
-        @NotNull
-        @Override
         public ButtonTemplate build() {
             return new ButtonTemplateImpl(
                     Set.copyOf(coordinates),
-                    Objects.requireNonNull(enabled, "enabled"),
-                    Objects.requireNonNull(shown, "shown"),
                     Collections.unmodifiableSortedSet(new TreeSet<>(interactions)),
                     Objects.requireNonNull(texture, "texture"),
                     Objects.requireNonNull(name, "name"),
                     Objects.requireNonNull(description, "description"),
-                    Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry"),
-                    Objects.requireNonNull(glowing, "glowing")
+                    Set.copyOf(attributes),
+                    Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry")
             );
         }
     }
