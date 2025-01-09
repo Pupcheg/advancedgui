@@ -1,13 +1,15 @@
 package me.supcheg.advancedgui.api.loader.configurate;
 
+import me.supcheg.advancedgui.api.AdvancedGuiApi;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
+import me.supcheg.advancedgui.api.lifecycle.Pointcut;
 import me.supcheg.advancedgui.api.loader.GuiLoader;
 import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.ComponentTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.KeyTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.CustomNamespaceKeyTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.StringComponentSerializerWrapperTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.ClasspathInterfaceImplLookup;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.InterfaceImplTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.layout.LayoutTemplateTypeSerializer;
@@ -33,15 +35,29 @@ import static io.leangen.geantyref.GenericTypeReflector.erase;
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
 public final class ConfigurateGuiLoader implements GuiLoader {
+
     private final ConfigurationLoaderOpener loaderBuilder;
 
     public ConfigurateGuiLoader(
             @NotNull ConfigurationLoaderBuilderFactory loaderFactory
     ) {
+        ConfigurationOptions configurationOptions = ConfigurationOptions.defaults()
+                .serializers(makeSerializers(TypeSerializerCollection.defaults()));
+
+        this.loaderBuilder = in ->
+                loaderFactory.newConfigurationLoader()
+                        .defaultOptions(configurationOptions)
+                        .source(asBufferedReaderCallable(in))
+                        .build();
+    }
+
+    private TypeSerializerCollection makeSerializers(TypeSerializerCollection root) {
         ObjectMapper.Factory objectFactory = ObjectMapper.factory();
 
-        TypeSerializerCollection serializers = TypeSerializerCollection.defaults()
-                .childBuilder()
+        return root.childBuilder()
+                .register(
+                        new StringComponentSerializerWrapperTypeSerializer(miniMessage())
+                )
                 .register(
                         ActionTypeSerializer::isAction,
                         new ActionTypeSerializer(
@@ -57,17 +73,13 @@ public final class ConfigurateGuiLoader implements GuiLoader {
                         new LayoutTemplateTypeSerializer()
                 )
                 .register(
-                        new ComponentTypeSerializer(
-                                miniMessage()
-                        )
-                )
-                .register(
                         new PriorityTypeSerializer()
                 )
                 .register(
-                        new KeyTypeSerializer()
+                        new CustomNamespaceKeyTypeSerializer(AdvancedGuiApi.NAMESPACE)
                 )
                 .register(
+                        Pointcut.class,
                         new PointcutTypeSerializer()
                 )
                 .register(
@@ -87,15 +99,6 @@ public final class ConfigurateGuiLoader implements GuiLoader {
                 )
                 .registerAnnotatedObjects(objectFactory)
                 .build();
-
-        ConfigurationOptions configurationOptions = ConfigurationOptions.defaults()
-                .serializers(serializers);
-
-        this.loaderBuilder = in ->
-                loaderFactory.newConfigurationLoader()
-                        .defaultOptions(configurationOptions)
-                        .source(asBufferedReaderCallable(in))
-                        .build();
     }
 
     @NotNull

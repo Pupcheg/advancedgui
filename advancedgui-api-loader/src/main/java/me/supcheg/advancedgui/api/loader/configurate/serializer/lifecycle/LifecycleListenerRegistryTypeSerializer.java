@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
-import org.spongepowered.configurate.serialize.ScalarSerializer;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
 
@@ -19,20 +18,22 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 
+import static org.spongepowered.configurate.BasicConfigurationNode.root;
+
 public class LifecycleListenerRegistryTypeSerializer implements TypeSerializer<LifecycleListenerRegistry<?>> {
     private final Type rawLifecycleListenerListType = TypeFactory.parameterizedClass(List.class, RawLifecycleListener.class);
 
     @Override
     public LifecycleListenerRegistry<?> deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        ScalarSerializer<Pointcut> pointcutTypeSerializer = getPointcutScalarSerializer(node.options());
+        TypeSerializer<Pointcut> pointcutTypeSerializer = getPointcutScalarSerializer(node.options());
         var rawLifecycleListenerListSerializer = getRawLifecycleListenerListSerializer(node.options());
 
         LifecycleListenerRegistry.Builder<Object> builder = LifecycleListenerRegistry.lifecycleListenerRegistry();
         for (var entry : node.childrenMap().entrySet()) {
-            Object rawPointcut = entry.getKey();
+            ConfigurationNode keyNode = root(node.options()).set(entry.getKey());
             ConfigurationNode valueNode = entry.getValue();
 
-            Pointcut pointcut = pointcutTypeSerializer.deserialize(Pointcut.class, rawPointcut);
+            Pointcut pointcut = pointcutTypeSerializer.deserialize(Pointcut.class, keyNode);
             var rawList = rawLifecycleListenerListSerializer.deserialize(rawLifecycleListenerListType, valueNode);
 
             for (var raw : rawList) {
@@ -53,12 +54,11 @@ public class LifecycleListenerRegistryTypeSerializer implements TypeSerializer<L
     }
 
     @NotNull
-    private ScalarSerializer<Pointcut> getPointcutScalarSerializer(@NotNull ConfigurationOptions options) {
-        return (ScalarSerializer<Pointcut>)
-                Objects.requireNonNull(
-                        options.serializers().get(Pointcut.class),
-                        "Not found type serializer for Pointcut"
-                );
+    private TypeSerializer<Pointcut> getPointcutScalarSerializer(@NotNull ConfigurationOptions options) {
+        return Objects.requireNonNull(
+                options.serializers().get(Pointcut.class),
+                "Not found type serializer for Pointcut"
+        );
     }
 
     @SuppressWarnings("unchecked")

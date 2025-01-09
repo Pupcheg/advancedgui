@@ -6,7 +6,6 @@ import me.supcheg.advancedgui.api.component.ComponentRenderContext;
 import me.supcheg.advancedgui.api.component.ComponentRendererBuilder;
 import me.supcheg.advancedgui.api.gui.Gui;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
-import me.supcheg.advancedgui.api.texture.TextureWrapper;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import org.jetbrains.annotations.Contract;
@@ -19,9 +18,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public interface GuiController<S, T extends GuiController<S, T, B>, B extends GuiController.Builder<S, T, B>> extends Buildable<T, B>, AutoCloseable {
-
-    @NotNull
-    TextureWrapper textureWrapper();
 
     @NotNull
     ComponentRenderer<ComponentRenderContext> componentRenderer();
@@ -44,6 +40,10 @@ public interface GuiController<S, T extends GuiController<S, T, B>, B extends Gu
 
     void unregister(@NotNull Key key);
 
+    default void unregister(@NotNull Gui gui) {
+        unregister(gui.key());
+    }
+
     interface Builder<S, T extends GuiController<S, T, B>, B extends Builder<S, T, B>> extends AbstractBuilder<T> {
         @NotNull
         @Contract("_ -> this")
@@ -65,26 +65,5 @@ public interface GuiController<S, T extends GuiController<S, T, B>, B extends Gu
 
         @Nullable
         ComponentRenderer<ComponentRenderContext> componentRenderer();
-
-        @NotNull
-        @Contract("_ -> this")
-        default B textureWrapper(@NotNull Consumer<TextureWrapper.Builder> consumer) {
-            TextureWrapper.Builder builder = TextureWrapper.textureWrapper();
-            consumer.accept(builder);
-            return textureWrapper(builder);
-        }
-
-        @NotNull
-        @Contract("_ -> this")
-        default B textureWrapper(@NotNull TextureWrapper.Builder wrapper) {
-            return textureWrapper(wrapper.build());
-        }
-
-        @NotNull
-        @Contract("_ -> this")
-        B textureWrapper(@NotNull TextureWrapper textureWrapper);
-
-        @Nullable
-        TextureWrapper textureWrapper();
     }
 }

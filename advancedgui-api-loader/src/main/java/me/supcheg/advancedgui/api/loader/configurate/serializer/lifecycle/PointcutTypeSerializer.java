@@ -1,25 +1,26 @@
 package me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle;
 
-import me.supcheg.advancedgui.api.key.AdvancedGuiKeys;
 import me.supcheg.advancedgui.api.lifecycle.Pointcut;
-import org.spongepowered.configurate.serialize.ScalarSerializer;
+import net.kyori.adventure.key.Key;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import java.lang.reflect.Type;
-import java.util.function.Predicate;
 
-public final class PointcutTypeSerializer extends ScalarSerializer<Pointcut> {
-    public PointcutTypeSerializer() {
-        super(Pointcut.class);
+public final class PointcutTypeSerializer implements TypeSerializer<Pointcut> {
+    @Override
+    public Pointcut deserialize(Type type, ConfigurationNode node) throws SerializationException {
+        return Pointcut.newPointcut(node.require(Key.class));
     }
 
     @Override
-    public Pointcut deserialize(Type type, Object obj) throws SerializationException {
-        return Pointcut.newPointcut(AdvancedGuiKeys.advancedguiKey(String.valueOf(obj)));
-    }
-
-    @Override
-    protected Object serialize(Pointcut item, Predicate<Class<?>> typeSupported) {
-        return item.key().asString();
+    public void serialize(Type type, @Nullable Pointcut obj, ConfigurationNode node) throws SerializationException {
+        if(obj == null) {
+            node.set(null);
+            return;
+        }
+        node.set(obj.key());
     }
 }
