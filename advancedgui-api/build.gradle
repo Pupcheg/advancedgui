@@ -1,5 +1,5 @@
 dependencies {
-    implementation 'net.kyori:adventure-api:4.17.0'
+    implementation 'net.kyori:adventure-api:4.18.0'
     implementation 'org.jetbrains:annotations:24.1.0'
 
     testImplementation 'org.assertj:assertj-swing-junit:3.17.1'
