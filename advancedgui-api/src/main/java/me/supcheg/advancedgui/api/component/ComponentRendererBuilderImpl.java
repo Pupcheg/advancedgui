@@ -84,7 +84,16 @@ final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
         @NotNull
         @Override
         public Component render(@NotNull Component original, @NotNull ComponentRenderContext ctx) {
-            return cache.computeIfAbsent(original, component -> delegate.render(component, ctx));
+            Component result = cache.get(original);
+            if (result != null) {
+                return result;
+            }
+
+            result = delegate.render(original, ctx);
+            if (result != original) {
+                cache.put(original, result);
+            }
+            return result;
         }
     }
 }
