@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -205,10 +206,13 @@ class ConfigurateGuiLoaderTests {
                 .isEqualTo(template);
     }
 
+    @Disabled("#saveString is not implemented")
     @Test
-    void yamlLoadAndSave() {
+    void yamlLoadAndSave() throws IOException {
         GuiLoader yamlLoader = yamlLoader();
-
+        GuiTemplate template = yamlLoader.loadString(rawYamlTemplate);
+        assertThat(yamlLoader.saveString(template))
+                .isEqualTo(rawYamlTemplate);
     }
 
     @Test

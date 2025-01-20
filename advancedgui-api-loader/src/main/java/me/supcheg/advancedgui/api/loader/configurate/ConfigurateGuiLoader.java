@@ -31,6 +31,7 @@ import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.concurrent.Callable;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
@@ -121,6 +122,11 @@ public final class ConfigurateGuiLoader implements GuiLoader {
         return loaderBuilder.openLoader(in)
                 .load()
                 .require(GuiTemplate.class);
+    }
+
+    @Override
+    public void saveResource(@NotNull GuiTemplate template, @NotNull Writer writer) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public interface ConfigurationLoaderBuilderFactory {
