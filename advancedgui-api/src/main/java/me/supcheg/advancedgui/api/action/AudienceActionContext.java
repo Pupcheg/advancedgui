@@ -1,9 +1,9 @@
-package me.supcheg.advancedgui.api.component;
+package me.supcheg.advancedgui.api.action;
 
 import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.NotNull;
 
-public interface ComponentRenderContext {
+public interface AudienceActionContext extends ActionContext {
     @NotNull
     Audience audience();
 }

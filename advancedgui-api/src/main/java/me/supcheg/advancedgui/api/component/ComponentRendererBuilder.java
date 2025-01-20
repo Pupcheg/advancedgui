@@ -6,11 +6,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public interface ComponentRendererBuilder extends AbstractBuilder<ComponentRenderer<ComponentRenderContext>> {
 
@@ -30,17 +29,7 @@ public interface ComponentRendererBuilder extends AbstractBuilder<ComponentRende
     }
 
     @NotNull
-    default ComponentRendererBuilder enableSynchronizedWeakCache() {
-        return enableCache(Collections.synchronizedMap(new WeakHashMap<>()));
-    }
-
-    @NotNull
-    default ComponentRendererBuilder enableConcurrentCache() {
-        return enableCache(new ConcurrentHashMap<>());
-    }
-
-    @NotNull
-    ComponentRendererBuilder enableCache(@NotNull Map<Component, Component> cache);
+    ComponentRendererBuilder enableCache(@NotNull Supplier<Map<Component, Component>> cacheFactory);
 
     @NotNull
     ComponentRendererBuilder disableCache();
@@ -49,5 +38,15 @@ public interface ComponentRendererBuilder extends AbstractBuilder<ComponentRende
     ComponentRendererBuilder addHead(@NotNull ComponentRenderer<ComponentRenderContext> head);
 
     @NotNull
+    default ComponentRendererBuilder addHead(@NotNull UnaryOperator<Component> tail) {
+        return addHead((component, ctx) -> tail.apply(component));
+    }
+
+    @NotNull
     ComponentRendererBuilder addTail(@NotNull ComponentRenderer<ComponentRenderContext> tail);
+
+    @NotNull
+    default ComponentRendererBuilder addTail(@NotNull UnaryOperator<Component> tail) {
+        return addTail((component, ctx) -> tail.apply(component));
+    }
 }

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 final class BuiltinCoordinateTranslators {
     private BuiltinCoordinateTranslators() {
     }
@@ -32,7 +34,7 @@ final class BuiltinCoordinateTranslators {
         }
     }
 
-    private static final CoordinateTranslator FURNACE = new CombinedCoordinateTranslator(new CoordinateTranslator[]{
+    private static final CoordinateTranslator FURNACE = new CombinedCoordinateTranslator(
             new CoordinateTranslatorImpl(3) {
                 @Override
                 public int toIndex(@NotNull Coordinate coordinate) {
@@ -66,9 +68,9 @@ final class BuiltinCoordinateTranslators {
                 }
             },
             new RowedCoordinateTranslator(4, 8)
-    });
+    );
 
-    private static final CoordinateTranslator ANVIL = new CombinedCoordinateTranslator(new CoordinateTranslator[]{
+    private static final CoordinateTranslator ANVIL = new CombinedCoordinateTranslator(
             new CoordinateTranslatorImpl(3) {
                 @Override
                 public int toIndex(@NotNull Coordinate coordinate) {
@@ -102,7 +104,7 @@ final class BuiltinCoordinateTranslators {
                 }
             },
             new RowedCoordinateTranslator(1, 5)
-    });
+    );
 
     @RequiredArgsConstructor
     private abstract static class CoordinateTranslatorImpl implements CoordinateTranslator {
@@ -115,12 +117,13 @@ final class BuiltinCoordinateTranslators {
     }
 
     private record CombinedCoordinateTranslator(
-            @NotNull CoordinateTranslator[] translators
+            @NotNull CoordinateTranslator upper,
+            @NotNull CoordinateTranslator lower
     ) implements CoordinateTranslator {
 
         @Override
         public int toIndex(@NotNull Coordinate coordinate) {
-            for (CoordinateTranslator translator : translators) {
+            for (CoordinateTranslator translator : translators()) {
                 try {
                     return translator.toIndex(coordinate);
                 } catch (IndexOutOfBoundsException ignored) {
@@ -132,7 +135,7 @@ final class BuiltinCoordinateTranslators {
         @NotNull
         @Override
         public Coordinate toCoordinate(int index) {
-            for (CoordinateTranslator translator : translators) {
+            for (CoordinateTranslator translator : translators()) {
                 try {
                     return translator.toCoordinate(index);
                 } catch (IndexOutOfBoundsException ignored) {
@@ -141,9 +144,13 @@ final class BuiltinCoordinateTranslators {
             throw indexOutOfBoundsException(index);
         }
 
+        private Iterable<CoordinateTranslator> translators() {
+            return List.of(upper, lower);
+        }
+
         @Override
         public int upperSlotsCount() {
-            return translators[0].upperSlotsCount(); // let upper translator answer
+            return upper.upperSlotsCount();
         }
     }
 

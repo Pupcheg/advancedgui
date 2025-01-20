@@ -44,7 +44,4 @@ class NoItalicByDefaultTests {
         assertThat(render)
                 .isEqualTo(original);
     }
-
-    record ComponentRenderContextImpl() implements ComponentRenderContext {
-    }
 }

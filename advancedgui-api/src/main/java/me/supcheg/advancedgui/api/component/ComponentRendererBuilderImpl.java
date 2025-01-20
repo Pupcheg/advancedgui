@@ -8,23 +8,24 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
     private final Deque<ComponentRenderer<ComponentRenderContext>> queue = new LinkedList<>();
-    private Map<Component, Component> cache;
+    private Supplier<Map<Component, Component>> cacheFactory;
 
     @NotNull
     @Override
-    public ComponentRendererBuilder enableCache(@NotNull Map<Component, Component> cache) {
-        Objects.requireNonNull(cache, "cache");
-        this.cache = cache;
+    public ComponentRendererBuilder enableCache(@NotNull Supplier<Map<Component, Component>> cacheFactory) {
+        Objects.requireNonNull(cacheFactory, "cacheFactory");
+        this.cacheFactory = cacheFactory;
         return this;
     }
 
     @NotNull
     @Override
     public ComponentRendererBuilder disableCache() {
-        cache = null;
+        cacheFactory = null;
         return this;
     }
 
@@ -57,9 +58,9 @@ final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
                 queue.getFirst() :
                 new SequencedComponentRenderer(new LinkedList<>(queue));
 
-        renderer = cache == null ?
+        renderer = cacheFactory == null ?
                 renderer :
-                new CachingComponentRenderer(cache, renderer);
+                new CachingComponentRenderer(cacheFactory.get(), renderer);
 
         return renderer;
     }
