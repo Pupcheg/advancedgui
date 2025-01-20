@@ -15,9 +15,7 @@ public interface CoordinateTranslator {
 
     int upperSlotsCount();
 
-    default int lowerSlotsCount() {
-        return 36;
-    }
+    int lowerSlotsCount();
 
     default int slotsCount() {
         return upperSlotsCount() + lowerSlotsCount();
