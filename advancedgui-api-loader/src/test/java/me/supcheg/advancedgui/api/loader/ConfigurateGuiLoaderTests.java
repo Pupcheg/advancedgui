@@ -2,15 +2,15 @@ package me.supcheg.advancedgui.api.loader;
 
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
+import me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader;
 import me.supcheg.advancedgui.api.sequence.NamedPriority;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.spongepowered.configurate.gson.GsonConfigurationLoader;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.IOException;
 
@@ -206,13 +206,14 @@ class ConfigurateGuiLoaderTests {
                 .isEqualTo(template);
     }
 
-    @Disabled("#saveString is not implemented")
     @Test
-    void yamlLoadAndSave() throws IOException {
+    void yamlSaveAndLoad() throws IOException {
         GuiLoader yamlLoader = yamlLoader();
-        GuiTemplate template = yamlLoader.loadString(rawYamlTemplate);
-        assertThat(yamlLoader.saveString(template))
-                .isEqualTo(rawYamlTemplate);
+
+        String raw = yamlLoader.saveString(template);
+        assertThat(yamlLoader.loadString(raw))
+                .usingRecursiveComparison()
+                .isEqualTo(template);
     }
 
     @Test
@@ -223,10 +224,16 @@ class ConfigurateGuiLoaderTests {
     }
 
     private GuiLoader yamlLoader() {
-        return new ConfigurateGuiLoader(YamlConfigurationLoader::builder);
+        return YamlGuiLoader.yamlGuiLoader();
     }
 
     private GuiLoader jsonLoader() {
-        return new ConfigurateGuiLoader(GsonConfigurationLoader::builder);
+        return new ConfigurateGuiLoader<GsonConfigurationLoader, GsonConfigurationLoader.Builder>() {
+            @NotNull
+            @Override
+            protected GsonConfigurationLoader.Builder configurationLoaderBuilder() {
+                return GsonConfigurationLoader.builder();
+            }
+        };
     }
 }

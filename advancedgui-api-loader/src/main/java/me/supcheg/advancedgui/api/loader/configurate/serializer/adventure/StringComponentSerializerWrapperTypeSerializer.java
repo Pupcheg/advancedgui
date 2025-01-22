@@ -10,7 +10,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import java.lang.reflect.Type;
 import java.util.function.Predicate;
 
-public class StringComponentSerializerWrapperTypeSerializer extends ScalarSerializer<Component> {
+public final class StringComponentSerializerWrapperTypeSerializer extends ScalarSerializer<Component> {
     private final ComponentSerializer<Component, ?, String> componentSerializer;
 
     public StringComponentSerializerWrapperTypeSerializer(ComponentSerializer<Component, ?, String> componentSerializer) {

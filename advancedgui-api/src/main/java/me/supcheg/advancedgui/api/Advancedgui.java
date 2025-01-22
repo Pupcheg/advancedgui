@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import net.kyori.adventure.key.KeyPattern.Namespace;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AdvancedGuiApi {
+public final class Advancedgui {
     @Namespace
     public static final String NAMESPACE = "advancedgui";
 }

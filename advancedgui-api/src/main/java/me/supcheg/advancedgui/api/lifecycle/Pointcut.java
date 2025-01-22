@@ -13,7 +13,7 @@ public interface Pointcut extends Keyed {
 
     @NotNull
     @Contract("_ -> new")
-    static Pointcut newPointcut(@NotNull Key key) {
+    static Pointcut pointcut(@NotNull Key key) {
         Objects.requireNonNull(key, "key");
         return new PointcutImpl(key);
     }

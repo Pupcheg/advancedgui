@@ -3,6 +3,7 @@ package me.supcheg.advancedgui.api.loader.configurate.serializer.layout;
 import me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate;
 import me.supcheg.advancedgui.api.layout.template.LayoutTemplate;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
@@ -14,6 +15,8 @@ import java.util.Map;
 import static io.leangen.geantyref.GenericTypeReflector.erase;
 
 public final class LayoutTemplateTypeSerializer implements TypeSerializer<LayoutTemplate<?, ?, ?>> {
+    private static final String TYPE = "type";
+
     private final Map<String, Type> key2type = new HashMap<>();
 
     public static boolean isExactLayoutTemplate(Type type) {
@@ -26,7 +29,7 @@ public final class LayoutTemplateTypeSerializer implements TypeSerializer<Layout
 
     @Override
     public LayoutTemplate<?, ?, ?> deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        String nodeType = node.node("type").getString();
+        String nodeType = node.node(TYPE).getString();
         if (nodeType == null) {
             throw new SerializationException("Node type is required");
         }
@@ -41,6 +44,32 @@ public final class LayoutTemplateTypeSerializer implements TypeSerializer<Layout
 
     @Override
     public void serialize(Type type, @Nullable LayoutTemplate<?, ?, ?> obj, ConfigurationNode node) throws SerializationException {
-        throw new SerializationException("Not implemented yet");
+        if (obj == null) {
+            node.set(null);
+            return;
+        }
+
+        var objType = obj.getClass();
+
+        String nodeType = findTypeKey(objType);
+        node.node(TYPE).set(nodeType);
+        node.set(objType, obj);
+    }
+
+    @NotNull
+    private String findTypeKey(Type requestedType) throws SerializationException {
+        String nodeType = null;
+        for (Map.Entry<String, Type> entry : key2type.entrySet()) {
+            String key = entry.getKey();
+            Type type = entry.getValue();
+
+            if (erase(type).isAssignableFrom(erase(requestedType))) {
+                nodeType = key;
+            }
+        }
+        if (nodeType == null) {
+            throw new SerializationException("Unsupported node type: " + requestedType);
+        }
+        return nodeType;
     }
 }

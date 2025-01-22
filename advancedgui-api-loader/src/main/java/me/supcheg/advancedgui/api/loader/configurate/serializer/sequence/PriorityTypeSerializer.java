@@ -28,6 +28,10 @@ public final class PriorityTypeSerializer extends ScalarSerializer<Priority> {
 
     @Override
     protected Object serialize(Priority item, Predicate<Class<?>> typeSupported) {
-        throw new UnsupportedOperationException("PriorityTypeSerializer does not support serialization");
+        if (item instanceof NamedPriority namedPriority) {
+            return namedPriority.name();
+        }
+
+        return item.value();
     }
 }

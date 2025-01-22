@@ -1,60 +1,92 @@
 package me.supcheg.advancedgui.api.loader.configurate;
 
-import me.supcheg.advancedgui.api.AdvancedGuiApi;
+import me.supcheg.advancedgui.api.Advancedgui;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.lifecycle.Pointcut;
 import me.supcheg.advancedgui.api.loader.GuiLoader;
-import me.supcheg.advancedgui.api.loader.configurate.button.ButtonAttributeTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.CustomNamespaceKeyTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.KeyedTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.StringComponentSerializerWrapperTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.ClasspathInterfaceImplLookup;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.InterfaceImplTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.layout.LayoutTemplateTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.LifecycleListenerRegistryTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.PointcutTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PriorityTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.SequencedSortedSetTypeSerializer;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
-import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.concurrent.Callable;
+import java.util.Objects;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
+import static me.supcheg.advancedgui.api.loader.configurate.io.BufferedIO.lazyBufferedOrNull;
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
-public final class ConfigurateGuiLoader implements GuiLoader {
+public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader<?>, B extends AbstractConfigurationLoader.Builder<B, L>> implements GuiLoader {
 
-    private final ConfigurationLoaderOpener loaderBuilder;
+    private final TypeSerializerCollection serializers = makeSerializers(TypeSerializerCollection.defaults());
 
-    public ConfigurateGuiLoader(
-            @NotNull ConfigurationLoaderBuilderFactory loaderFactory
-    ) {
-        ConfigurationOptions configurationOptions = ConfigurationOptions.defaults()
-                .serializers(makeSerializers(TypeSerializerCollection.defaults()));
+    @NotNull
+    protected abstract B configurationLoaderBuilder();
 
-        this.loaderBuilder = in ->
-                loaderFactory.newConfigurationLoader()
-                        .defaultOptions(configurationOptions)
-                        .source(asBufferedReaderCallable(in))
-                        .build();
+    protected void configureConfigurationLoaderBuilder(@NotNull B builder) {
+        builder.defaultOptions(defaultOptions -> defaultOptions.serializers(serializers));
     }
 
-    private TypeSerializerCollection makeSerializers(TypeSerializerCollection root) {
+    @NotNull
+    protected L buildConfigurationLoader(@NotNull B builder) {
+        return builder.build();
+    }
+
+    @NotNull
+    private L readLoader(@NotNull Reader in) {
+        Objects.requireNonNull(in, "in");
+
+        B builder = configurationLoaderBuilder();
+
+        configureConfigurationLoaderBuilder(builder);
+        builder.source(lazyBufferedOrNull(in));
+
+        L loader = buildConfigurationLoader(builder);
+
+        if (!loader.canLoad()) {
+            throw new IllegalStateException(loader + " doesn't support loading");
+        }
+
+        return loader;
+    }
+
+    @NotNull
+    private L writeLoader(@NotNull Writer out) {
+        Objects.requireNonNull(out, "out");
+
+        B builder = configurationLoaderBuilder();
+
+        configureConfigurationLoaderBuilder(builder);
+        builder.sink(lazyBufferedOrNull(out));
+
+        L loader = buildConfigurationLoader(builder);
+
+        if (!loader.canSave()) {
+            throw new IllegalStateException(loader + " doesn't support saving");
+        }
+
+        return loader;
+    }
+
+    @NotNull
+    private static TypeSerializerCollection makeSerializers(@NotNull TypeSerializerCollection root) {
         ObjectMapper.Factory objectFactory = ObjectMapper.factory();
 
         return root.childBuilder()
@@ -64,7 +96,7 @@ public final class ConfigurateGuiLoader implements GuiLoader {
                 .register(
                         ActionTypeSerializer::isAction,
                         new ActionTypeSerializer(
-                                new YamlClasspathActionInterpreterSource(getClass().getClassLoader())
+                                new YamlClasspathActionInterpreterSource(ConfigurateGuiLoader.class.getClassLoader())
                         )
                 )
                 .register(
@@ -79,15 +111,15 @@ public final class ConfigurateGuiLoader implements GuiLoader {
                         new PriorityTypeSerializer()
                 )
                 .register(
-                        new CustomNamespaceKeyTypeSerializer(AdvancedGuiApi.NAMESPACE)
+                        new CustomNamespaceKeyTypeSerializer(Advancedgui.NAMESPACE)
                 )
                 .register(
                         ButtonAttribute.class,
-                        new ButtonAttributeTypeSerializer()
+                        (KeyedTypeSerializer<ButtonAttribute>) ButtonAttribute::buttonAttribute
                 )
                 .register(
                         Pointcut.class,
-                        new PointcutTypeSerializer()
+                        (KeyedTypeSerializer<Pointcut>) Pointcut::pointcut
                 )
                 .register(
                         type -> LifecycleListenerRegistry.class.isAssignableFrom(erase(type)),
@@ -109,35 +141,19 @@ public final class ConfigurateGuiLoader implements GuiLoader {
     }
 
     @NotNull
-    public static Callable<BufferedReader> asBufferedReaderCallable(@NotNull Reader reader) {
-        BufferedReader bufferedReader = reader instanceof BufferedReader alreadyBuffered ?
-                alreadyBuffered :
-                new BufferedReader(reader);
-        return () -> bufferedReader;
-    }
-
-    @NotNull
     @Override
     public GuiTemplate loadResource(@NotNull Reader in) throws IOException {
-        return loaderBuilder.openLoader(in)
+        return readLoader(in)
                 .load()
                 .require(GuiTemplate.class);
     }
 
     @Override
-    public void saveResource(@NotNull GuiTemplate template, @NotNull Writer writer) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    public interface ConfigurationLoaderBuilderFactory {
-        @NotNull
-        @Contract("-> new")
-        AbstractConfigurationLoader.Builder<?, ?> newConfigurationLoader();
-    }
-
-    private interface ConfigurationLoaderOpener {
-        @NotNull
-        @Contract("_ -> new")
-        ConfigurationLoader<?> openLoader(@NotNull Reader in);
+    public void saveResource(@NotNull GuiTemplate template, @NotNull Writer writer) throws IOException {
+        L loader = writeLoader(writer);
+        loader.save(
+                loader.createNode()
+                        .set(GuiTemplate.class, template)
+        );
     }
 }

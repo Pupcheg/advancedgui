@@ -18,19 +18,23 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 
+import static me.supcheg.advancedgui.api.loader.configurate.ConfigurateUtil.findTypeSerializer;
+import static me.supcheg.advancedgui.api.loader.configurate.serializer.unchecked.Unchecked.uncheckedCast;
 import static org.spongepowered.configurate.BasicConfigurationNode.root;
 
-public class LifecycleListenerRegistryTypeSerializer implements TypeSerializer<LifecycleListenerRegistry<?>> {
+public final class LifecycleListenerRegistryTypeSerializer implements TypeSerializer<LifecycleListenerRegistry<?>> {
     private final Type rawLifecycleListenerListType = TypeFactory.parameterizedClass(List.class, RawLifecycleListener.class);
 
     @Override
     public LifecycleListenerRegistry<?> deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        TypeSerializer<Pointcut> pointcutTypeSerializer = getPointcutScalarSerializer(node.options());
-        var rawLifecycleListenerListSerializer = getRawLifecycleListenerListSerializer(node.options());
+        ConfigurationOptions options = node.options();
+
+        TypeSerializer<Pointcut> pointcutTypeSerializer = findTypeSerializer(options, Pointcut.class);
+        TypeSerializer<List<RawLifecycleListener>> rawLifecycleListenerListSerializer = findTypeSerializer(options, rawLifecycleListenerListType);
 
         LifecycleListenerRegistry.Builder<Object> builder = LifecycleListenerRegistry.lifecycleListenerRegistry();
         for (var entry : node.childrenMap().entrySet()) {
-            ConfigurationNode keyNode = root(node.options()).set(entry.getKey());
+            ConfigurationNode keyNode = root(options).set(entry.getKey());
             ConfigurationNode valueNode = entry.getValue();
 
             Pointcut pointcut = pointcutTypeSerializer.deserialize(Pointcut.class, keyNode);
@@ -45,7 +49,7 @@ public class LifecycleListenerRegistryTypeSerializer implements TypeSerializer<L
     }
 
     @NotNull
-    private LifecycleListener<Object> rawLifecycleListenerToLifecycleListener(@NotNull Pointcut pointcut,
+    private static LifecycleListener<Object> rawLifecycleListenerToLifecycleListener(@NotNull Pointcut pointcut,
                                                                               @NotNull RawLifecycleListener raw) {
         return pointcut.lifecycleListener(lifecycleListener -> lifecycleListener
                 .priority(raw.priority())
@@ -54,25 +58,40 @@ public class LifecycleListenerRegistryTypeSerializer implements TypeSerializer<L
     }
 
     @NotNull
-    private TypeSerializer<Pointcut> getPointcutScalarSerializer(@NotNull ConfigurationOptions options) {
-        return Objects.requireNonNull(
-                options.serializers().get(Pointcut.class),
-                "Not found type serializer for Pointcut"
-        );
-    }
-
-    @SuppressWarnings("unchecked")
-    @NotNull
-    private TypeSerializer<List<RawLifecycleListener>> getRawLifecycleListenerListSerializer(@NotNull ConfigurationOptions options) {
-        return (TypeSerializer<List<RawLifecycleListener>>) Objects.requireNonNull(
-                options.serializers().get(rawLifecycleListenerListType),
-                "Not found type serializer for Pointcut"
+    private static RawLifecycleListener lifecycleListenerToRawLifecycleListener(@NotNull LifecycleListener<?> lifecycleListener) {
+        return new RawLifecycleListener(
+                lifecycleListener.priority(),
+                uncheckedCast(lifecycleListener.action())
         );
     }
 
     @Override
     public void serialize(Type type, @Nullable LifecycleListenerRegistry<?> obj, ConfigurationNode node) throws SerializationException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (obj == null) {
+            node.set(null);
+            return;
+        }
+
+        for (var entry : obj.listeners().entrySet()) {
+            Pointcut pointcut = entry.getKey();
+            var listeners = entry.getValue();
+
+            ConfigurationNode child = node.node(serializeAsString(node.options(), pointcut));
+
+            for (LifecycleListener<?> listener : listeners) {
+                child.appendListNode()
+                        .set(lifecycleListenerToRawLifecycleListener(listener));
+            }
+        }
+    }
+
+    @NotNull
+    private static String serializeAsString(@NotNull ConfigurationOptions options,
+                                            @NotNull Pointcut pointcut) throws SerializationException {
+        return (String) Objects.requireNonNull(
+                root(options).set(pointcut).rawScalar(),
+                () -> "Serialized %s to null".formatted(pointcut)
+        );
     }
 
     @ConfigSerializable

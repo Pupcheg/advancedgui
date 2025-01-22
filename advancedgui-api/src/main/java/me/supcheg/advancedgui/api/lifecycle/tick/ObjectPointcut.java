@@ -11,19 +11,12 @@ import static me.supcheg.advancedgui.api.lifecycle.Pointcut.pointcut;
 import static net.kyori.adventure.key.Key.key;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TickPointcut {
-    private static final Pointcut BEFORE_TICK = pointcut(key(Advancedgui.NAMESPACE, "before_tick"));
-    private static final Pointcut AFTER_TICK = pointcut(key(Advancedgui.NAMESPACE, "after_tick"));
+public final class ObjectPointcut {
+    private static final Pointcut CONSTRUCT = pointcut(key(Advancedgui.NAMESPACE, "construct"));
 
     @Contract(pure = true)
     @NotNull
-    public static Pointcut beforeTickPointcut() {
-        return BEFORE_TICK;
-    }
-
-    @Contract(pure = true)
-    @NotNull
-    public static Pointcut afterTickPointcut() {
-        return AFTER_TICK;
+    public static Pointcut objectConstructPointcut() {
+        return CONSTRUCT;
     }
 }

@@ -20,6 +20,10 @@ public final class InterfaceImplTypeSerializer implements TypeSerializer<Object>
 
     @Override
     public void serialize(Type type, @Nullable Object obj, ConfigurationNode node) throws SerializationException {
-        delegate.serialize(type, obj, node);
+        if (obj == null) {
+            node.set(null);
+            return;
+        }
+        delegate.serialize(obj.getClass(), obj, node);
     }
 }

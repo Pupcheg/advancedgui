@@ -1,13 +1,19 @@
 package me.supcheg.advancedgui.api.loader.interpret;
 
+import me.supcheg.advancedgui.api.action.ActionContext;
 import org.jetbrains.annotations.NotNull;
 
-final class DummyActionInterpreter implements GenericActionInterpreter<DummyActionInterpretContext> {
-    private static final GenericAction ACTION = ctx -> {/* Hi! I'm dummy */};
+import java.lang.invoke.MethodHandle;
+
+import static java.lang.invoke.MethodHandles.empty;
+import static java.lang.invoke.MethodType.methodType;
+
+final class DummyActionInterpreter implements ActionInterpreter<DummyActionInterpretContext> {
+    private static final MethodHandle doNothing = empty(methodType(void.class, ActionContext.class));
 
     @NotNull
     @Override
-    public GenericAction interpretGenericAction(@NotNull DummyActionInterpretContext ctx) {
-        return ACTION;
+    public MethodHandle interpretMethodHandle(@NotNull DummyActionInterpretContext ctx) {
+        return doNothing;
     }
 }
