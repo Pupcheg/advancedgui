@@ -1,6 +1,5 @@
 package me.supcheg.advancedgui.api.loader.configurate.serializer.action;
 
-import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContextParser;
@@ -43,18 +42,17 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
                 .toList();
     }
 
-    @SneakyThrows
     @NotNull
     @Override
-    public Action deserialize(@NotNull Type type, @NotNull ConfigurationNode node) {
+    public Action deserialize(@NotNull Type type, @NotNull ConfigurationNode node) throws SerializationException {
         Class<?> actionType = erase(type);
-        String interfaceMethodType = actionType.getMethods()[0].getName();
+        String interfaceMethodName = actionType.getMethods()[0].getName();
         InterpretedContext interpretedContext = interpret(node);
 
         return (Action) Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class[]{actionType, ContextInterpreted.class},
-                new InterpretedContextInvocationHandler(interpretedContext, interfaceMethodType)
+                new InterpretedContextInvocationHandler(interpretedContext, interfaceMethodName)
         );
     }
 
