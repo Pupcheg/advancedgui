@@ -4,16 +4,17 @@ import me.supcheg.advancedgui.api.action.ActionContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 
+import static java.lang.invoke.MethodHandles.publicLookup;
 import static java.lang.invoke.MethodType.methodType;
+import static lombok.Lombok.sneakyThrow;
 
 public interface GenericActionInterpreter<C extends ActionInterpretContext> extends ActionInterpreter<C> {
 
     @NotNull
     @Override
     default MethodHandle interpretMethodHandle(@NotNull C ctx) {
-        return MethodHandleAccessor.genericLambda_handle.bindTo(interpretGenericAction(ctx));
+        return MethodHandleAccessor.GenericAction_handle.bindTo(interpretGenericAction(ctx));
     }
 
     @NotNull
@@ -25,14 +26,14 @@ public interface GenericActionInterpreter<C extends ActionInterpretContext> exte
     }
 
     class MethodHandleAccessor {
-        private static final MethodHandle genericLambda_handle;
+        private static final MethodHandle GenericAction_handle;
 
         static {
             try {
-                genericLambda_handle = MethodHandles.publicLookup()
+                GenericAction_handle = publicLookup()
                         .findVirtual(GenericAction.class, "handle", methodType(void.class, ActionContext.class));
             } catch (NoSuchMethodException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw sneakyThrow(e);
             }
         }
     }
