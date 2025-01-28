@@ -14,4 +14,25 @@ allprojects {
         mavenCentral()
         maven { url = "https://repo.papermc.io/repository/maven-public/" }
     }
+
+    // tests configuration
+    dependencies {
+        testImplementation 'org.slf4j:slf4j-simple:2.0.16'
+        testImplementation 'org.assertj:assertj-swing-junit:3.17.1'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(21)
+    }
+
+    compileJava {
+        options.release = 21
+    }
 }

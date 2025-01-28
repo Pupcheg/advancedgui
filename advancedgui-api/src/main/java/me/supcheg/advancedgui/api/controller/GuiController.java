@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public interface GuiController<S, T extends GuiController<S, T, B>, B extends GuiController.Builder<S, T, B>> extends Buildable<T, B>, AutoCloseable {
+public interface GuiController<T extends GuiController<T, B>, B extends GuiController.Builder<T, B>> extends Buildable<T, B>, AutoCloseable {
 
     @NotNull
     ComponentRenderer<ComponentRenderContext> componentRenderer();
@@ -44,7 +44,7 @@ public interface GuiController<S, T extends GuiController<S, T, B>, B extends Gu
         unregister(gui.key());
     }
 
-    interface Builder<S, T extends GuiController<S, T, B>, B extends Builder<S, T, B>> extends AbstractBuilder<T> {
+    interface Builder<T extends GuiController<T, B>, B extends Builder<T, B>> extends AbstractBuilder<T> {
         @NotNull
         @Contract("_ -> this")
         default B componentRenderer(@NotNull Consumer<ComponentRendererBuilder> consumer) {

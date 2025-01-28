@@ -1,13 +1,4 @@
 dependencies {
-    implementation 'net.kyori:adventure-api:4.18.0'
-    implementation 'org.jetbrains:annotations:24.1.0'
-
-    testImplementation 'org.assertj:assertj-swing-junit:3.17.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
-}
-
-test {
-    useJUnitPlatform()
+    implementation "net.kyori:adventure-api:$adventure_api_version"
+    implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
 }

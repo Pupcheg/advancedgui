@@ -6,9 +6,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public interface Lifecycled<T> {
+public interface Lifecycled<S> {
     @NotNull
-    LifecycleListenerRegistry<T> lifecycleListenerRegistry();
+    LifecycleListenerRegistry<S> lifecycleListenerRegistry();
 
     interface Builder<L, B> {
 

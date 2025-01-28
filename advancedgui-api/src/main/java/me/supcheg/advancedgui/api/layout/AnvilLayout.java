@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.SortedSet;
 
-public interface AnvilLayout extends Layout {
+public interface AnvilLayout extends Layout<AnvilLayout> {
     @NotNull
     @Unmodifiable
-    SortedSet<InputUpdateListener> inputUpdates();
+    SortedSet<InputUpdateListener> inputUpdateListeners();
 
     @NotNull
     @Override

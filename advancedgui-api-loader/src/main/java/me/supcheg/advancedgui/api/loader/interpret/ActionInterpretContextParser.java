@@ -5,15 +5,16 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
-import java.lang.reflect.Type;
-
-public interface ActionInterpretContextParser<C> {
+public interface ActionInterpretContextParser<C extends ActionInterpretContext> {
 
     String TYPE_KEY = "type";
 
     @Nullable
     static String parseType(@NotNull final ConfigurationNode node) {
-        return node.node(TYPE_KEY).getString();
+        String scalar = node.getString();
+
+        return scalar != null ? scalar
+                : node.node(TYPE_KEY).getString();
     }
 
     boolean isAcceptable(@NotNull ConfigurationNode node);
@@ -21,7 +22,7 @@ public interface ActionInterpretContextParser<C> {
     @NotNull
     C deserialize(@NotNull ConfigurationNode node) throws SerializationException;
 
-    default void serialize(@NotNull Type type, @Nullable C ctx, @NotNull ConfigurationNode node) throws SerializationException {
-        node.set(type, ctx);
+    default void serialize(@NotNull C ctx, @NotNull ConfigurationNode node) throws SerializationException {
+        node.set(ctx.getClass(), ctx);
     }
 }

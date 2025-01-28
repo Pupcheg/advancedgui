@@ -119,7 +119,7 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
         ActionInterpretContext context = interpreted.context();
         ActionInterpretContextParser<?> parser = interpreted.parser();
 
-        parser.serialize(context.getClass(), uncheckedCast(context), node);
+        parser.serialize(uncheckedCast(context), node);
     }
 
     private interface ContextInterpreted {

@@ -13,6 +13,16 @@ record CombinedCoordinateTranslator(
 ) implements CoordinateTranslator {
 
     @Override
+    public boolean isInBounds(@NotNull Coordinate coordinate) {
+        return upper.acceptable(coordinate) || lower.acceptable(coordinate);
+    }
+
+    @Override
+    public boolean isInBounds(int index) {
+        return upper.acceptable(index) || lower.acceptable(index);
+    }
+
+    @Override
     public int toIndex(@NotNull Coordinate coordinate) {
         for (PartitionCoordinateTranslator translator : translators()) {
             if (translator.acceptable(coordinate)) {

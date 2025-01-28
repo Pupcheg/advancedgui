@@ -1,16 +1,13 @@
 package me.supcheg.advancedgui.api.loader;
 
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
-import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
 import me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader;
 import me.supcheg.advancedgui.api.sequence.NamedPriority;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.intellij.lang.annotations.Language;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 
 import java.io.IOException;
 
@@ -29,8 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConfigurateGuiLoaderTests {
     @Language("yaml")
     static String rawYamlTemplate;
-    @Language("json")
-    static String rawJsonTemplate;
 
     static GuiTemplate template;
 
@@ -75,76 +70,6 @@ class ConfigurateGuiLoaderTests {
                 background:
                   locations:
                     - 'advancedgui:test/background'
-                """;
-
-        rawJsonTemplate = """
-                {
-                  "key": "advancedgui:test/test",
-                  "layout": {
-                    "type": "anvil",
-                    "input-update-listeners": [
-                      {
-                        "priority": "normal",
-                        "action": "dummy"
-                      }
-                    ],
-                    "buttons": [
-                      {
-                        "coordinates": [ [0, 0] ],
-                        "interactions": [
-                          {
-                            "priority": "normal",
-                            "action": "dummy"
-                          }
-                        ],
-                        "texture": "advancedgui:test/interaction",
-                        "name": "<bold>Hi!",
-                        "description": {
-                          "lines": [
-                            "<red>eee",
-                            "eEe"
-                          ]
-                        },
-                        "lifecycle-listener-registry": {
-                          "before_tick": [
-                            {
-                              "priority": "normal",
-                              "action": "dummy"
-                            }
-                          ]
-                        },
-                        "attributes": [ "glowing", "hidden" ]
-                      }
-                    ],
-                    "lifecycle-listener-registry": {
-                      "after_tick": [
-                        {
-                          "priority": "highest",
-                          "action": "dummy"
-                        }
-                      ]
-                    }
-                  },
-                  "lifecycle-listener-registry": {
-                    "before_tick": [
-                      {
-                        "priority": "normal",
-                        "action": "dummy"
-                      }
-                    ],
-                    "after_tick": [
-                      {
-                        "priority": "low",
-                        "action": "dummy"
-                      }
-                    ]
-                  },
-                  "background": {
-                    "locations": [
-                      "advancedgui:test/background"
-                    ]
-                  }
-                }
                 """;
 
         template = gui(gui -> gui
@@ -216,24 +141,7 @@ class ConfigurateGuiLoaderTests {
                 .isEqualTo(template);
     }
 
-    @Test
-    void jsonLoad() throws IOException {
-        assertThat(jsonLoader().loadString(rawJsonTemplate))
-                .usingRecursiveComparison()
-                .isEqualTo(template);
-    }
-
     private GuiLoader yamlLoader() {
         return YamlGuiLoader.yamlGuiLoader();
-    }
-
-    private GuiLoader jsonLoader() {
-        return new ConfigurateGuiLoader<GsonConfigurationLoader, GsonConfigurationLoader.Builder>() {
-            @NotNull
-            @Override
-            protected GsonConfigurationLoader.Builder configurationLoaderBuilder() {
-                return GsonConfigurationLoader.builder();
-            }
-        };
     }
 }

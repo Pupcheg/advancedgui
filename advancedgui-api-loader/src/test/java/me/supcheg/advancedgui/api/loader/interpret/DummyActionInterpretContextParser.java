@@ -6,15 +6,13 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
-import java.lang.reflect.Type;
-
 @RequiredArgsConstructor
 final class DummyActionInterpretContextParser implements ActionInterpretContextParser<DummyActionInterpretContext> {
     private final String name;
 
     @Override
     public boolean isAcceptable(@NotNull ConfigurationNode node) {
-        return name.equals(node.getString());
+        return name.equals(ActionInterpretContextParser.parseType(node));
     }
 
     @NotNull
@@ -24,7 +22,7 @@ final class DummyActionInterpretContextParser implements ActionInterpretContextP
     }
 
     @Override
-    public void serialize(@NotNull Type type, @Nullable DummyActionInterpretContext ctx, @NotNull ConfigurationNode node) throws SerializationException {
+    public void serialize(@Nullable DummyActionInterpretContext ctx, @NotNull ConfigurationNode node) throws SerializationException {
         node.set(name);
     }
 }

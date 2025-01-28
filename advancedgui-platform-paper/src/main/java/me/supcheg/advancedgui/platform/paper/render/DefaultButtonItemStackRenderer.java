@@ -1,0 +1,51 @@
+package me.supcheg.advancedgui.platform.paper.render;
+
+import com.google.common.collect.Lists;
+import io.papermc.paper.adventure.PaperAdventure;
+import me.supcheg.advancedgui.api.button.Button;
+import me.supcheg.advancedgui.api.button.description.Description;
+import net.kyori.adventure.key.Key;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemLore;
+import org.jetbrains.annotations.NotNull;
+
+import static io.papermc.paper.adventure.PaperAdventure.asVanilla;
+import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
+import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
+
+public class DefaultButtonItemStackRenderer implements Renderer<Button, ItemStack> {
+    @NotNull
+    @Override
+    public ItemStack render(@NotNull Button input) {
+
+        if (input.hasAttribute(hidden())) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack itemStack = item(input.texture());
+        itemStack.set(DataComponents.ITEM_NAME, name(input.name()));
+        itemStack.set(DataComponents.LORE, lore(input.description()));
+
+        if (input.hasAttribute(glowing())) {
+            itemStack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+        }
+
+        return itemStack;
+    }
+
+    private ItemStack item(@NotNull Key texture) {
+        return new ItemStack(BuiltInRegistries.ITEM.getValue(asVanilla(texture)));
+    }
+
+    private ItemLore lore(@NotNull Description description) {
+        var transform = Lists.transform(description.lines(), PaperAdventure::asVanilla);
+        return new ItemLore(transform, transform);
+    }
+
+    private Component name(@NotNull net.kyori.adventure.text.Component name) {
+        return asVanilla(name);
+    }
+}

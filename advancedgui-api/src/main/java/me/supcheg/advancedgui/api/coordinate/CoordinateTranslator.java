@@ -4,6 +4,14 @@ import org.jetbrains.annotations.NotNull;
 
 public interface CoordinateTranslator {
 
+    boolean isInBounds(@NotNull Coordinate coordinate);
+
+    default boolean isInBounds(int x, int y) {
+        return isInBounds(Coordinate.coordinate(x, y));
+    }
+
+    boolean isInBounds(int index);
+
     int toIndex(@NotNull Coordinate coordinate);
 
     default int toIndex(int x, int y) {
