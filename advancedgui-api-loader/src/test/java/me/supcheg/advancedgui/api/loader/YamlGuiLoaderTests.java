@@ -6,7 +6,7 @@ import me.supcheg.advancedgui.api.sequence.NamedPriority;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.intellij.lang.annotations.Language;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,20 +18,23 @@ import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anv
 import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.afterTickPointcut;
 import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.beforeTickPointcut;
 import static me.supcheg.advancedgui.api.loader.interpret.DummyAction.dummyAction;
+import static me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader.yamlGuiLoader;
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.Style.style;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ConfigurateGuiLoaderTests {
+class YamlGuiLoaderTests {
+    YamlGuiLoader loader;
     @Language("yaml")
-    static String rawYamlTemplate;
+    String yamlTemplate;
+    GuiTemplate template;
 
-    static GuiTemplate template;
+    @BeforeEach
+    void setup() {
+        loader = yamlGuiLoader();
 
-    @BeforeAll
-    static void setup() {
-        rawYamlTemplate = """
+        yamlTemplate = """
                 key: 'advancedgui:test/test'
                 layout:
                   type: 'anvil'
@@ -126,22 +129,17 @@ class ConfigurateGuiLoaderTests {
 
     @Test
     void yamlLoad() throws IOException {
-        assertThat(yamlLoader().loadString(rawYamlTemplate))
-                .usingRecursiveComparison()
-                .isEqualTo(template);
+        assertEquals(
+                template,
+                loader.loadString(yamlTemplate)
+        );
     }
 
     @Test
     void yamlSaveAndLoad() throws IOException {
-        GuiLoader yamlLoader = yamlLoader();
-
-        String raw = yamlLoader.saveString(template);
-        assertThat(yamlLoader.loadString(raw))
-                .usingRecursiveComparison()
-                .isEqualTo(template);
-    }
-
-    private GuiLoader yamlLoader() {
-        return YamlGuiLoader.yamlGuiLoader();
+        assertEquals(
+                template,
+                loader.loadString(loader.saveString(template))
+        );
     }
 }
