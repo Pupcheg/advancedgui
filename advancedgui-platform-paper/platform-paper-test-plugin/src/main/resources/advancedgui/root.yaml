@@ -1,0 +1,16 @@
+key: 'testplugin:root'
+layout:
+  type: 'anvil'
+  buttons:
+    - coordinates: [ [ 0, 0 ] ]
+      texture: 'advancedgui:test/interaction'
+      name: '<bold>Hi!'
+      description:
+        lines:
+          - '<red>eee'
+          - 'eEe'
+      attributes:
+        - 'glowing'
+background:
+  locations:
+    - 'advancedgui:test/background'
