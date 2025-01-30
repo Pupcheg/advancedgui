@@ -12,7 +12,6 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -70,14 +69,14 @@ record ButtonTemplateImpl(
 
         @NotNull
         @Override
-        public Builder addCoordinates(@NotNull Collection<Coordinate> coordinates) {
+        public Builder addCoordinates(@NotNull Set<Coordinate> coordinates) {
             this.coordinates.addAll(coordinates);
             return this;
         }
 
         @NotNull
         @Override
-        public Builder coordinates(@NotNull Collection<Coordinate> coordinates) {
+        public Builder coordinates(@NotNull Set<Coordinate> coordinates) {
             AbstractBuilder.replaceCollectionContents(this.coordinates, coordinates);
             return this;
         }

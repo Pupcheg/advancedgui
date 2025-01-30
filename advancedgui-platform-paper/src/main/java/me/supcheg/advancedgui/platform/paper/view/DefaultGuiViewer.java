@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.gui.background.Background;
-import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.platform.paper.PlatformAudienceConverter;
 import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
+import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
 import me.supcheg.advancedgui.platform.paper.render.Renderer;
 import net.kyori.adventure.audience.Audience;
 import net.minecraft.core.NonNullList;
@@ -23,7 +23,7 @@ import java.util.Objects;
 public class DefaultGuiViewer implements GuiViewer {
     private final PlatformAudienceConverter audienceConverter;
     private final Renderer<Background, Component> backgroundComponentRenderer;
-    private final Renderer<Layout<?>, NonNullList<ItemStack>> layoutNonNullListRenderer;
+    private final Renderer<LayoutImpl<?>, NonNullList<ItemStack>> layoutNonNullListRenderer;
     private final Renderer<Button, ItemStack> buttonItemStackRenderer;
 
     private final Map<ServerPlayer, GuiView> viewByServerPlayer = CacheBuilder.newBuilder()

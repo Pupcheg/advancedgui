@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -79,16 +78,16 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
         @Contract("_, _, _ -> this")
         default Builder addCoordinates(@NotNull Coordinate first, @NotNull Coordinate second,
                                        @NotNull Coordinate @NotNull ... coordinates) {
-            return addCoordinates(makeNoNullsList(first, second, coordinates));
+            return addCoordinates(Set.copyOf(makeNoNullsList(first, second, coordinates)));
         }
 
         @NotNull
         @Contract("_ -> this")
-        Builder addCoordinates(@NotNull Collection<Coordinate> coordinates);
+        Builder addCoordinates(@NotNull Set<Coordinate> coordinates);
 
         @NotNull
         @Contract("_ -> this")
-        Builder coordinates(@NotNull Collection<Coordinate> coordinates);
+        Builder coordinates(@NotNull Set<Coordinate> coordinates);
 
         @NotNull
         Set<Coordinate> coordinates();

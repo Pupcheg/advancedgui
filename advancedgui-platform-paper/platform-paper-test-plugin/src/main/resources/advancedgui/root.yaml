@@ -2,8 +2,8 @@ key: 'testplugin:root'
 layout:
   type: 'anvil'
   buttons:
-    - coordinates: [ [ 0, 0 ] ]
-      texture: 'advancedgui:test/interaction'
+    - coordinates: [ [ 0, 0 ], [ 1, 5 ] ]
+      texture: 'minecraft:paper'
       name: '<bold>Hi!'
       description:
         lines:

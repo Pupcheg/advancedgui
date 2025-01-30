@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public sealed interface LayoutTemplate<L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>>
+public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>>
         extends Buildable<T, B>, Lifecycled<L>
         permits AnvilLayoutTemplate {
 

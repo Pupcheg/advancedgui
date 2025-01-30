@@ -46,19 +46,22 @@ public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.B
 
         @NotNull
         @Contract("_ -> this")
-        <L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull T layout);
+        Builder layout(@NotNull LayoutTemplate<?, ?, ?> layout);
 
         @NotNull
         @Contract("_, _ -> this")
-        default<L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull B builder, @NotNull Consumer<B> consumer) {
+        default <L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>>  Builder layout(@NotNull B builder, @NotNull Consumer<B> consumer) {
             return layout(Buildable.configureAndBuild(builder, consumer));
         }
 
         @NotNull
         @Contract("_ -> this")
-        default <L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull B layout) {
+        default <L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull B layout) {
             return layout(layout.build());
         }
+
+        @Nullable
+        LayoutTemplate<?, ?, ?> layout();
 
         @NotNull
         @Contract("_ -> this")

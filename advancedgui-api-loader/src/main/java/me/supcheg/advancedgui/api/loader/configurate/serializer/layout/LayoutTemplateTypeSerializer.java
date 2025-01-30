@@ -51,25 +51,20 @@ public final class LayoutTemplateTypeSerializer implements TypeSerializer<Layout
 
         var objType = obj.getClass();
 
-        String nodeType = findTypeKey(objType);
-        node.node(TYPE).set(nodeType);
-        node.set(objType, obj);
+        var nodeType = findTypeEntry(objType);
+        node.node(TYPE).set(nodeType.getKey());
+        node.set(nodeType.getValue(), obj);
     }
 
     @NotNull
-    private String findTypeKey(Type requestedType) throws SerializationException {
-        String nodeType = null;
+    private Map.Entry<String, Type> findTypeEntry(Type requestedType) throws SerializationException {
         for (Map.Entry<String, Type> entry : key2type.entrySet()) {
-            String key = entry.getKey();
             Type type = entry.getValue();
 
             if (erase(type).isAssignableFrom(erase(requestedType))) {
-                nodeType = key;
+                return entry;
             }
         }
-        if (nodeType == null) {
-            throw new SerializationException("Unsupported node type: " + requestedType);
-        }
-        return nodeType;
+        throw new SerializationException("Unsupported node type: " + requestedType);
     }
 }

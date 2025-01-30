@@ -3,6 +3,7 @@ package me.supcheg.advancedgui.api.loader.configurate;
 import me.supcheg.advancedgui.api.Advancedgui;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
+import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.lifecycle.Pointcut;
@@ -12,8 +13,10 @@ import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTyp
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.CustomNamespaceKeyTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.KeyedTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.StringComponentSerializerWrapperTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.ClasspathInterfaceImplLookup;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.InterfaceImplTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.BuildableInterfaceTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.CacheBuildableMethodDataLookup;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.DefaultBuildableMethodDataLookup;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.coordinate.CoordinateTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.layout.LayoutTemplateTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.LifecycleListenerRegistryTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PriorityTypeSerializer;
@@ -23,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.serialize.TypeSerializerCollection;
+import org.spongepowered.configurate.util.NamingSchemes;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -122,14 +126,19 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
                         (KeyedTypeSerializer<Pointcut>) Pointcut::pointcut
                 )
                 .register(
+                        Coordinate.class,
+                        new CoordinateTypeSerializer()
+                )
+                .register(
                         type -> LifecycleListenerRegistry.class.isAssignableFrom(erase(type)),
                         new LifecycleListenerRegistryTypeSerializer()
                 )
                 .register(
                         Buildable.class,
-                        new InterfaceImplTypeSerializer(
-                                objectFactory.asTypeSerializer(),
-                                new ClasspathInterfaceImplLookup()
+                        new BuildableInterfaceTypeSerializer(
+                                new CacheBuildableMethodDataLookup(
+                                        new DefaultBuildableMethodDataLookup(NamingSchemes.LOWER_CASE_DASHED)
+                                )
                         )
                 )
                 .register(

@@ -1,16 +1,30 @@
 package me.supcheg.advancedgui.api.coordinate.builtin;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+@EqualsAndHashCode
+@ToString
+final class CombinedCoordinateTranslator implements CoordinateTranslator {
+    private final String key;
+    private final PartitionCoordinateTranslator upper;
+    private final PartitionCoordinateTranslator lower;
+    private final PartitionCoordinateTranslator[] translators;
 
-record CombinedCoordinateTranslator(
-        @NotNull PartitionCoordinateTranslator upper,
-        @NotNull PartitionCoordinateTranslator lower
-) implements CoordinateTranslator {
+    CombinedCoordinateTranslator(
+            @NotNull String key,
+            @NotNull PartitionCoordinateTranslator upper,
+            @NotNull PartitionCoordinateTranslator lower
+    ) {
+        this.key = key;
+        this.upper = upper;
+        this.lower = lower;
+        this.translators = new PartitionCoordinateTranslator[]{upper, lower};
+    }
 
     @Override
     public boolean isInBounds(@NotNull Coordinate coordinate) {
@@ -24,7 +38,7 @@ record CombinedCoordinateTranslator(
 
     @Override
     public int toIndex(@NotNull Coordinate coordinate) {
-        for (PartitionCoordinateTranslator translator : translators()) {
+        for (PartitionCoordinateTranslator translator : translators) {
             if (translator.acceptable(coordinate)) {
                 return translator.toIndex(coordinate);
             }
@@ -35,16 +49,12 @@ record CombinedCoordinateTranslator(
     @NotNull
     @Override
     public Coordinate toCoordinate(int index) {
-        for (PartitionCoordinateTranslator translator : translators()) {
+        for (PartitionCoordinateTranslator translator : translators) {
             if (translator.acceptable(index)) {
                 return translator.toCoordinate(index);
             }
         }
         throw indexOutOfBoundsException(index);
-    }
-
-    private List<PartitionCoordinateTranslator> translators() {
-        return List.of(upper, lower);
     }
 
     @Override
@@ -59,15 +69,16 @@ record CombinedCoordinateTranslator(
 
     @NotNull
     @Contract("_ -> new")
-    private static IndexOutOfBoundsException indexOutOfBoundsException(@NotNull Coordinate coordinate) {
+    private IndexOutOfBoundsException indexOutOfBoundsException(@NotNull Coordinate coordinate) {
         return new IndexOutOfBoundsException(
-                "Coordinate out of bounds: (%d, %d)".formatted(coordinate.x(), coordinate.y())
+                "Coordinate out of bounds in %s: (%d, %d)".formatted(key, coordinate.x(), coordinate.y())
         );
     }
 
     @NotNull
     @Contract("_ -> new")
-    private static IndexOutOfBoundsException indexOutOfBoundsException(int index) {
-        return new IndexOutOfBoundsException(index);
+    private IndexOutOfBoundsException indexOutOfBoundsException(int index) {
+        return new IndexOutOfBoundsException("Index out of range in %s: %d".formatted(key, index));
     }
+
 }

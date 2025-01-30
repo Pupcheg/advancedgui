@@ -3,7 +3,6 @@ package me.supcheg.advancedgui.api.gui.template;
 import lombok.NoArgsConstructor;
 import me.supcheg.advancedgui.api.gui.Gui;
 import me.supcheg.advancedgui.api.gui.background.Background;
-import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.api.layout.template.LayoutTemplate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import net.kyori.adventure.key.Key;
@@ -54,10 +53,16 @@ record GuiTemplateImpl(
 
         @NotNull
         @Override
-        public <L extends Layout, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull T layout) {
+        public Builder layout(@NotNull LayoutTemplate<?, ?, ?> layout) {
             Objects.requireNonNull(layout, "layout");
             this.layout = layout;
             return this;
+        }
+
+        @Nullable
+        @Override
+        public LayoutTemplate<?, ?, ?> layout() {
+            return layout;
         }
 
         @Nullable

@@ -49,8 +49,14 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
     }
 
     @NotNull
+    @Override
+    public LifecycleListenerRegistry<?> emptyValue(Type specificType, ConfigurationOptions options) {
+        return LifecycleListenerRegistry.lifecycleListenerRegistry().build();
+    }
+
+    @NotNull
     private static LifecycleListener<Object> rawLifecycleListenerToLifecycleListener(@NotNull Pointcut pointcut,
-                                                                              @NotNull RawLifecycleListener raw) {
+                                                                                     @NotNull RawLifecycleListener raw) {
         return pointcut.lifecycleListener(lifecycleListener -> lifecycleListener
                 .priority(raw.priority())
                 .action(raw.action())

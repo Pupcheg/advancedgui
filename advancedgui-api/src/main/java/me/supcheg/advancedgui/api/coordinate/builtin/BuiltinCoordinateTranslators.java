@@ -31,15 +31,17 @@ public final class BuiltinCoordinateTranslators {
     private static final CoordinateTranslator[] CHEST = new CoordinateTranslator[6];
 
     static {
-        for (int rows = 0; rows < CHEST.length; rows++) {
-            CHEST[rows] = new CombinedCoordinateTranslator(
+        for (int rows = 1; rows <= CHEST.length; rows++) {
+            CHEST[rows - 1] = new CombinedCoordinateTranslator(
+                    "chest9x" + rows,
                     new RowedPartitionCoordinateTranslator(0, rows),
-                    new RowedPartitionCoordinateTranslator(rows + 1, rows + PLAYER_INVENTORY_ROWS)
+                    new RowedPartitionCoordinateTranslator(rows, rows + PLAYER_INVENTORY_ROWS)
             );
         }
     }
 
     private static final CoordinateTranslator FURNACE = new CombinedCoordinateTranslator(
+            "furnace",
             new SimplePartitionCoordinateTranslator(3) {
                 @Override
                 public int toIndex(@NotNull Coordinate coordinate) {
@@ -50,7 +52,7 @@ public final class BuiltinCoordinateTranslators {
                 public boolean acceptable(@NotNull Coordinate coordinate) {
                     int x = coordinate.x();
                     int y = coordinate.y();
-                    return x == 0 && y > 0 && y < slotsCount;
+                    return x == 0 && y >= 0 && y < slotsCount;
                 }
 
                 @NotNull
@@ -59,16 +61,17 @@ public final class BuiltinCoordinateTranslators {
                     return Coordinate.coordinate(0, index);
                 }
             },
-            new RowedPartitionCoordinateTranslator(4, 4 + PLAYER_INVENTORY_ROWS)
+            new RowedPartitionCoordinateTranslator(4, PLAYER_INVENTORY_ROWS)
     );
 
     private static final CoordinateTranslator ANVIL = new CombinedCoordinateTranslator(
+            "anvil",
             new SimplePartitionCoordinateTranslator(3) {
                 @Override
                 public boolean acceptable(@NotNull Coordinate coordinate) {
                     int x = coordinate.x();
                     int y = coordinate.y();
-                    return x > 0 && x < slotsCount && y == 0;
+                    return x >= 0 && x < slotsCount && y == 0;
                 }
 
                 @Override
@@ -82,6 +85,6 @@ public final class BuiltinCoordinateTranslators {
                     return Coordinate.coordinate(index, 0);
                 }
             },
-            new RowedPartitionCoordinateTranslator(1, 5)
+            new RowedPartitionCoordinateTranslator(1, PLAYER_INVENTORY_ROWS)
     );
 }
