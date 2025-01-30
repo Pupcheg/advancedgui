@@ -39,7 +39,7 @@ public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemp
         }
 
         @NotNull
-        AnvilLayoutTemplate.Builder buttons(@NotNull Set<ButtonTemplate> buttons);
+        B buttons(@NotNull Set<ButtonTemplate> buttons);
 
         @NotNull
         Set<ButtonTemplate> buttons();
