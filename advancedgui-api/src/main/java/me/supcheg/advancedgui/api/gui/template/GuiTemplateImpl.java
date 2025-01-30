@@ -97,10 +97,10 @@ record GuiTemplateImpl(
         @Override
         public GuiTemplate build() {
             return new GuiTemplateImpl(
-                    key,
-                    lifecycleListenerRegistry,
-                    layout,
-                    background
+                    Objects.requireNonNull(key, "key"),
+                    Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry"),
+                    Objects.requireNonNull(layout, "layout"),
+                    Objects.requireNonNull(background, "background")
             );
         }
     }

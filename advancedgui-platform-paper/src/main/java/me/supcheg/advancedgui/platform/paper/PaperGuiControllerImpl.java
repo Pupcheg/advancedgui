@@ -1,7 +1,6 @@
 package me.supcheg.advancedgui.platform.paper;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import lombok.NoArgsConstructor;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.component.ComponentRenderContext;
 import me.supcheg.advancedgui.api.gui.Gui;
@@ -146,10 +145,13 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         return plugin;
     }
 
-    @NoArgsConstructor
     static final class BuilderImpl implements Builder {
         private ComponentRenderer<ComponentRenderContext> componentRenderer;
         private Plugin plugin;
+
+        BuilderImpl() {
+            componentRenderer = noopComponentRenderer();
+        }
 
         BuilderImpl(@NotNull PaperGuiControllerImpl impl) {
             componentRenderer = impl.componentRenderer;
@@ -186,10 +188,9 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         @NotNull
         @Override
         public PaperGuiController build() {
-            Objects.requireNonNull(plugin, "plugin");
             return new PaperGuiControllerImpl(
-                    plugin,
-                    componentRenderer != null ? componentRenderer : noopComponentRenderer()
+                    Objects.requireNonNull(plugin, "plugin"),
+                    componentRenderer
             );
         }
 

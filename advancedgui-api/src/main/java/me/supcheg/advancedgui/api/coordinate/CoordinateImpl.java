@@ -3,6 +3,8 @@ package me.supcheg.advancedgui.api.coordinate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 record CoordinateImpl(
         int x,
         int y
@@ -61,7 +63,10 @@ record CoordinateImpl(
         @NotNull
         @Override
         public Coordinate build() {
-            return new CoordinateImpl(x, y);
+            return new CoordinateImpl(
+                    Objects.requireNonNull(x, "x"),
+                    Objects.requireNonNull(y, "y")
+            );
         }
     }
 }

@@ -69,9 +69,11 @@ record LifecycleListenerImpl<S>(
         @NotNull
         @Override
         public LifecycleListener<S> build() {
-            Objects.requireNonNull(priority, "priority");
-            Objects.requireNonNull(action, "action");
-            return new LifecycleListenerImpl<>(pointcut, priority, action);
+            return new LifecycleListenerImpl<>(
+                    pointcut,
+                    Objects.requireNonNull(priority, "priority"),
+                    Objects.requireNonNull(action, "action")
+            );
         }
     }
 }

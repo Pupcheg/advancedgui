@@ -49,7 +49,7 @@ final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
     @Override
     public ComponentRenderer<ComponentRenderContext> build() {
         if (queue.isEmpty()) {
-            throw new IllegalStateException("No any renderer");
+            return NoopComponentRenderer.INSTANCE;
         }
 
         ComponentRenderer<ComponentRenderContext> renderer;

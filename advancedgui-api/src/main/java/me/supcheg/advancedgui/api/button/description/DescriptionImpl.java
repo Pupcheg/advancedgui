@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import static me.supcheg.advancedgui.api.builder.AbstractBuilder.replaceCollectionContents;
-
 public record DescriptionImpl(
         @NotNull List<Component> lines
 ) implements Description {
@@ -19,7 +17,7 @@ public record DescriptionImpl(
     }
 
     static class BuilderImpl implements Builder {
-        private final List<Component> lines;
+        private final LinkedList<Component> lines;
 
         BuilderImpl() {
             this.lines = new LinkedList<>();
@@ -47,7 +45,8 @@ public record DescriptionImpl(
         @Override
         public Builder lines(@NotNull List<Component> lines) {
             Objects.requireNonNull(lines, "lines");
-            replaceCollectionContents(this.lines, lines);
+            this.lines.clear();
+            this.lines.addAll(lines);
             return this;
         }
 

@@ -1,18 +1,17 @@
 package me.supcheg.advancedgui.api.button.template;
 
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
 import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
+import me.supcheg.advancedgui.api.util.CollectionUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -77,7 +76,9 @@ record ButtonTemplateImpl(
         @NotNull
         @Override
         public Builder coordinates(@NotNull Set<Coordinate> coordinates) {
-            AbstractBuilder.replaceCollectionContents(this.coordinates, coordinates);
+            Objects.requireNonNull(coordinates, "coordinates");
+            this.coordinates.clear();
+            this.coordinates.addAll(coordinates);
             return this;
         }
 
@@ -98,7 +99,9 @@ record ButtonTemplateImpl(
         @NotNull
         @Override
         public Builder interactions(@NotNull SortedSet<ButtonInteraction> interactions) {
-            AbstractBuilder.replaceCollectionContents(this.interactions, interactions);
+            Objects.requireNonNull(interactions, "interactions");
+            this.interactions.clear();
+            this.interactions.addAll(interactions);
             return this;
         }
 
@@ -158,7 +161,9 @@ record ButtonTemplateImpl(
         @NotNull
         @Override
         public Builder attributes(@NotNull Set<ButtonAttribute> attributes) {
-            AbstractBuilder.replaceCollectionContents(this.attributes, attributes);
+            Objects.requireNonNull(attributes, "attributes");
+            this.attributes.clear();
+            this.attributes.addAll(attributes);
             return this;
         }
 
@@ -188,7 +193,7 @@ record ButtonTemplateImpl(
         public ButtonTemplate build() {
             return new ButtonTemplateImpl(
                     Set.copyOf(coordinates),
-                    Collections.unmodifiableSortedSet(new TreeSet<>(interactions)),
+                    CollectionUtil.copyOf(interactions),
                     Objects.requireNonNull(texture, "texture"),
                     Objects.requireNonNull(name, "name"),
                     Objects.requireNonNull(description, "description"),

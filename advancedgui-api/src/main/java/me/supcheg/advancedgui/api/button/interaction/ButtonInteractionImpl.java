@@ -59,9 +59,10 @@ record ButtonInteractionImpl(
         @NotNull
         @Contract("-> new")
         public ButtonInteraction build() {
-            Objects.requireNonNull(action, "action");
-            Objects.requireNonNull(priority, "priority");
-            return new ButtonInteractionImpl(priority, action);
+            return new ButtonInteractionImpl(
+                    Objects.requireNonNull(priority, "priority"),
+                    Objects.requireNonNull(action, "action")
+            );
         }
     }
 }

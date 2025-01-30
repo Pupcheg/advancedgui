@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 
 import static me.supcheg.advancedgui.api.component.ComponentRendererBuilder.componentRenderer;
+import static me.supcheg.advancedgui.api.component.ComponentRenderers.noopComponentRenderer;
 import static net.kyori.adventure.text.Component.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -34,8 +34,7 @@ class ComponentRenderTests {
 
     @Test
     void noopBuilderTest() {
-        var builder = componentRenderer();
-        assertThrows(IllegalStateException.class, builder::build);
+        assertSame(noopComponentRenderer(), componentRenderer().build());
     }
 
     @Test

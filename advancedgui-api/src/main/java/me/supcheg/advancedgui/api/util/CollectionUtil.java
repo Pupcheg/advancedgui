@@ -7,11 +7,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.AbstractList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CollectionUtil {
+
+    @NotNull
+    public static <E> SortedSet<E> copyOf(@NotNull SortedSet<? extends E> original) {
+        return original.isEmpty() ?
+                Collections.emptySortedSet() :
+                Collections.unmodifiableSortedSet(new TreeSet<E>(original));
+    }
+
     @SafeVarargs
     @Unmodifiable
     @NotNull

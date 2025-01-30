@@ -1,6 +1,5 @@
 package me.supcheg.advancedgui.api.gui.background;
 
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +38,9 @@ record BackgroundImpl(
         @NotNull
         @Override
         public Builder locations(@NotNull List<Key> locations) {
-            AbstractBuilder.replaceCollectionContents(this.locations, locations);
+            Objects.requireNonNull(locations, "locations");
+            this.locations.clear();
+            this.locations.addAll(locations);
             return this;
         }
 
@@ -52,10 +53,9 @@ record BackgroundImpl(
         @NotNull
         @Override
         public Background build() {
-            if (locations.isEmpty()) {
-                throw new IllegalStateException("locations is empty");
-            }
-            return new BackgroundImpl(List.copyOf(locations));
+            return new BackgroundImpl(
+                    List.copyOf(locations)
+            );
         }
     }
 }

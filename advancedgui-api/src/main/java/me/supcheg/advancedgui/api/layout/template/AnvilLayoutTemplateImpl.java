@@ -1,14 +1,13 @@
 package me.supcheg.advancedgui.api.layout.template;
 
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
 import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
+import me.supcheg.advancedgui.api.util.CollectionUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -53,7 +52,9 @@ record AnvilLayoutTemplateImpl(
         @NotNull
         @Override
         public Builder inputUpdateListeners(@NotNull SortedSet<InputUpdateListener> inputUpdateListeners) {
-            AbstractBuilder.replaceCollectionContents(this.inputUpdateListeners, inputUpdateListeners);
+            Objects.requireNonNull(inputUpdateListeners, "inputUpdateListeners");
+            this.inputUpdateListeners.clear();
+            this.inputUpdateListeners.addAll(inputUpdateListeners);
             return this;
         }
 
@@ -74,7 +75,9 @@ record AnvilLayoutTemplateImpl(
         @NotNull
         @Override
         public Builder buttons(@NotNull Set<ButtonTemplate> buttons) {
-            AbstractBuilder.replaceCollectionContents(this.buttons, buttons);
+            Objects.requireNonNull(buttons, "buttons");
+            this.buttons.clear();
+            this.buttons.addAll(buttons);
             return this;
         }
 
@@ -102,9 +105,9 @@ record AnvilLayoutTemplateImpl(
         @Override
         public AnvilLayoutTemplate build() {
             return new AnvilLayoutTemplateImpl(
-                    Collections.unmodifiableSortedSet(new TreeSet<>(inputUpdateListeners)),
+                    CollectionUtil.copyOf(inputUpdateListeners),
                     Set.copyOf(buttons),
-                    lifecycleListenerRegistry
+                    Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry")
             );
         }
     }

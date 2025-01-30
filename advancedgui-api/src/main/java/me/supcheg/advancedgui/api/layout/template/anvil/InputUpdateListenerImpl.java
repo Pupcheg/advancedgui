@@ -58,9 +58,10 @@ record InputUpdateListenerImpl(
         @NotNull
         @Override
         public InputUpdateListener build() {
-            Objects.requireNonNull(priority, "priority");
-            Objects.requireNonNull(action, "action");
-            return new InputUpdateListenerImpl(priority, action);
+            return new InputUpdateListenerImpl(
+                    Objects.requireNonNull(priority, "priority"),
+                    Objects.requireNonNull(action, "action")
+            );
         }
     }
 }
