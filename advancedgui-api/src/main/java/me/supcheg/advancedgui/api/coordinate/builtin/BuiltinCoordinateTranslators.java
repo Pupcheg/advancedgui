@@ -2,7 +2,6 @@ package me.supcheg.advancedgui.api.coordinate.builtin;
 
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public final class BuiltinCoordinateTranslators {
@@ -13,9 +12,8 @@ public final class BuiltinCoordinateTranslators {
     }
 
     @NotNull
-    @Contract("_ -> new")
     public static CoordinateTranslator chest(int rows) {
-        return CHEST[rows];
+        return CHEST[rows - 1];
     }
 
     @NotNull
