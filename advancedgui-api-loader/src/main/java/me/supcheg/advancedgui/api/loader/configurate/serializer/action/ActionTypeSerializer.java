@@ -16,6 +16,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
     @Override
     public Action deserialize(@NotNull Type type, @NotNull ConfigurationNode node) throws SerializationException {
         Class<?> actionType = erase(type);
-        String interfaceMethodName = actionType.getMethods()[0].getName();
+        String interfaceMethodName = findFunctionalInterfaceMethodName(actionType);
         InterpretedContext interpretedContext = interpret(node);
 
         return (Action) Proxy.newProxyInstance(
@@ -54,6 +55,19 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
                 new Class[]{actionType, ContextInterpreted.class},
                 new InterpretedContextInvocationHandler(interpretedContext, interfaceMethodName)
         );
+    }
+
+    @NotNull
+    private static String findFunctionalInterfaceMethodName(@NotNull Class<?> interfaceClass) throws SerializationException {
+        if (!interfaceClass.isInterface()) {
+            throw new SerializationException("Interface class " + interfaceClass + " is not an interface");
+        }
+
+        return Arrays.stream(interfaceClass.getMethods())
+                .filter(method -> Modifier.isAbstract(method.getModifiers()))
+                .map(Method::getName)
+                .findFirst()
+                .orElseThrow(() -> new SerializationException(interfaceClass + " has no any non-default method"));
     }
 
     private record InterpretedContextInvocationHandler(
