@@ -2,6 +2,8 @@ package me.supcheg.advancedgui.api.coordinate;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.stream.Stream;
+
 public interface CoordinateTranslator {
 
     boolean isInBounds(@NotNull Coordinate coordinate);
@@ -28,4 +30,7 @@ public interface CoordinateTranslator {
     default int slotsCount() {
         return upperSlotsCount() + lowerSlotsCount();
     }
+
+    @NotNull
+    Stream<Coordinate> availableCoordinates();
 }

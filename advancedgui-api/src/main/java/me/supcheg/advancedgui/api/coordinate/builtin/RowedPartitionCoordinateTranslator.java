@@ -5,6 +5,9 @@ import lombok.ToString;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 
 @ToString
@@ -37,7 +40,7 @@ final class RowedPartitionCoordinateTranslator implements PartitionCoordinateTra
         int x = coordinate.x();
         int y = coordinate.y();
         return y >= startRow && y < endRow
-                && x >= 0 && x < 9;
+               && x >= 0 && x < 9;
     }
 
     @Override
@@ -54,6 +57,13 @@ final class RowedPartitionCoordinateTranslator implements PartitionCoordinateTra
     @Override
     public int slotsCount() {
         return endIndex - startIndex;
+    }
+
+    @NotNull
+    @Override
+    public Stream<Coordinate> availableCoordinates() {
+       return IntStream.range(startIndex, endIndex)
+                .mapToObj(this::toCoordinate);
     }
 
 }

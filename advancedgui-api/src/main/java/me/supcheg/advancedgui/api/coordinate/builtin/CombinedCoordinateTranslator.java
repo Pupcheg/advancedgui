@@ -7,6 +7,8 @@ import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.stream.Stream;
+
 @EqualsAndHashCode
 @ToString
 final class CombinedCoordinateTranslator implements CoordinateTranslator {
@@ -65,6 +67,12 @@ final class CombinedCoordinateTranslator implements CoordinateTranslator {
     @Override
     public int lowerSlotsCount() {
         return lower.slotsCount();
+    }
+
+    @NotNull
+    @Override
+    public Stream<Coordinate> availableCoordinates() {
+        return Stream.concat(upper.availableCoordinates(), lower.availableCoordinates());
     }
 
     @NotNull

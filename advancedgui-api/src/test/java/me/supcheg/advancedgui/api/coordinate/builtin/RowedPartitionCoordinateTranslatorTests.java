@@ -1,20 +1,20 @@
 package me.supcheg.advancedgui.api.coordinate.builtin;
 
-import org.junit.jupiter.api.Test;
+import me.supcheg.advancedgui.api.annotation.ChestRowsSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
+import static me.supcheg.advancedgui.api.TestInventoryConstants.PLAYER_INVENTORY_ROWS;
+import static me.supcheg.advancedgui.api.TestInventoryConstants.SLOTS_IN_ROW;
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RowedPartitionCoordinateTranslatorTests {
-    int MAX_CHEST_ROWS = 6;
-    int PLAYER_INVENTORY_ROWS = 4;
 
-    @Test
-    void chest() {
-        for (int rows = 1; rows <= MAX_CHEST_ROWS; rows++) {
-            validateChest(rows);
-        }
+    @ParameterizedTest
+    @ChestRowsSource
+    void chest(int rows) {
+        validateChest(rows);
     }
 
     private void validateChest(int rows) {
@@ -25,12 +25,12 @@ class RowedPartitionCoordinateTranslatorTests {
     private void validateRowed(int start, int rows) {
         var translator = new RowedPartitionCoordinateTranslator(start, rows);
 
-        assertEquals(translator.slotsCount(), rows * 9);
+        assertEquals(translator.slotsCount(), rows * SLOTS_IN_ROW);
 
         for (int y = start; y < (start + rows); y++) {
-            for (int x = 0; x < 9; x++) {
+            for (int x = 0; x < SLOTS_IN_ROW; x++) {
 
-                int index = y * 9 + x;
+                int index = y * SLOTS_IN_ROW + x;
                 var coord = coordinate(x, y);
 
                 assertTrue(translator.acceptable(index));

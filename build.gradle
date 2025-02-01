@@ -18,9 +18,10 @@ allprojects {
     // tests configuration
     dependencies {
         testImplementation 'org.slf4j:slf4j-simple:2.0.16'
-        testImplementation 'org.assertj:assertj-swing-junit:3.17.1'
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+        testImplementation 'org.assertj:assertj-core:3.27.3'
+        testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+        testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_version"
         testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
     }
 
