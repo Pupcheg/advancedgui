@@ -1,26 +1,31 @@
 plugins {
     id 'xyz.jpenilla.run-paper' version '2.3.1'
-    id "xyz.jpenilla.resource-factory-paper-convention" version '1.2.0'
+    id 'xyz.jpenilla.resource-factory-paper-convention' version '1.2.0'
 }
+
+def minecraft_version = '1.21.4'
 
 dependencies {
     implementation project(':advancedgui-api')
     implementation project(':advancedgui-api-loader')
     implementation project(':advancedgui-platform-paper')
-    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+    implementation project(':advancedgui-api-resources-processor')
+    compileOnly "io.papermc.paper:paper-api:$minecraft_version-R0.1-SNAPSHOT"
 }
 
 jar {
     from(project(':advancedgui-api').sourceSets.main.output)
     from(project(':advancedgui-api-loader').sourceSets.main.output)
     from(project(':advancedgui-platform-paper').sourceSets.main.output)
+    from(project(':advancedgui-api-resources-processor').sourceSets.main.output)
 }
 
 runServer {
-    minecraftVersion '1.21.4'
+    minecraftVersion minecraft_version
 }
 
 paperPluginYaml {
+    name.set 'testplugin'
     main.set 'me.supcheg.advancedgui.testplugin.TestPlugin'
-    apiVersion.set '1.21.4'
+    apiVersion.set minecraft_version
 }

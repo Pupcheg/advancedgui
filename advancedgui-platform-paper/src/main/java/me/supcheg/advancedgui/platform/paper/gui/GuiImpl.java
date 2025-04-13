@@ -9,8 +9,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
-import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.afterTickPointcut;
-import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.beforeTickPointcut;
+import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTickPointcut;
+import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.beforeTickPointcut;
 
 public record GuiImpl(
         @NotNull Key key,

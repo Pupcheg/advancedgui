@@ -4,7 +4,7 @@ import io.leangen.geantyref.TypeFactory;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleAction;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListener;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
-import me.supcheg.advancedgui.api.lifecycle.Pointcut;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
@@ -18,8 +18,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 
+import static me.supcheg.advancedgui.api.lifecycle.LifecycleListener.lifecycleListener;
 import static me.supcheg.advancedgui.api.loader.configurate.ConfigurateUtil.findTypeSerializer;
-import static me.supcheg.advancedgui.api.loader.configurate.serializer.unchecked.Unchecked.uncheckedCast;
 import static org.spongepowered.configurate.BasicConfigurationNode.root;
 
 public final class LifecycleListenerRegistryTypeSerializer implements TypeSerializer<LifecycleListenerRegistry<?>> {
@@ -57,17 +57,18 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
     @NotNull
     private static LifecycleListener<Object> rawLifecycleListenerToLifecycleListener(@NotNull Pointcut pointcut,
                                                                                      @NotNull RawLifecycleListener raw) {
-        return pointcut.lifecycleListener(lifecycleListener -> lifecycleListener
+        return lifecycleListener(lifecycleListener -> lifecycleListener
+                .pointcut(pointcut)
                 .priority(raw.priority())
                 .action(raw.action())
         );
     }
 
     @NotNull
-    private static RawLifecycleListener lifecycleListenerToRawLifecycleListener(@NotNull LifecycleListener<?> lifecycleListener) {
+    private static RawLifecycleListener lifecycleListenerToRawLifecycleListener(@NotNull LifecycleListener<Object> lifecycleListener) {
         return new RawLifecycleListener(
                 lifecycleListener.priority(),
-                uncheckedCast(lifecycleListener.action())
+                lifecycleListener.action()
         );
     }
 
@@ -78,13 +79,16 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
             return;
         }
 
-        for (var entry : obj.listeners().entrySet()) {
+        @SuppressWarnings("unchecked") // safe cast
+        LifecycleListenerRegistry<Object> objRegistry = (LifecycleListenerRegistry<Object>) obj;
+
+        for (var entry : objRegistry.listeners().entrySet()) {
             Pointcut pointcut = entry.getKey();
             var listeners = entry.getValue();
 
             ConfigurationNode child = node.node(serializeAsString(node.options(), pointcut));
 
-            for (LifecycleListener<?> listener : listeners) {
+            for (LifecycleListener<Object> listener : listeners) {
                 child.appendListNode()
                         .set(lifecycleListenerToRawLifecycleListener(listener));
             }

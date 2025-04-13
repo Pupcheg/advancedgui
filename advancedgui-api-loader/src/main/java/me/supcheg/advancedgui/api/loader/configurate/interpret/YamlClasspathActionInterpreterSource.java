@@ -73,7 +73,10 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
             }
             default -> throw new IllegalArgumentException("Couldn't construct " + className);
         };
-        return (T) object;
+
+        @SuppressWarnings("unchecked")
+        T cast = (T) object;
+        return cast;
     }
 
     @SneakyThrows

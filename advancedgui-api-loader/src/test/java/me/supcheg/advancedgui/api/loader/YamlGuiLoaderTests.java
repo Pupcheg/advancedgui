@@ -15,8 +15,8 @@ import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowin
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
 import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
 import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anvilLayout;
-import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.afterTickPointcut;
-import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.beforeTickPointcut;
+import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTickPointcut;
+import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.beforeTickPointcut;
 import static me.supcheg.advancedgui.api.loader.interpret.DummyAction.dummyAction;
 import static me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader.yamlGuiLoader;
 import static net.kyori.adventure.key.Key.key;
@@ -98,14 +98,16 @@ class YamlGuiLoaderTests {
                                 )
                                 .attributes(glowing(), hidden())
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                                        .add(beforeTickPointcut(), lifecycleListener -> lifecycleListener
+                                        .add(lifecycleListener -> lifecycleListener
+                                                .pointcut(beforeTickPointcut())
                                                 .priority(NamedPriority.NORMAL)
                                                 .action(dummyAction())
                                         )
                                 )
                         )
                         .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                                .add(afterTickPointcut(), lifecycleListener -> lifecycleListener
+                                .add(lifecycleListener -> lifecycleListener
+                                        .pointcut(afterTickPointcut())
                                         .priority(NamedPriority.HIGHEST)
                                         .action(dummyAction())
                                 )
@@ -115,11 +117,13 @@ class YamlGuiLoaderTests {
                         .addLocation(key("advancedgui:test/background"))
                 )
                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                        .add(beforeTickPointcut(), lifecycleListener -> lifecycleListener
+                        .add(lifecycleListener -> lifecycleListener
+                                .pointcut(beforeTickPointcut())
                                 .priority(NamedPriority.NORMAL)
                                 .action(dummyAction())
                         )
-                        .add(afterTickPointcut(), lifecycleListener -> lifecycleListener
+                        .add(lifecycleListener -> lifecycleListener
+                                .pointcut(afterTickPointcut())
                                 .priority(NamedPriority.LOW)
                                 .action(dummyAction())
                         )

@@ -26,6 +26,9 @@ public interface PaperGuiController extends GuiController<PaperGuiController, Pa
     @NotNull
     Plugin plugin();
 
+    @Override
+    void close();
+
     interface Builder extends GuiController.Builder<PaperGuiController, Builder> {
         @Nullable
         Plugin plugin();

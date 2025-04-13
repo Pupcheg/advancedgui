@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.testplugin;
 
+import com.google.common.cache.CacheBuilder;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+import static me.supcheg.advancedgui.api.component.guava.GuavaComponentRendererCacheProviders.guava;
 import static me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader.yamlGuiLoader;
 import static me.supcheg.advancedgui.platform.paper.PaperGuiController.paperGuiController;
 
@@ -22,9 +24,13 @@ public class TestPlugin extends JavaPlugin {
     public void onEnable() {
         controller = paperGuiController(paperGuiController -> paperGuiController
                 .plugin(this)
+                .componentRenderer(componentRenderer -> componentRenderer
+                        .noItalicByDefault()
+                        .enableCache(guava(CacheBuilder::weakKeys))
+                )
         );
 
-        controller.register(loadGuiTemplate("advancedgui/root.yaml"));
+        controller.register(loadGuiTemplate("testplugin/question.yaml"));
 
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> event
                 .registrar()
@@ -38,15 +44,13 @@ public class TestPlugin extends JavaPlugin {
     @SneakyThrows
     @NotNull
     private GuiTemplate loadGuiTemplate(@NotNull String path) {
-        try (var in = getTextResource(path)) {
-            Objects.requireNonNull(in);
-            return yamlGuiLoader().loadResource(in);
-        } finally {
-            getSLF4JLogger().info("loaded {}", path);
+        try (var in = Objects.requireNonNull(getTextResource(path))) {
+            var template = yamlGuiLoader().loadResource(in);
+            getSLF4JLogger().info("Successfully loaded template '{}' from '{}'", template.key(), path);
+            return template;
         }
     }
 
-    @SneakyThrows
     @Override
     public void onDisable() {
         controller.close();

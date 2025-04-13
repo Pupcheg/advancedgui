@@ -31,6 +31,7 @@ class BuiltinCoordinateTranslatorsTests {
         var translator = chest(rows);
         assertThat(translator.availableCoordinates())
                 .hasSameElementsAs(matrix(
+                        // https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Inventory#Chest
                         rows(0, rows),
                         rows(rows, PLAYER_INVENTORY_ROWS)
                 ));
@@ -50,6 +51,7 @@ class BuiltinCoordinateTranslatorsTests {
     void anvilTranslator() {
         assertThat(anvil().availableCoordinates())
                 .hasSameElementsAs(matrix(
+                        // https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Inventory#Anvil
                         new int[][]{
                                 {0, 0}, /* + */ {1, 0}, /* -> */ {2, 0}
                         },
@@ -71,6 +73,7 @@ class BuiltinCoordinateTranslatorsTests {
     void furnaceTranslator() {
         assertThat(furnace().availableCoordinates())
                 .hasSameElementsAs(matrix(
+                        // https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Inventory#Furnace
                         new int[][]{
                                 {0, 0},
                                 /*🔥*/   /* -> */    {0, 1},

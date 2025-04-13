@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.SortedSet;
 
-import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.afterTickPointcut;
-import static me.supcheg.advancedgui.api.lifecycle.tick.TickPointcut.beforeTickPointcut;
+import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTickPointcut;
+import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.beforeTickPointcut;
 
 public record AnvilLayoutImpl(
         @NotNull Set<ButtonImpl> buttons,

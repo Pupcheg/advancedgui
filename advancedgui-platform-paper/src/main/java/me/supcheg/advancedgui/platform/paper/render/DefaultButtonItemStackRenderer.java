@@ -1,14 +1,14 @@
 package me.supcheg.advancedgui.platform.paper.render;
 
-import com.google.common.collect.Lists;
 import io.papermc.paper.adventure.PaperAdventure;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.description.Description;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +25,8 @@ public class DefaultButtonItemStackRenderer implements Renderer<Button, ItemStac
             return ItemStack.EMPTY;
         }
 
-        ItemStack itemStack = item(input.texture());
+        ItemStack itemStack = new ItemStack(Items.PAPER);
+        itemStack.set(DataComponents.ITEM_MODEL, model(input.texture()));
         itemStack.set(DataComponents.ITEM_NAME, name(input.name()));
         itemStack.set(DataComponents.LORE, lore(input.description()));
 
@@ -36,12 +37,12 @@ public class DefaultButtonItemStackRenderer implements Renderer<Button, ItemStac
         return itemStack;
     }
 
-    private ItemStack item(@NotNull Key texture) {
-        return new ItemStack(BuiltInRegistries.ITEM.getValue(asVanilla(texture)));
+    private ResourceLocation model(Key key) {
+        return PaperAdventure.asVanilla(key);
     }
 
     private ItemLore lore(@NotNull Description description) {
-        var transform = Lists.transform(description.lines(), PaperAdventure::asVanilla);
+        var transform = PaperAdventure.asVanilla(description.lines());
         return new ItemLore(transform, transform);
     }
 

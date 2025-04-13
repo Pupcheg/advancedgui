@@ -1,6 +1,7 @@
 package me.supcheg.advancedgui.platform.paper.construct;
 
 import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.ObjectPointcut;
 import me.supcheg.advancedgui.platform.paper.gui.ButtonImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +23,7 @@ public class ButtonImplConstructor implements TemplateConstructor<ButtonTemplate
                                 template.lifecycleListenerRegistry()
                         )
                 )
+                .peek(button -> button.handleEachLifecycleAction(ObjectPointcut.objectConstructPointcut()))
                 .toList();
     }
 }

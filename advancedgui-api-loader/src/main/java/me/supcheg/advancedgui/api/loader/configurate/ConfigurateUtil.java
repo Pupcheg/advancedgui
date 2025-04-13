@@ -8,15 +8,12 @@ import org.spongepowered.configurate.ConfigurationOptions;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-import static me.supcheg.advancedgui.api.loader.configurate.serializer.unchecked.Unchecked.uncheckedCast;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigurateUtil {
     @NotNull
     public static <T> T findTypeSerializer(@NotNull ConfigurationOptions options, @NotNull Type type) {
-        return Objects.requireNonNull(
-                uncheckedCast(options.serializers().get(type)),
-                () -> "No type serializer found for " + type
-        );
+        @SuppressWarnings("unchecked")
+        T serializer = (T) options.serializers().get(type);
+        return Objects.requireNonNull(serializer, () -> "No type serializer found for " + type);
     }
 }

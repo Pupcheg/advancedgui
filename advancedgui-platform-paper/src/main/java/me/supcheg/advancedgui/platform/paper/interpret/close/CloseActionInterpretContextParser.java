@@ -32,6 +32,6 @@ final class CloseActionInterpretContextParser implements ActionInterpretContextP
             return;
         }
 
-        node.set(ctx);
+        ActionInterpretContextParser.super.serialize(ctx, node);
     }
 }

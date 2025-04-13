@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
-import static me.supcheg.advancedgui.api.loader.configurate.serializer.unchecked.Unchecked.uncheckedCast;
 
 public final class ActionTypeSerializer implements TypeSerializer<Action> {
     private final List<ActionInterpreterEntry<?>> interpreters;
@@ -131,9 +130,11 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
         }
 
         ActionInterpretContext context = interpreted.context();
-        ActionInterpretContextParser<?> parser = interpreted.parser();
+        @SuppressWarnings("unchecked") // safe cast
+        ActionInterpretContextParser<ActionInterpretContext> parser =
+                (ActionInterpretContextParser<ActionInterpretContext>) interpreted.parser();
 
-        parser.serialize(uncheckedCast(context), node);
+        parser.serialize(context, node);
     }
 
     private interface ContextInterpreted {

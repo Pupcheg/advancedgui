@@ -3,7 +3,7 @@ package me.supcheg.advancedgui.platform.paper.lifecycle;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleContext;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListener;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
-import me.supcheg.advancedgui.api.lifecycle.Pointcut;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

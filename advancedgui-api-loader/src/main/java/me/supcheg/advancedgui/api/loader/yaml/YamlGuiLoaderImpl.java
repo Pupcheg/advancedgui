@@ -10,6 +10,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import java.util.Optional;
 
 final class YamlGuiLoaderImpl extends ConfigurateGuiLoader<YamlConfigurationLoader, YamlConfigurationLoader.Builder> implements YamlGuiLoader {
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // paper-like api contract
     private static final Optional<Provider> SERVICE = Services.service(Provider.class);
 
     @NotNull

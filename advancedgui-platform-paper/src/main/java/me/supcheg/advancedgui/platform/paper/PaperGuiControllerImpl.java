@@ -3,8 +3,13 @@ package me.supcheg.advancedgui.platform.paper;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.component.ComponentRenderContext;
+import me.supcheg.advancedgui.api.component.ComponentRenderers;
 import me.supcheg.advancedgui.api.gui.Gui;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.ObjectPointcut;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.RegistrationPointcut;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.support.PointcutSupport;
 import me.supcheg.advancedgui.platform.paper.construct.ButtonImplConstructor;
 import me.supcheg.advancedgui.platform.paper.construct.GuiImplConstructor;
 import me.supcheg.advancedgui.platform.paper.construct.LayoutImplConstructor;
@@ -14,6 +19,7 @@ import me.supcheg.advancedgui.platform.paper.render.DefaultBackgroundComponentRe
 import me.supcheg.advancedgui.platform.paper.render.DefaultButtonItemStackRenderer;
 import me.supcheg.advancedgui.platform.paper.render.DefaultLayoutNonNullListItemStackRenderer;
 import me.supcheg.advancedgui.platform.paper.render.Renderer;
+import me.supcheg.advancedgui.platform.paper.resourcepack.DefaultBackgroundImageMetaLookup;
 import me.supcheg.advancedgui.platform.paper.view.DefaultGuiViewer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
@@ -33,9 +39,27 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static me.supcheg.advancedgui.api.component.ComponentRenderers.noopComponentRenderer;
-
 final class PaperGuiControllerImpl implements PaperGuiController {
+    private static final PointcutSupport POINTCUT_SUPPORT = PointcutSupport.pointcutSupport(
+            pointcutSupport -> pointcutSupport
+                    .supports(
+                            // Registration
+                            RegistrationPointcut.preRegisterPointcut(),
+                            RegistrationPointcut.postRegisterPointcut(),
+                            RegistrationPointcut.preUnregisterPointcut(),
+                            RegistrationPointcut.postUnregisterPointcut()
+                    )
+                    .supports(
+                            // Tick
+                            TickPointcut.beforeTickPointcut(),
+                            TickPointcut.afterTickPointcut()
+                    )
+                    .supports(
+                            // Object
+                            ObjectPointcut.objectConstructPointcut()
+                    )
+    );
+
     private final ComponentRenderer<ComponentRenderContext> componentRenderer;
     private final Plugin plugin;
 
@@ -58,7 +82,9 @@ final class PaperGuiControllerImpl implements PaperGuiController {
 
         DefaultGuiViewer guiViewer = new DefaultGuiViewer(
                 new DefaultPlatformAudienceConverter(Bukkit.getName(), CraftPlayer.class),
-                new DefaultBackgroundComponentRenderer(),
+                new DefaultBackgroundComponentRenderer(
+                        new DefaultBackgroundImageMetaLookup()
+                ),
                 new DefaultLayoutNonNullListItemStackRenderer(
                         buttonItemStackRenderer
                 ),
@@ -78,6 +104,12 @@ final class PaperGuiControllerImpl implements PaperGuiController {
     @Override
     public ComponentRenderer<ComponentRenderContext> componentRenderer() {
         return componentRenderer;
+    }
+
+    @NotNull
+    @Override
+    public PointcutSupport pointcutSupport() {
+        return POINTCUT_SUPPORT;
     }
 
     @UnmodifiableView
@@ -100,14 +132,24 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         Objects.requireNonNull(template, "template");
 
         GuiImpl gui = guiConstructor.construct(template);
+
+        gui.handleEachLifecycleAction(RegistrationPointcut.preRegisterPointcut());
         registry.put(gui.key(), gui);
+        gui.handleEachLifecycleAction(RegistrationPointcut.postRegisterPointcut());
+
         return gui;
     }
 
     @Override
     public void unregister(@NotNull Key key) {
         Objects.requireNonNull(key, "key");
-        registry.remove(key);
+
+        GuiImpl gui = registry.get(key);
+        if (gui != null) {
+            gui.handleEachLifecycleAction(RegistrationPointcut.preUnregisterPointcut());
+            registry.remove(key, gui);
+            gui.handleEachLifecycleAction(RegistrationPointcut.postUnregisterPointcut());
+        }
     }
 
     @NotNull
@@ -150,11 +192,12 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         private Plugin plugin;
 
         BuilderImpl() {
-            componentRenderer = noopComponentRenderer();
+            componentRenderer = ComponentRenderers.noopComponentRenderer();
         }
 
         BuilderImpl(@NotNull PaperGuiControllerImpl impl) {
             componentRenderer = impl.componentRenderer;
+            plugin = impl.plugin;
         }
 
         @NotNull
