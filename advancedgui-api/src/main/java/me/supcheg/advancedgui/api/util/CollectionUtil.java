@@ -10,6 +10,7 @@ import java.util.AbstractList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -63,6 +64,14 @@ public final class CollectionUtil {
         public int size() {
             return 2 + other.length;
         }
+    }
+
+    @SafeVarargs
+    @Unmodifiable
+    @NotNull
+    @Contract("_, _, _ -> new")
+    public static <T> Set<T> makeNoNullsSet(@NotNull T first, @NotNull T second, @NotNull T @NotNull ... other) {
+        return Set.copyOf(makeNoNullsList(first, second, other));
     }
 
 }

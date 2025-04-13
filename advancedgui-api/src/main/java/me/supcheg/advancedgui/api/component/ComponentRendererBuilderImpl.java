@@ -6,26 +6,26 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
     private final Deque<ComponentRenderer<ComponentRenderContext>> queue = new LinkedList<>();
-    private Supplier<Map<Component, Component>> cacheFactory;
+    private ComponentRendererCacheProvider cacheProvider;
 
     @NotNull
     @Override
-    public ComponentRendererBuilder enableCache(@NotNull Supplier<Map<Component, Component>> cacheFactory) {
-        Objects.requireNonNull(cacheFactory, "cacheFactory");
-        this.cacheFactory = cacheFactory;
+    public ComponentRendererBuilder enableCache(@NotNull ComponentRendererCacheProvider cacheProvider) {
+        Objects.requireNonNull(cacheProvider, "cacheProvider");
+        this.cacheProvider = cacheProvider;
         return this;
     }
 
     @NotNull
     @Override
     public ComponentRendererBuilder disableCache() {
-        cacheFactory = null;
+        cacheProvider = null;
         return this;
     }
 
@@ -56,11 +56,11 @@ final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
 
         renderer = queue.size() == 1 ?
                 queue.getFirst() :
-                new SequencedComponentRenderer(new LinkedList<>(queue));
+                new SequencedComponentRenderer(List.copyOf(queue));
 
-        renderer = cacheFactory == null ?
+        renderer = cacheProvider == null ?
                 renderer :
-                new CachingComponentRenderer(cacheFactory.get(), renderer);
+                new CachingComponentRenderer(cacheProvider.newCacheMap(), renderer);
 
         return renderer;
     }

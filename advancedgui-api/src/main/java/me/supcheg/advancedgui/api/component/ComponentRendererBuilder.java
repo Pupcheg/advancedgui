@@ -6,9 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public interface ComponentRendererBuilder extends AbstractBuilder<ComponentRenderer<ComponentRenderContext>> {
@@ -25,11 +23,11 @@ public interface ComponentRendererBuilder extends AbstractBuilder<ComponentRende
 
     @NotNull
     default ComponentRendererBuilder noItalicByDefault() {
-        return addTail(NoItalicByDefaultComponentRenderer.INSTANCE);
+        return addTail(ComponentRenderers.noItalicComponentRenderer());
     }
 
     @NotNull
-    ComponentRendererBuilder enableCache(@NotNull Supplier<Map<Component, Component>> cacheFactory);
+    ComponentRendererBuilder enableCache(@NotNull ComponentRendererCacheProvider cacheProvider);
 
     @NotNull
     ComponentRendererBuilder disableCache();

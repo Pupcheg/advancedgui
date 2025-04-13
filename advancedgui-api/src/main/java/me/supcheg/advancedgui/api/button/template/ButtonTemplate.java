@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Consumer;
@@ -150,7 +149,7 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
         @NotNull
         default Builder attributes(@NotNull ButtonAttribute first, @NotNull ButtonAttribute second,
                                    @NotNull ButtonAttribute @NotNull ... other) {
-            return attributes(new HashSet<>(CollectionUtil.makeNoNullsList(first, second, other)));
+            return attributes(CollectionUtil.makeNoNullsSet(first, second, other));
         }
 
         @NotNull
@@ -163,8 +162,8 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
 
         @NotNull
         default Builder addAttributes(@NotNull ButtonAttribute first, @NotNull ButtonAttribute second,
-                                   @NotNull ButtonAttribute @NotNull ... other) {
-            return addAttributes(new HashSet<>(CollectionUtil.makeNoNullsList(first, second, other)));
+                                      @NotNull ButtonAttribute @NotNull ... other) {
+            return addAttributes(CollectionUtil.makeNoNullsSet(first, second, other));
         }
     }
 }

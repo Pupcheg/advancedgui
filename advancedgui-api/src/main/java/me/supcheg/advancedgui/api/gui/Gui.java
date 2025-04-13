@@ -18,7 +18,7 @@ public interface Gui extends Keyed, Lifecycled<Gui> {
     Background background();
 
     @NotNull
-    Layout layout();
+    Layout<?> layout();
 
     void open(@NotNull Audience audience);
 }

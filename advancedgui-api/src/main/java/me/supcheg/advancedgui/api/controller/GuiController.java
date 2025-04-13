@@ -6,6 +6,7 @@ import me.supcheg.advancedgui.api.component.ComponentRenderContext;
 import me.supcheg.advancedgui.api.component.ComponentRendererBuilder;
 import me.supcheg.advancedgui.api.gui.Gui;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.support.PointcutSupport;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import org.jetbrains.annotations.Contract;
@@ -21,6 +22,9 @@ public interface GuiController<T extends GuiController<T, B>, B extends GuiContr
 
     @NotNull
     ComponentRenderer<ComponentRenderContext> componentRenderer();
+
+    @NotNull
+    PointcutSupport pointcutSupport();
 
     @UnmodifiableView
     @NotNull

@@ -11,4 +11,9 @@ public final class ComponentRenderers {
     public static ComponentRenderer<ComponentRenderContext> noopComponentRenderer() {
         return NoopComponentRenderer.INSTANCE;
     }
+
+    @NotNull
+    public static ComponentRenderer<ComponentRenderContext> noItalicComponentRenderer() {
+        return NoItalicByDefaultComponentRenderer.INSTANCE;
+    }
 }

@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.lifecycle;
 
+import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,12 +19,11 @@ record LifecycleListenerImpl<S>(
     }
 
     static final class BuilderImpl<S> implements LifecycleListener.Builder<S> {
-        private final Pointcut pointcut;
+        private Pointcut pointcut;
         private Priority priority;
         private LifecycleAction<S> action;
 
-        BuilderImpl(@NotNull Pointcut pointcut) {
-            this.pointcut = pointcut;
+        BuilderImpl() {
         }
 
         BuilderImpl(@NotNull LifecycleListenerImpl<S> impl) {
@@ -31,8 +31,15 @@ record LifecycleListenerImpl<S>(
             this.priority = impl.priority;
             this.action = impl.action;
         }
-
         @NotNull
+        @Override
+        public Builder<S> pointcut(@NotNull Pointcut pointcut) {
+            Objects.requireNonNull(pointcut, "pointcut");
+            this.pointcut = pointcut;
+            return this;
+        }
+
+        @Nullable
         @Override
         public Pointcut pointcut() {
             return pointcut;
@@ -70,7 +77,7 @@ record LifecycleListenerImpl<S>(
         @Override
         public LifecycleListener<S> build() {
             return new LifecycleListenerImpl<>(
-                    pointcut,
+                    Objects.requireNonNull(pointcut, "pointcut"),
                     Objects.requireNonNull(priority, "priority"),
                     Objects.requireNonNull(action, "action")
             );

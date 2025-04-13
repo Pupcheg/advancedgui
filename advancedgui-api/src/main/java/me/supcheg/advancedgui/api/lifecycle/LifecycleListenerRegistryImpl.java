@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.lifecycle;
 
+import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

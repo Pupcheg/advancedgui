@@ -2,6 +2,7 @@ package me.supcheg.advancedgui.api.lifecycle;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
+import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -43,9 +44,9 @@ public interface LifecycleListenerRegistry<S> extends Buildable<LifecycleListene
         Builder<S> add(@NotNull LifecycleListener<S> listener);
 
         @NotNull
-        @Contract("_, _ -> this")
-        default Builder<S> add(@NotNull Pointcut pointcut, @NotNull Consumer<LifecycleListener.Builder<S>> consumer) {
-            return add(pointcut.lifecycleListener(consumer));
+        @Contract("_ -> this")
+        default Builder<S> add(@NotNull Consumer<LifecycleListener.Builder<S>> consumer) {
+            return add(LifecycleListener.lifecycleListener(consumer));
         }
     }
 }
