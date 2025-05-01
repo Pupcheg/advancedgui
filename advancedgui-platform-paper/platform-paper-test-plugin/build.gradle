@@ -9,7 +9,6 @@ dependencies {
     implementation project(':advancedgui-api')
     implementation project(':advancedgui-api-loader')
     implementation project(':advancedgui-platform-paper')
-    implementation project(':advancedgui-api-resources-processor')
     compileOnly "io.papermc.paper:paper-api:$minecraft_version-R0.1-SNAPSHOT"
 }
 
@@ -17,7 +16,6 @@ jar {
     from(project(':advancedgui-api').sourceSets.main.output)
     from(project(':advancedgui-api-loader').sourceSets.main.output)
     from(project(':advancedgui-platform-paper').sourceSets.main.output)
-    from(project(':advancedgui-api-resources-processor').sourceSets.main.output)
 }
 
 runServer {
