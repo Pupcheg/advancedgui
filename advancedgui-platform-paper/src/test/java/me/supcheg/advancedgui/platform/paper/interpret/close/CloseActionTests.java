@@ -2,8 +2,7 @@ package me.supcheg.advancedgui.platform.paper.interpret.close;
 
 import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.action.AudienceActionContext;
-import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
 import me.supcheg.advancedgui.platform.paper.interpret.util.SimpleYamlConfigurationLoader;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.HumanEntity;
@@ -28,16 +27,7 @@ public class CloseActionTests {
 
     @BeforeAll
     static void beforeAll() {
-        LOADER = new SimpleYamlConfigurationLoader(
-                TypeSerializerCollection.defaults().childBuilder()
-                        .register(
-                                ActionTypeSerializer::isAction,
-                                new ActionTypeSerializer(
-                                        new YamlClasspathActionInterpreterSource(CloseActionTests.class.getClassLoader())
-                                )
-                        )
-                        .build()
-        );
+        LOADER = new SimpleYamlConfigurationLoader(ConfigurateGuiLoader.makeSerializers(TypeSerializerCollection.defaults()));
     }
 
     @BeforeEach

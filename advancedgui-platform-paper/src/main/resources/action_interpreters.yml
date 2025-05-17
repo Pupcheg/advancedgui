@@ -1,3 +1,6 @@
 - name: close
   context-parser: me.supcheg.advancedgui.platform.paper.interpret.close.CloseActionInterpretContextParser
   interpreter: me.supcheg.advancedgui.platform.paper.interpret.close.CloseActionInterpreter
+- name: send
+  context-parser: me.supcheg.advancedgui.platform.paper.interpret.send.SendActionInterpretContextParser
+  interpreter: me.supcheg.advancedgui.platform.paper.interpret.send.SendActionInterpreter

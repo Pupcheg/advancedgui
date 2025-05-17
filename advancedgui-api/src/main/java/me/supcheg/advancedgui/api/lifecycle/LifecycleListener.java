@@ -5,13 +5,16 @@ import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import me.supcheg.advancedgui.api.sequence.Sequenced;
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
-public interface LifecycleListener<S> extends Sequenced<LifecycleListener<S>>, Buildable<LifecycleListener<S>, LifecycleListener.Builder<S>> {
+public interface LifecycleListener<S> extends Examinable, Sequenced<LifecycleListener<S>>, Buildable<LifecycleListener<S>, LifecycleListener.Builder<S>> {
 
     @NotNull
     @Contract("-> new")
@@ -30,6 +33,16 @@ public interface LifecycleListener<S> extends Sequenced<LifecycleListener<S>>, B
 
     @NotNull
     Pointcut pointcut();
+
+    @NotNull
+    @Override
+    default Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("action", action()),
+                ExaminableProperty.of("pointcut", pointcut()),
+                ExaminableProperty.of("priority", priority())
+        );
+    }
 
     interface Builder<S> extends AbstractBuilder<LifecycleListener<S>> {
 

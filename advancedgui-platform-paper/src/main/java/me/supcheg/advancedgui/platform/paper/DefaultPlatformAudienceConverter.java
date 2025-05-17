@@ -11,7 +11,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class DefaultPlatformAudienceConverter implements PlatformAudienceConverter {
     private final String platformName;
-    private final Class<? extends Audience> requiredType;
 
     @NotNull
     @Override
@@ -19,7 +18,7 @@ public class DefaultPlatformAudienceConverter implements PlatformAudienceConvert
         Objects.requireNonNull(audience, "audience");
 
         if (!(audience instanceof CraftPlayer craftPlayer)) {
-            throw new UnsupportedAudienceException(platformName, audience.getClass(), requiredType);
+            throw new UnsupportedAudienceException(platformName, audience.getClass(), CraftPlayer.class);
         }
 
         return craftPlayer.getHandle();

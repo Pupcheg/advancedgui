@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreterEntry;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreterSource;
+import me.supcheg.advancedgui.api.loader.interpret.SimpleActionInterpretContextParser;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationOptions;
@@ -73,6 +74,10 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
             }
             default -> throw new IllegalArgumentException("Couldn't construct " + className);
         };
+
+        if (object instanceof SimpleActionInterpretContextParser<?> parser) {
+            SimpleActionInterpretContextParserReflection.setNameIfNotPresent(parser, name);
+        }
 
         @SuppressWarnings("unchecked")
         T cast = (T) object;

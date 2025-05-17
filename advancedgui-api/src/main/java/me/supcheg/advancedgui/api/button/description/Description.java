@@ -3,16 +3,19 @@ package me.supcheg.advancedgui.api.button.description;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import net.kyori.adventure.text.Component;
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static me.supcheg.advancedgui.api.util.CollectionUtil.makeNoNullsList;
 
-public interface Description extends Buildable<Description, Description.Builder> {
+public interface Description extends Examinable, Buildable<Description, Description.Builder> {
 
     @NotNull
     @Contract("-> new")
@@ -29,6 +32,14 @@ public interface Description extends Buildable<Description, Description.Builder>
     @NotNull
     @Unmodifiable
     List<Component> lines();
+
+    @NotNull
+    @Override
+    default Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("lines", lines())
+        );
+    }
 
     interface Builder extends AbstractBuilder<Description> {
 

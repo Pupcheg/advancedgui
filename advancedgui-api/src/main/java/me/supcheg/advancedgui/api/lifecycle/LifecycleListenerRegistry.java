@@ -3,16 +3,20 @@ package me.supcheg.advancedgui.api.lifecycle;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
-public interface LifecycleListenerRegistry<S> extends Buildable<LifecycleListenerRegistry<S>, LifecycleListenerRegistry.Builder<S>> {
+public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<LifecycleListenerRegistry<S>, LifecycleListenerRegistry.Builder<S>> {
 
     @NotNull
     @Contract("-> new")
@@ -37,6 +41,13 @@ public interface LifecycleListenerRegistry<S> extends Buildable<LifecycleListene
     @NotNull
     @Unmodifiable
     Map<Pointcut, SortedSet<LifecycleListener<S>>> listeners();
+
+    @Override
+    default @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("listeners", listeners().values().stream().flatMap(Collection::stream))
+        );
+    }
 
     interface Builder<S> extends AbstractBuilder<LifecycleListenerRegistry<S>> {
         @NotNull

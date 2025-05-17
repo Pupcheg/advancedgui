@@ -5,10 +5,20 @@ plugins {
 
 def minecraft_version = '1.21.4'
 
+configurations {
+    jarInclude {
+        canBeConsumed = false
+        canBeResolved = true
+    }
+}
+
 dependencies {
     implementation project(':advancedgui-api')
     implementation project(':advancedgui-api-loader')
     implementation project(':advancedgui-platform-paper')
+
+    jarInclude 'net.bytebuddy:byte-buddy:1.17.5'
+
     compileOnly "io.papermc.paper:paper-api:$minecraft_version-R0.1-SNAPSHOT"
 }
 
@@ -16,6 +26,11 @@ jar {
     from(project(':advancedgui-api').sourceSets.main.output)
     from(project(':advancedgui-api-loader').sourceSets.main.output)
     from(project(':advancedgui-platform-paper').sourceSets.main.output)
+
+    from {
+        duplicatesStrategy = DuplicatesStrategy.WARN
+        configurations.jarInclude.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 runServer {

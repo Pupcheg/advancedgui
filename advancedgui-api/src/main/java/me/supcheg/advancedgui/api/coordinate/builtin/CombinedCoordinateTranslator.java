@@ -1,33 +1,18 @@
 package me.supcheg.advancedgui.api.coordinate.builtin;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
-@EqualsAndHashCode
-@ToString
-final class CombinedCoordinateTranslator implements CoordinateTranslator {
-    private final String key;
-    private final PartitionCoordinateTranslator upper;
-    private final PartitionCoordinateTranslator lower;
-    private final PartitionCoordinateTranslator[] translators;
-
-    CombinedCoordinateTranslator(
-            @NotNull String key,
-            @NotNull PartitionCoordinateTranslator upper,
-            @NotNull PartitionCoordinateTranslator lower
-    ) {
-        this.key = key;
-        this.upper = upper;
-        this.lower = lower;
-        this.translators = new PartitionCoordinateTranslator[]{upper, lower};
-    }
-
+record CombinedCoordinateTranslator(
+        @NotNull Key key,
+        @NotNull PartitionCoordinateTranslator upper,
+        @NotNull PartitionCoordinateTranslator lower
+) implements CoordinateTranslator {
     @Override
     public boolean isInBounds(@NotNull Coordinate coordinate) {
         return upper.acceptable(coordinate) || lower.acceptable(coordinate);
@@ -40,22 +25,28 @@ final class CombinedCoordinateTranslator implements CoordinateTranslator {
 
     @Override
     public int toIndex(@NotNull Coordinate coordinate) {
-        for (PartitionCoordinateTranslator translator : translators) {
-            if (translator.acceptable(coordinate)) {
-                return translator.toIndex(coordinate);
-            }
+        if (upper.acceptable(coordinate)) {
+            return upper.toIndex(coordinate);
         }
+
+        if (lower.acceptable(coordinate)) {
+            return upper.slotsCount() + lower.toIndex(coordinate);
+        }
+
         throw indexOutOfBoundsException(coordinate);
     }
 
     @NotNull
     @Override
     public Coordinate toCoordinate(int index) {
-        for (PartitionCoordinateTranslator translator : translators) {
-            if (translator.acceptable(index)) {
-                return translator.toCoordinate(index);
-            }
+        if (upper.acceptable(index)) {
+            return upper.toCoordinate(index);
         }
+
+        if (lower.acceptable(index - upper.slotsCount())) {
+            return lower.toCoordinate(index - upper.slotsCount());
+        }
+
         throw indexOutOfBoundsException(index);
     }
 

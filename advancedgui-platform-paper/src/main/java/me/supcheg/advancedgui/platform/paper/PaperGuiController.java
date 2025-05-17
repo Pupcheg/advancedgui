@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 
 public interface PaperGuiController extends GuiController<PaperGuiController, PaperGuiController.Builder> {
@@ -27,7 +28,7 @@ public interface PaperGuiController extends GuiController<PaperGuiController, Pa
     Plugin plugin();
 
     @Override
-    void close();
+    void close() throws IOException;
 
     interface Builder extends GuiController.Builder<PaperGuiController, Builder> {
         @Nullable

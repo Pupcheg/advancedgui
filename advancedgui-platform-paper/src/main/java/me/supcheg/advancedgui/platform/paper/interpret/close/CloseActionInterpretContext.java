@@ -4,7 +4,6 @@ import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
-@ConfigSerializable
 record CloseActionInterpretContext(
         @NotNull CloseErrorStrategy errorStrategy
 ) implements ActionInterpretContext {

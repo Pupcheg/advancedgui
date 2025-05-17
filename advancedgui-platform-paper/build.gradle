@@ -5,7 +5,6 @@ plugins {
 dependencies {
     implementation project(':advancedgui-api')
     implementation project(':advancedgui-api-loader')
-    
     compileOnly "org.spongepowered:configurate-core:$configurate_version"
     compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
     paperweight.paperDevBundle '1.21.4-R0.1-SNAPSHOT'

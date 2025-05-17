@@ -11,6 +11,8 @@ import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import me.supcheg.advancedgui.api.util.CollectionUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,11 +21,12 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 import static me.supcheg.advancedgui.api.util.CollectionUtil.makeNoNullsList;
 
-public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
+public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
     @NotNull
     @Contract("-> new")
     static Builder button() {
@@ -59,6 +62,20 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
 
     default boolean hasAttribute(@NotNull ButtonAttribute attribute) {
         return attributes().contains(attribute);
+    }
+
+    @NotNull
+    @Override
+    default Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("coordinates", coordinates()),
+                ExaminableProperty.of("interactions", interactions()),
+                ExaminableProperty.of("texture", texture()),
+                ExaminableProperty.of("name", name()),
+                ExaminableProperty.of("description", description()),
+                ExaminableProperty.of("attributes", attributes()),
+                ExaminableProperty.of("lifecycleListenerRegistry", lifecycleListenerRegistry())
+        );
     }
 
     interface Builder extends AbstractBuilder<ButtonTemplate>, Lifecycled.Builder<Button, Builder> {

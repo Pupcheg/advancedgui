@@ -1,20 +1,11 @@
 package me.supcheg.advancedgui.platform.paper.interpret.close;
 
-import lombok.RequiredArgsConstructor;
-import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContextParser;
+import me.supcheg.advancedgui.api.loader.interpret.SimpleActionInterpretContextParser;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
-@RequiredArgsConstructor
-final class CloseActionInterpretContextParser implements ActionInterpretContextParser<CloseActionInterpretContext> {
-    private final String name;
-
-    @Override
-    public boolean isAcceptable(@NotNull ConfigurationNode node) {
-        return name.equals(ActionInterpretContextParser.parseType(node));
-    }
-
+final class CloseActionInterpretContextParser extends SimpleActionInterpretContextParser<CloseActionInterpretContext> {
     @NotNull
     @Override
     public CloseActionInterpretContext deserialize(@NotNull ConfigurationNode node) throws SerializationException {
@@ -22,7 +13,7 @@ final class CloseActionInterpretContextParser implements ActionInterpretContextP
             return CloseActionInterpretContext.DEFAULT;
         }
 
-        return node.require(CloseActionInterpretContext.class);
+        return super.deserialize(node);
     }
 
     @Override
@@ -32,6 +23,6 @@ final class CloseActionInterpretContextParser implements ActionInterpretContextP
             return;
         }
 
-        ActionInterpretContextParser.super.serialize(ctx, node);
+        super.serialize(ctx, node);
     }
 }

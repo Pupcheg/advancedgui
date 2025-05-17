@@ -9,6 +9,7 @@ import me.supcheg.advancedgui.platform.paper.util.AdvancedguiCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import static me.supcheg.advancedgui.api.component.guava.GuavaComponentRendererCacheProviders.guava;
@@ -53,6 +54,10 @@ public class TestPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        controller.close();
+        try {
+            controller.close();
+        } catch (IOException e) {
+            getSLF4JLogger().error("Failed to close paper gui controller", e);
+        }
     }
 }

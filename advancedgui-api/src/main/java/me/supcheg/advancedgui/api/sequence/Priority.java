@@ -1,10 +1,14 @@
 package me.supcheg.advancedgui.api.sequence;
 
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.stream.Stream;
 
 import static me.supcheg.advancedgui.api.sequence.PriorityImpl.priorityImpl;
 
-public sealed interface Priority extends Comparable<Priority> permits NamedPriority, PriorityImpl {
+public sealed interface Priority extends Examinable, Comparable<Priority> permits NamedPriority, PriorityImpl {
     @NotNull
     static Priority priority(int value) {
         Priority named = NamedPriorityImpl.byValue(value);
@@ -15,6 +19,14 @@ public sealed interface Priority extends Comparable<Priority> permits NamedPrior
     }
 
     int value();
+
+    @NotNull
+    @Override
+    default Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("value", value())
+        );
+    }
 
     @NotNull
     default Priority earlier(int value) {

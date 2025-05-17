@@ -1,6 +1,7 @@
 package me.supcheg.advancedgui.platform.paper;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import lombok.extern.slf4j.Slf4j;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.component.ComponentRenderContext;
 import me.supcheg.advancedgui.api.component.ComponentRenderers;
@@ -15,6 +16,8 @@ import me.supcheg.advancedgui.platform.paper.construct.GuiImplConstructor;
 import me.supcheg.advancedgui.platform.paper.construct.LayoutImplConstructor;
 import me.supcheg.advancedgui.platform.paper.construct.TemplateConstructor;
 import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
+import me.supcheg.advancedgui.platform.paper.network.NetworkInjection;
+import me.supcheg.advancedgui.platform.paper.network.NmsNetworkInjection;
 import me.supcheg.advancedgui.platform.paper.render.DefaultBackgroundComponentRenderer;
 import me.supcheg.advancedgui.platform.paper.render.DefaultButtonItemStackRenderer;
 import me.supcheg.advancedgui.platform.paper.render.DefaultLayoutNonNullListItemStackRenderer;
@@ -24,14 +27,16 @@ import me.supcheg.advancedgui.platform.paper.view.DefaultGuiViewer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.util.Ticks;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -39,6 +44,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 final class PaperGuiControllerImpl implements PaperGuiController {
     private static final PointcutSupport POINTCUT_SUPPORT = PointcutSupport.pointcutSupport(
             pointcutSupport -> pointcutSupport
@@ -66,6 +72,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
     private final Map<Key, GuiImpl> registry;
     private final Map<Key, Gui> unmodifiableRegistryView;
     private final TemplateConstructor<GuiTemplate, GuiImpl> guiConstructor;
+    private final NetworkInjection networkInjection;
     private final ScheduledTask tickTask;
 
     PaperGuiControllerImpl(
@@ -81,14 +88,30 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         Renderer<Button, ItemStack> buttonItemStackRenderer = new DefaultButtonItemStackRenderer();
 
         DefaultGuiViewer guiViewer = new DefaultGuiViewer(
-                new DefaultPlatformAudienceConverter(Bukkit.getName(), CraftPlayer.class),
+                new DefaultPlatformAudienceConverter(Bukkit.getName()),
                 new DefaultBackgroundComponentRenderer(
                         new DefaultBackgroundImageMetaLookup()
                 ),
                 new DefaultLayoutNonNullListItemStackRenderer(
                         buttonItemStackRenderer
                 ),
-                buttonItemStackRenderer
+                buttonItemStackRenderer,
+                new NetworkInjection() {
+                    @Override
+                    public void inject(ServerPlayer player) {
+                        PaperGuiControllerImpl.this.networkInjection.inject(player);
+                    }
+
+                    @Override
+                    public void uninject(ServerPlayer player) {
+                        PaperGuiControllerImpl.this.networkInjection.uninject(player);
+                    }
+
+                    @Override
+                    public void close() throws IOException {
+                        PaperGuiControllerImpl.this.networkInjection.close();
+                    }
+                }
         );
 
         this.guiConstructor = new GuiImplConstructor(
@@ -97,6 +120,9 @@ final class PaperGuiControllerImpl implements PaperGuiController {
                 ),
                 guiViewer
         );
+
+        this.networkInjection = new NmsNetworkInjection(guiViewer);
+
         this.tickTask = startTicking();
     }
 
@@ -166,13 +192,24 @@ final class PaperGuiControllerImpl implements PaperGuiController {
 
     private void tick(@NotNull ScheduledTask task) {
         for (GuiImpl gui : registry.values()) {
-            gui.tick();
+            try {
+                gui.tick();
+            } catch (Exception e) {
+                log.error("An error occurred while ticking {}", gui, e);
+            }
         }
     }
 
     @Override
-    public void close() {
-        tickTask.cancel();
+    public void close() throws IOException {
+        Closeable tickTaskCloseable = tickTask::cancel;
+
+        try (
+                tickTaskCloseable;
+                networkInjection
+        ) {
+            // this try-with-resources will generate safe close for each Closeable
+        }
     }
 
     @NotNull

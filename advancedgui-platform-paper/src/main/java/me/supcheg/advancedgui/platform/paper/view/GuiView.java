@@ -19,12 +19,25 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class GuiView {
+    private final DefaultGuiViewer viewer;
     private final GuiImpl gui;
     private final ServerPlayer serverPlayer;
     private final Renderer<Background, Component> backgroundComponentRenderer;
     private final Renderer<LayoutImpl<?>, NonNullList<ItemStack>> layoutNonNullListRenderer;
     private final Renderer<Button, ItemStack> buttonItemStackRenderer;
     private final ContainerState containerState;
+
+    public GuiImpl gui() {
+        return gui;
+    }
+
+    public ServerPlayer serverPlayer() {
+        return serverPlayer;
+    }
+
+    public ContainerState containerState() {
+        return containerState;
+    }
 
     public void sendFull() {
         send(backgroundPacket());
@@ -37,6 +50,10 @@ public class GuiView {
 
     public void sendSlot(@NotNull Coordinate coordinate) {
         send(slotPacket(coordinate));
+    }
+
+    public void sendSlot(int index) {
+        send(slotPacket(index));
     }
 
     public void sendEmptyCursor() {
@@ -68,14 +85,25 @@ public class GuiView {
 
     @NotNull
     private Packet<?> slotPacket(@NotNull Coordinate coordinate) {
-        int slot = gui.layout().coordinateTranslator().toIndex(coordinate);
-        Button button = gui.layout().buttonAt(coordinate);
-
         return new ClientboundContainerSetSlotPacket(
                 containerState.containerId(),
                 containerState.nextStateId(),
-                slot,
-                button == null ? ItemStack.EMPTY : buttonItemStackRenderer.render(button)
+                gui.layout().coordinateTranslator().toIndex(coordinate),
+                gui.layout().buttonAt(coordinate)
+                        .map(buttonItemStackRenderer::render)
+                        .orElse(ItemStack.EMPTY)
+        );
+    }
+
+    @NotNull
+    private Packet<?> slotPacket(int index) {
+        return new ClientboundContainerSetSlotPacket(
+                containerState.containerId(),
+                containerState.nextStateId(),
+                index,
+                gui.layout().buttonAt(index)
+                        .map(buttonItemStackRenderer::render)
+                        .orElse(ItemStack.EMPTY)
         );
     }
 
@@ -87,5 +115,13 @@ public class GuiView {
                 -1,
                 ItemStack.EMPTY
         );
+    }
+
+    public void handleRemove() {
+        viewer.remove(this);
+    }
+
+    public void handleClose() {
+
     }
 }

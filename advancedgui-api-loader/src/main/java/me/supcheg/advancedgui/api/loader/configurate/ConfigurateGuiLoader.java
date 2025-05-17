@@ -90,7 +90,7 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
     }
 
     @NotNull
-    private static TypeSerializerCollection makeSerializers(@NotNull TypeSerializerCollection root) {
+    public static TypeSerializerCollection makeSerializers(@NotNull TypeSerializerCollection root) {
         ObjectMapper.Factory objectFactory = ObjectMapper.factory();
 
         return root.childBuilder()

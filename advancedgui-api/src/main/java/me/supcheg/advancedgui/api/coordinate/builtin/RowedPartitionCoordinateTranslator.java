@@ -19,6 +19,10 @@ final class RowedPartitionCoordinateTranslator implements PartitionCoordinateTra
     private final int startIndex;
     private final int endIndex;
 
+    RowedPartitionCoordinateTranslator(int count) {
+        this(0, count);
+    }
+
     RowedPartitionCoordinateTranslator(
             int start,
             int count
@@ -62,7 +66,7 @@ final class RowedPartitionCoordinateTranslator implements PartitionCoordinateTra
     @NotNull
     @Override
     public Stream<Coordinate> availableCoordinates() {
-       return IntStream.range(startIndex, endIndex)
+        return IntStream.range(startIndex, endIndex)
                 .mapToObj(this::toCoordinate);
     }
 

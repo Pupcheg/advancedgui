@@ -5,12 +5,14 @@ import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslators;
 import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
+import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.SortedSet;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayout, AnvilLayoutTemplate, AnvilLayoutTemplate.Builder> {
 
@@ -34,6 +36,17 @@ public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayo
     @Override
     default CoordinateTranslator coordinateTranslator() {
         return CoordinateTranslators.anvilCoordinateTranslator();
+    }
+
+    @NotNull
+    @Override
+    default Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.concat(
+                Stream.of(
+                        ExaminableProperty.of("inputUpdateListeners", inputUpdateListeners())
+                ),
+                LayoutTemplate.super.examinableProperties()
+        );
     }
 
     interface Builder extends LayoutTemplate.Builder<AnvilLayout, AnvilLayoutTemplate, Builder> {

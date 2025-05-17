@@ -22,7 +22,8 @@ public class GuiImplConstructor implements TemplateConstructor<GuiTemplate, GuiI
                 template.background(),
                 layoutConstructor.construct(template.layout()),
                 template.lifecycleListenerRegistry(),
-                guiViewer
+                guiViewer,
+                template
         );
         gui.handleEachLifecycleAction(ObjectPointcut.objectConstructPointcut());
         return gui;

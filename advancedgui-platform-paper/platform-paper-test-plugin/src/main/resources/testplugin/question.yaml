@@ -2,7 +2,7 @@ key: 'testplugin:root'
 layout:
   type: 'anvil'
   buttons:
-    - coordinates: [ [ 0, 0 ], [ 1, 5 ] ]
+    - coordinates: [ [ 0, 0 ], [ 5, 1 ] ]
       texture: 'minecraft:paper'
       name: '<bold>Hi!'
       description:
@@ -11,6 +11,12 @@ layout:
           - 'eEe'
       attributes:
         - 'glowing'
+      interactions:
+        - priority: 'normal'
+          action:
+            type: 'send'
+            content: 'no'
+            target: 'chat'
 background:
   locations:
     - 'advancedgui:test/background'

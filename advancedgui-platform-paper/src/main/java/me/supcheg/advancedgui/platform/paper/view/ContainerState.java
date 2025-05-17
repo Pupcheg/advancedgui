@@ -24,6 +24,10 @@ public class ContainerState {
         return containerId;
     }
 
+    public int stateId() {
+        return stateId;
+    }
+
     public int nextStateId() {
         return stateId++;
     }

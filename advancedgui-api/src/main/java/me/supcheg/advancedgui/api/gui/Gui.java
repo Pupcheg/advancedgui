@@ -1,6 +1,7 @@
 package me.supcheg.advancedgui.api.gui;
 
 import me.supcheg.advancedgui.api.gui.background.Background;
+import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import net.kyori.adventure.audience.Audience;
@@ -21,4 +22,7 @@ public interface Gui extends Keyed, Lifecycled<Gui> {
     Layout<?> layout();
 
     void open(@NotNull Audience audience);
+
+    @NotNull
+    GuiTemplate source();
 }

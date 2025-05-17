@@ -2,11 +2,15 @@ package me.supcheg.advancedgui.api.coordinate;
 
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface Coordinate extends Buildable<Coordinate, Coordinate.Builder> {
+import java.util.stream.Stream;
+
+public interface Coordinate extends Examinable, Buildable<Coordinate, Coordinate.Builder> {
     @NotNull
     @Contract(value = "-> new", pure = true)
     static Builder coordinate() {
@@ -22,6 +26,15 @@ public interface Coordinate extends Buildable<Coordinate, Coordinate.Builder> {
     int x();
 
     int y();
+
+    @NotNull
+    @Override
+    default Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("x", x()),
+                ExaminableProperty.of("y", y())
+        );
+    }
 
     interface Builder extends AbstractBuilder<Coordinate> {
         @Nullable
