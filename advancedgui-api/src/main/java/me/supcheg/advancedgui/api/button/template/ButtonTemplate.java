@@ -18,8 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -45,7 +45,7 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
 
     @NotNull
     @Unmodifiable
-    SortedSet<ButtonInteraction> interactions();
+    Queue<ButtonInteraction> interactions();
 
     @NotNull
     Key texture();
@@ -120,10 +120,10 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
 
         @NotNull
         @Contract("_ -> this")
-        Builder interactions(@NotNull SortedSet<ButtonInteraction> interactions);
+        Builder interactions(@NotNull Queue<ButtonInteraction> interactions);
 
         @NotNull
-        SortedSet<ButtonInteraction> interactions();
+        Queue<ButtonInteraction> interactions();
 
         @NotNull
         @Contract("_ -> this")

@@ -9,13 +9,13 @@ import me.supcheg.advancedgui.api.loader.interpret.SimpleActionInterpretContextP
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationOptions;
-import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Stream;
@@ -27,7 +27,7 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
     private final ClassLoader classLoader;
     private final ConfigurationOptions configurationOptions = ConfigurationOptions.defaults()
             .serializers(serializers -> serializers
-                    .registerAnnotatedObjects(ObjectMapper.factory())
+                    .register(RawActionInterpreterEntry.class, ObjectMapper.factory().asTypeSerializer())
             );
 
 
@@ -37,12 +37,12 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
         return classLoader.resources(INTERPRETERS_FILE)
                 .map(this::parseInterpreters)
                 .<RawActionInterpreterEntry>mapMulti(Iterable::forEach)
-                .map(this::parseRawActionInterpreterEntry);
+                .map(YamlClasspathActionInterpreterSource::parseRawActionInterpreterEntry);
     }
 
     @NotNull
     @Contract("_ -> new")
-    private ActionInterpreterEntry<?> parseRawActionInterpreterEntry(RawActionInterpreterEntry raw) {
+    private static ActionInterpreterEntry<?> parseRawActionInterpreterEntry(@NotNull RawActionInterpreterEntry raw) {
         String name = raw.name();
         return new ActionInterpreterEntry<>(
                 name,
@@ -53,39 +53,54 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
 
     @SneakyThrows
     @NotNull
-    private <T> T constructInstance(@NotNull String className, @NotNull String name) {
-        Constructor<?>[] constructors = Class.forName(className).getDeclaredConstructors();
+    private static <T> T constructInstance(@NotNull String classname, @NotNull String typename) {
+        Object instance = constructInstance(Class.forName(classname), typename);
+
+        if (instance instanceof SimpleActionInterpretContextParser<?> parser) {
+            SimpleActionInterpretContextParserReflection.setNameIfNotPresent(parser, typename);
+        }
+
+        @SuppressWarnings("unchecked")
+        T cast = (T) instance;
+        return cast;
+    }
+
+    @NotNull
+    private static Object constructInstance(@NotNull Class<?> clazz, @NotNull Object additionalParameter)
+            throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 
         if (constructors.length != 1) {
-            throw new IllegalArgumentException("Couldn't construct " + className);
+            throw new IllegalArgumentException(
+                    "Couldn't construct " + clazz + ". " +
+                    "Must have exactly one constructor."
+            );
         }
 
         Constructor<?> constructor = constructors[0];
         constructor.setAccessible(true);
 
-        Object object = switch (constructor.getParameterCount()) {
+        return switch (constructor.getParameterCount()) {
             case 0 -> constructor.newInstance();
             case 1 -> {
                 Class<?> parameterType = constructor.getParameterTypes()[0];
-                if (!parameterType.isInstance(name)) {
-                    throw new IllegalArgumentException("Couldn't construct " + className);
+                if (!parameterType.isInstance(additionalParameter)) {
+                    throw new IllegalArgumentException(
+                            "Couldn't construct " + clazz + ". " +
+                            "Must have exactly one parameter of type " + parameterType + "."
+                    );
                 }
-                yield constructor.newInstance(name);
+                yield constructor.newInstance(additionalParameter);
             }
-            default -> throw new IllegalArgumentException("Couldn't construct " + className);
+            default -> throw new IllegalArgumentException(
+                    "Couldn't construct " + clazz + ". " +
+                    "Must have exactly one parameter."
+            );
         };
-
-        if (object instanceof SimpleActionInterpretContextParser<?> parser) {
-            SimpleActionInterpretContextParserReflection.setNameIfNotPresent(parser, name);
-        }
-
-        @SuppressWarnings("unchecked")
-        T cast = (T) object;
-        return cast;
     }
 
     @SneakyThrows
-    private List<RawActionInterpreterEntry> parseInterpreters(URL url) {
+    private List<RawActionInterpreterEntry> parseInterpreters(@NotNull URL url) {
         return YamlConfigurationLoader.builder()
                 .defaultOptions(configurationOptions)
                 .source(() -> new BufferedReader(new InputStreamReader(url.openStream())))
@@ -95,7 +110,6 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
                 });
     }
 
-    @ConfigSerializable
     private record RawActionInterpreterEntry(
             @NotNull String name,
             @NotNull String interpreter,

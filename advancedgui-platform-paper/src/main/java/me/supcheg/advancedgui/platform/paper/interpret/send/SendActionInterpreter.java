@@ -2,8 +2,8 @@ package me.supcheg.advancedgui.platform.paper.interpret.send;
 
 import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.action.AudienceActionContext;
+import me.supcheg.advancedgui.api.audience.GuiAudience;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreter;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,12 +21,12 @@ final class SendActionInterpreter implements ActionInterpreter<SendActionInterpr
     SendActionInterpreter() {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-        MethodHandle audienceFromActionContext = lookup.findVirtual(AudienceActionContext.class, "audience", methodType(Audience.class));
+        MethodHandle audienceFromActionContext = lookup.findVirtual(AudienceActionContext.class, "audience", methodType(GuiAudience.class));
 
-        MethodHandle audienceSendMessage = lookup.findVirtual(Audience.class, "sendMessage", methodType(void.class, Component.class));
+        MethodHandle audienceSendMessage = lookup.findVirtual(GuiAudience.class, "sendMessage", methodType(void.class, Component.class));
         this.chat = MethodHandles.filterArguments(audienceSendMessage, 0, audienceFromActionContext);
 
-        MethodHandle audienceSendActionBar = lookup.findVirtual(Audience.class, "sendActionBar", methodType(void.class, Component.class));
+        MethodHandle audienceSendActionBar = lookup.findVirtual(GuiAudience.class, "sendActionBar", methodType(void.class, Component.class));
         this.actionBar = MethodHandles.filterArguments(audienceSendActionBar, 0, audienceFromActionContext);
     }
 

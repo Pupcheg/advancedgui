@@ -20,7 +20,7 @@ import me.supcheg.advancedgui.api.loader.configurate.serializer.coordinate.Coord
 import me.supcheg.advancedgui.api.loader.configurate.serializer.layout.LayoutTemplateTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.LifecycleListenerRegistryTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PriorityTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.SequencedSortedSetTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.QueueTypeSerializer;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
@@ -104,8 +104,8 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
                         )
                 )
                 .register(
-                        SequencedSortedSetTypeSerializer::isSequencedSortedSet,
-                        new SequencedSortedSetTypeSerializer()
+                        QueueTypeSerializer::isQueue,
+                        new QueueTypeSerializer()
                 )
                 .register(
                         LayoutTemplateTypeSerializer::isExactLayoutTemplate,

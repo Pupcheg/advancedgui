@@ -2,15 +2,14 @@ package me.supcheg.advancedgui.platform.paper.network;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
-import lombok.extern.slf4j.Slf4j;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
-import me.supcheg.advancedgui.api.button.interaction.ButtonInteractionContext;
-import me.supcheg.advancedgui.api.button.interaction.ButtonInteractionType;
-import me.supcheg.advancedgui.api.gui.Gui;
+import me.supcheg.advancedgui.platform.paper.button.PaperPlatformButtonInteractionContextAdapter;
+import me.supcheg.advancedgui.platform.paper.gui.ButtonImpl;
 import me.supcheg.advancedgui.platform.paper.view.GuiView;
 import me.supcheg.advancedgui.platform.paper.view.GuiViewLookup;
-import net.kyori.adventure.audience.Audience;
+import net.minecraft.network.HandlerNames;
+import net.minecraft.network.protocol.game.GamePacketTypes;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.server.MinecraftServer;
@@ -23,10 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Slf4j
 public class NmsNetworkInjection implements NetworkInjection {
-    private static final String VANILLA_CHANNEL_NAME = "packet_handler";
-
     private final PacketHandlerRegistry handlers;
     private final GuiViewLookup lookup;
     private final ExecutorService packetHandlerExecutor;
@@ -35,20 +31,20 @@ public class NmsNetworkInjection implements NetworkInjection {
         this.handlers = new PacketHandlerRegistry();
         this.packetHandlerExecutor = Executors.newSingleThreadExecutor();
 
-        handlers.registerPacketHandler(ServerboundContainerClickPacket.class, this::handleContainerClick);
-        handlers.registerPacketHandler(ServerboundContainerClosePacket.class, this::handleContainerClose);
+        handlers.registerPacketHandler(GamePacketTypes.SERVERBOUND_CONTAINER_CLICK, this::handleContainerClick);
+        handlers.registerPacketHandler(GamePacketTypes.SERVERBOUND_CONTAINER_CLOSE, this::handleContainerClose);
 
         this.lookup = lookup;
     }
 
     private void handleContainerClose(ServerPlayer subject, GuiView view, ServerboundContainerClosePacket packet) {
-        view.handleRemove();
+        view.handleClose();
     }
 
     private void handleContainerClick(ServerPlayer subject, GuiView view, ServerboundContainerClickPacket packet) {
         int index = packet.getSlotNum();
 
-        if (index == -999) {
+        if (index < 0) {
             return;
         }
 
@@ -58,29 +54,17 @@ public class NmsNetworkInjection implements NetworkInjection {
             return;
         }
 
-        Button button = optionalButton.get();
+        ButtonImpl button = (ButtonImpl) optionalButton.get();
 
-        ButtonInteractionContext ctx = new ButtonInteractionContext() {
-            @Override
-            public @NotNull Gui gui() {
-                return view.gui();
-            }
+        view.sendButton(button);
+        view.sendEmptyCursor();
 
-            @Override
-            public @NotNull Button button() {
-                return button;
-            }
-
-            @Override
-            public @NotNull ButtonInteractionType interactionType() {
-                return ButtonInteractionType.LEFT_CLICK;
-            }
-
-            @Override
-            public @NotNull Audience audience() {
-                return subject.getBukkitEntity();
-            }
-        };
+        var ctx = new PaperPlatformButtonInteractionContextAdapter(
+                view,
+                button,
+                packet.getClickType(),
+                packet.getButtonNum()
+        );
 
         for (ButtonInteraction interaction : button.interactions()) {
             interaction.action().handleButtonInteraction(ctx);
@@ -88,7 +72,7 @@ public class NmsNetworkInjection implements NetworkInjection {
     }
 
     @Override
-    public void inject(ServerPlayer player) {
+    public void inject(@NotNull ServerPlayer player) {
         ChannelPipeline pipeline = pipeline(player);
 
         if (pipeline.get(AdvancedGuiChannelInboundHandler.NAME) != null) {
@@ -96,14 +80,14 @@ public class NmsNetworkInjection implements NetworkInjection {
         }
 
         pipeline.addBefore(
-                VANILLA_CHANNEL_NAME,
+                HandlerNames.PACKET_HANDLER,
                 AdvancedGuiChannelInboundHandler.NAME,
                 new AdvancedGuiChannelInboundHandler(player, handlers, lookup, packetHandlerExecutor)
         );
     }
 
     @Override
-    public void uninject(ServerPlayer player) {
+    public void uninject(@NotNull ServerPlayer player) {
         ChannelPipeline pipeline = pipeline(player);
         ChannelHandler channelHandler = pipeline.get(AdvancedGuiChannelInboundHandler.NAME);
         if (channelHandler != null) {
@@ -111,7 +95,8 @@ public class NmsNetworkInjection implements NetworkInjection {
         }
     }
 
-    private static ChannelPipeline pipeline(ServerPlayer serverPlayer) {
+    @NotNull
+    private static ChannelPipeline pipeline(@NotNull ServerPlayer serverPlayer) {
         return serverPlayer.connection.connection.channel.pipeline();
     }
 

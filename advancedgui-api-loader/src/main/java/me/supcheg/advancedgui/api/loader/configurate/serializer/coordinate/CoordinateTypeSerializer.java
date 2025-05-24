@@ -22,6 +22,11 @@ public final class CoordinateTypeSerializer implements TypeSerializer<Coordinate
         } else if (node.isMap()) {
             x = node.node("x").getInt();
             y = node.node("y").getInt();
+        } else if (node.rawScalar() instanceof String str) {
+            int separatorIndex = str.indexOf(':');
+
+            x = Integer.parseInt(str.substring(0, separatorIndex));
+            y = Integer.parseInt(str.substring(separatorIndex + 1));
         } else {
             throw new SerializationException("Invalid type for coordinate");
         }
@@ -35,6 +40,6 @@ public final class CoordinateTypeSerializer implements TypeSerializer<Coordinate
             node.set(null);
             return;
         }
-        node.setList(Integer.class, List.of(obj.x(), obj.y()));
+        node.set(obj.x() + ":" + obj.y());
     }
 }

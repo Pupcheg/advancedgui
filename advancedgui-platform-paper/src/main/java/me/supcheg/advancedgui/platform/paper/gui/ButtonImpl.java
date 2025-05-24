@@ -11,15 +11,16 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
 
 import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTickPointcut;
 import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.beforeTickPointcut;
 
 public record ButtonImpl(
         @NotNull Coordinate coordinate,
-        @NotNull SortedSet<ButtonInteraction> interactions,
+        @NotNull Queue<ButtonInteraction> interactions,
         @NotNull Key texture,
         @NotNull Component name,
         @NotNull Description description,

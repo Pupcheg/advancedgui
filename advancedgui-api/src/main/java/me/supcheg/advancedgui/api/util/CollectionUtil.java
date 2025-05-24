@@ -2,26 +2,104 @@ package me.supcheg.advancedgui.api.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.AbstractList;
+import java.util.AbstractQueue;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CollectionUtil {
 
     @NotNull
-    public static <E> SortedSet<E> copyOf(@NotNull SortedSet<? extends E> original) {
+    @Unmodifiable
+    public static <E> Queue<E> copyOf(@NotNull Queue<? extends E> original) {
         return original.isEmpty() ?
-                Collections.emptySortedSet() :
-                Collections.unmodifiableSortedSet(new TreeSet<E>(original));
+                emptyQueue() :
+                unmodifiableQueue(new PriorityQueue<>(original));
+    }
+
+    @NotNull
+    @UnmodifiableView
+    public static <E> Queue<E> unmodifiableQueue(@NotNull Queue<? extends E> original) {
+        return (Queue<E>) (original instanceof UnmodifiableQueue<? extends E> ? original : new UnmodifiableQueue<>(original));
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static class UnmodifiableQueue<E> extends AbstractQueue<E> {
+        private final Queue<E> delegate;
+
+        @NotNull
+        @Override
+        public Iterator<E> iterator() {
+            return delegate.iterator();
+        }
+
+        @Override
+        public int size() {
+            return delegate.size();
+        }
+
+        @Override
+        public boolean offer(E t) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public E poll() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public E peek() {
+            return delegate.peek();
+        }
+    }
+
+    @NotNull
+    @Unmodifiable
+    public static <E> Queue<E> emptyQueue() {
+        return (Queue<E>) EmptyQueue.INSTANCE;
+    }
+
+    private static class EmptyQueue extends AbstractQueue<Object> {
+        private static final EmptyQueue INSTANCE = new EmptyQueue();
+
+        @NotNull
+        @Override
+        public Iterator<Object> iterator() {
+            return Collections.emptyIterator();
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public boolean offer(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Object poll() {
+            return null;
+        }
+
+        @Override
+        public Object peek() {
+            return null;
+        }
     }
 
     @SafeVarargs

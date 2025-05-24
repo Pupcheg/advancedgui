@@ -1,9 +1,9 @@
 package me.supcheg.advancedgui.api.action;
 
-import net.kyori.adventure.audience.Audience;
+import me.supcheg.advancedgui.api.audience.GuiAudience;
 import org.jetbrains.annotations.NotNull;
 
 public interface AudienceActionContext extends ActionContext {
     @NotNull
-    Audience audience();
+    GuiAudience audience();
 }

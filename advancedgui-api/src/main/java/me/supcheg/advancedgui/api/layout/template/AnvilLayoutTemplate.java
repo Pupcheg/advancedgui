@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.SortedSet;
+import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -30,7 +30,7 @@ public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayo
 
     @NotNull
     @Unmodifiable
-    SortedSet<InputUpdateListener> inputUpdateListeners();
+    Queue<InputUpdateListener> inputUpdateListeners();
 
     @NotNull
     @Override
@@ -68,9 +68,9 @@ public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayo
         }
 
         @NotNull
-        Builder inputUpdateListeners(@NotNull SortedSet<InputUpdateListener> inputUpdateListeners);
+        Builder inputUpdateListeners(@NotNull Queue<InputUpdateListener> inputUpdateListeners);
 
         @NotNull
-        SortedSet<InputUpdateListener> inputUpdateListeners();
+        Queue<InputUpdateListener> inputUpdateListeners();
     }
 }

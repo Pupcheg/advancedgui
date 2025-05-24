@@ -1,20 +1,21 @@
 package me.supcheg.advancedgui.platform.paper.network;
 
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.PacketType;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 class PacketHandlerRegistry implements PacketHandlerLookup {
-    private final Map<Class<?>, PacketHandler<?>> handlers = new HashMap<>();
+    private final Map<PacketType<?>, PacketHandler<?>> handlers = new HashMap<>();
 
-    <T extends Packet<?>> void registerPacketHandler(Class<T> type, PacketHandler<T> handler) {
+    <T extends Packet<?>> void registerPacketHandler(PacketType<T> type, PacketHandler<T> handler) {
         handlers.put(type, handler);
     }
 
     @Override
-    public <T extends Packet<?>> Optional<PacketHandler<T>> findPacketHandler(Class<T> type) {
+    public <T extends Packet<?>> Optional<PacketHandler<T>> findPacketHandler(PacketType<T> type) {
         return Optional.ofNullable((PacketHandler<T>) handlers.get(type));
     }
 }

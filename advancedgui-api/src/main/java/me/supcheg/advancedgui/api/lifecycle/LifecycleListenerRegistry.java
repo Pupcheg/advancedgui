@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -36,11 +36,11 @@ public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<Life
 
     @NotNull
     @Unmodifiable
-    SortedSet<LifecycleListener<S>> listeners(@NotNull Pointcut pointcut);
+    Queue<LifecycleListener<S>> listeners(@NotNull Pointcut pointcut);
 
     @NotNull
     @Unmodifiable
-    Map<Pointcut, SortedSet<LifecycleListener<S>>> listeners();
+    Map<Pointcut, Queue<LifecycleListener<S>>> listeners();
 
     @Override
     default @NotNull Stream<? extends ExaminableProperty> examinableProperties() {

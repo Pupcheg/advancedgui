@@ -10,9 +10,11 @@ import me.supcheg.advancedgui.platform.paper.render.Renderer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +28,8 @@ public class GuiView {
     private final Renderer<LayoutImpl<?>, NonNullList<ItemStack>> layoutNonNullListRenderer;
     private final Renderer<Button, ItemStack> buttonItemStackRenderer;
     private final ContainerState containerState;
+
+    private boolean closed;
 
     public GuiImpl gui() {
         return gui;
@@ -56,11 +60,23 @@ public class GuiView {
         send(slotPacket(index));
     }
 
+    public void sendButton(@NotNull Button button) {
+        send(slotPacket(button));
+    }
+
     public void sendEmptyCursor() {
         send(emptyCursorPacket());
     }
 
+    public void sendClose() {
+        send(closePacket());
+    }
+
     private void send(@NotNull Packet<?> packet) {
+        if (closed) {
+            throw new IllegalStateException("GuiView is closed");
+        }
+
         serverPlayer.connection.send(packet);
     }
 
@@ -108,20 +124,33 @@ public class GuiView {
     }
 
     @NotNull
-    private Packet<?> emptyCursorPacket() {
+    private Packet<?> slotPacket(@NotNull Button button) {
         return new ClientboundContainerSetSlotPacket(
                 containerState.containerId(),
                 containerState.nextStateId(),
-                -1,
-                ItemStack.EMPTY
+                gui.layout().coordinateTranslator().toIndex(button.coordinate()),
+                buttonItemStackRenderer.render(button)
         );
     }
 
+    @NotNull
+    private Packet<?> emptyCursorPacket() {
+        return new ClientboundSetCursorItemPacket(ItemStack.EMPTY);
+    }
+
+    @NotNull
+    private Packet<?> closePacket() {
+        return new ClientboundContainerClosePacket(containerState.containerId());
+    }
+
     public void handleRemove() {
-        viewer.remove(this);
     }
 
     public void handleClose() {
-
+        if (closed) {
+            return;
+        }
+        closed = true;
+        viewer.remove(this);
     }
 }

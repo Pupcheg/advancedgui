@@ -14,13 +14,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 record ButtonTemplateImpl(
         @NotNull Set<Coordinate> coordinates,
-        @NotNull SortedSet<ButtonInteraction> interactions,
+        @NotNull Queue<ButtonInteraction> interactions,
         @NotNull Key texture,
         @NotNull Component name,
         @NotNull Description description,
@@ -35,7 +35,7 @@ record ButtonTemplateImpl(
 
     static final class BuilderImpl implements ButtonTemplate.Builder {
         private final Set<Coordinate> coordinates;
-        private final SortedSet<ButtonInteraction> interactions;
+        private final Queue<ButtonInteraction> interactions;
         private final Set<ButtonAttribute> attributes;
         private Key texture;
         private Component name;
@@ -44,13 +44,13 @@ record ButtonTemplateImpl(
 
         BuilderImpl() {
             this.coordinates = new HashSet<>();
-            this.interactions = new TreeSet<>();
+            this.interactions = new PriorityQueue<>();
             this.attributes = new HashSet<>();
         }
 
         BuilderImpl(@NotNull ButtonTemplateImpl impl) {
             this.coordinates = new HashSet<>(impl.coordinates);
-            this.interactions = new TreeSet<>(impl.interactions);
+            this.interactions = new PriorityQueue<>(impl.interactions);
             this.attributes = new HashSet<>(impl.attributes);
             this.texture = impl.texture;
             this.name = impl.name;
@@ -98,7 +98,7 @@ record ButtonTemplateImpl(
 
         @NotNull
         @Override
-        public Builder interactions(@NotNull SortedSet<ButtonInteraction> interactions) {
+        public Builder interactions(@NotNull Queue<ButtonInteraction> interactions) {
             Objects.requireNonNull(interactions, "interactions");
             this.interactions.clear();
             this.interactions.addAll(interactions);
@@ -107,7 +107,7 @@ record ButtonTemplateImpl(
 
         @NotNull
         @Override
-        public SortedSet<ButtonInteraction> interactions() {
+        public Queue<ButtonInteraction> interactions() {
             return interactions;
         }
 

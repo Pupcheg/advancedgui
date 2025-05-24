@@ -1,17 +1,17 @@
 package me.supcheg.advancedgui.api.lifecycle;
 
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
+import me.supcheg.advancedgui.api.util.CollectionUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toCollection;
 
 public record LifecycleListenerRegistryImpl<S>(
-        @NotNull Map<Pointcut, SortedSet<LifecycleListener<S>>> listeners
+        @NotNull Map<Pointcut, Queue<LifecycleListener<S>>> listeners
 ) implements LifecycleListenerRegistry<S> {
     @NotNull
     @Override
@@ -29,8 +29,8 @@ public record LifecycleListenerRegistryImpl<S>(
 
     @NotNull
     @Override
-    public SortedSet<LifecycleListener<S>> listeners(@NotNull Pointcut pointcut) {
-        return listeners.getOrDefault(pointcut, Collections.emptySortedSet());
+    public Queue<LifecycleListener<S>> listeners(@NotNull Pointcut pointcut) {
+        return listeners.getOrDefault(pointcut, CollectionUtil.emptyQueue());
     }
 
     @NotNull
@@ -71,8 +71,8 @@ public record LifecycleListenerRegistryImpl<S>(
                                             LifecycleListener::pointcut,
                                             HashMap::new,
                                             collectingAndThen(
-                                                    toCollection(TreeSet::new),
-                                                    Collections::unmodifiableSortedSet
+                                                    toCollection(PriorityQueue::new),
+                                                    CollectionUtil::unmodifiableQueue
                                             )
                                     )
                             )

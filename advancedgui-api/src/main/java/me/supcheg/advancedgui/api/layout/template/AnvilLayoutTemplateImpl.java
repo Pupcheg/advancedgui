@@ -10,12 +10,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 record AnvilLayoutTemplateImpl(
-        @NotNull SortedSet<InputUpdateListener> inputUpdateListeners,
+        @NotNull Queue<InputUpdateListener> inputUpdateListeners,
         @NotNull Set<ButtonTemplate> buttons,
         @NotNull LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry
 ) implements AnvilLayoutTemplate {
@@ -26,18 +26,18 @@ record AnvilLayoutTemplateImpl(
     }
 
     static class BuilderImpl implements Builder {
-        private final SortedSet<InputUpdateListener> inputUpdateListeners;
+        private final Queue<InputUpdateListener> inputUpdateListeners;
         private final Set<ButtonTemplate> buttons;
         private LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry;
 
         BuilderImpl(@NotNull AnvilLayoutTemplateImpl impl) {
-            this.inputUpdateListeners = new TreeSet<>(impl.inputUpdateListeners);
+            this.inputUpdateListeners = new PriorityQueue<>(impl.inputUpdateListeners);
             this.buttons = new HashSet<>(impl.buttons);
             this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
         }
 
         BuilderImpl() {
-            this.inputUpdateListeners = new TreeSet<>();
+            this.inputUpdateListeners = new PriorityQueue<>();
             this.buttons = new HashSet<>();
         }
 
@@ -51,7 +51,7 @@ record AnvilLayoutTemplateImpl(
 
         @NotNull
         @Override
-        public Builder inputUpdateListeners(@NotNull SortedSet<InputUpdateListener> inputUpdateListeners) {
+        public Builder inputUpdateListeners(@NotNull Queue<InputUpdateListener> inputUpdateListeners) {
             Objects.requireNonNull(inputUpdateListeners, "inputUpdateListeners");
             this.inputUpdateListeners.clear();
             this.inputUpdateListeners.addAll(inputUpdateListeners);
@@ -60,7 +60,7 @@ record AnvilLayoutTemplateImpl(
 
         @NotNull
         @Override
-        public SortedSet<InputUpdateListener> inputUpdateListeners() {
+        public Queue<InputUpdateListener> inputUpdateListeners() {
             return inputUpdateListeners;
         }
 

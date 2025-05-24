@@ -6,12 +6,12 @@ import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.SortedSet;
+import java.util.Queue;
 
 public interface AnvilLayout extends Layout<AnvilLayout> {
     @NotNull
     @Unmodifiable
-    SortedSet<InputUpdateListener> inputUpdateListeners();
+    Queue<InputUpdateListener> inputUpdateListeners();
 
     @NotNull
     @Override

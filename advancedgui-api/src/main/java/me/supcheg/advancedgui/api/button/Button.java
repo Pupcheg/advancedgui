@@ -10,8 +10,8 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
 
 public interface Button extends Lifecycled<Button> {
     @NotNull
@@ -19,7 +19,7 @@ public interface Button extends Lifecycled<Button> {
 
     @NotNull
     @Unmodifiable
-    SortedSet<ButtonInteraction> interactions();
+    Queue<ButtonInteraction> interactions();
 
     @NotNull
     Key texture();
