@@ -3,7 +3,7 @@ dependencies {
     implementation "net.kyori:adventure-api:$adventure_api_version"
     implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
 
-    implementation "org.slf4j:slf4j-api:$slf4j_api_version"
+    implementation "org.slf4j:slf4j-api:$slf4j_version"
     implementation "net.kyori:adventure-text-minimessage:$adventure_api_version"
 
     implementation "org.spongepowered:configurate-core:$configurate_version"

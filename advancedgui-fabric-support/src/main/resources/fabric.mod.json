@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "advancedgui-fabric-support",
+  "version": "${version}",
+  "name": "advancedgui-fabric-support",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "Apache-2.0",
+  "icon": "assets/advancedgui-fabric-support/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.supcheg.advancedgui.AdvancedguiFabricSupport"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
