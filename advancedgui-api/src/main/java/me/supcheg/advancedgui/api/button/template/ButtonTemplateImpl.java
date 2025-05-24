@@ -6,7 +6,7 @@ import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
-import me.supcheg.advancedgui.api.util.CollectionUtil;
+import me.supcheg.advancedgui.api.util.Queues;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -193,7 +193,7 @@ record ButtonTemplateImpl(
         public ButtonTemplate build() {
             return new ButtonTemplateImpl(
                     Set.copyOf(coordinates),
-                    CollectionUtil.copyOf(interactions),
+                    Queues.copyOf(interactions),
                     Objects.requireNonNull(texture, "texture"),
                     Objects.requireNonNull(name, "name"),
                     Objects.requireNonNull(description, "description"),

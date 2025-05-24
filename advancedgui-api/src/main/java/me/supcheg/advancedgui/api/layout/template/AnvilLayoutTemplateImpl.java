@@ -4,7 +4,7 @@ import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
 import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
-import me.supcheg.advancedgui.api.util.CollectionUtil;
+import me.supcheg.advancedgui.api.util.Queues;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -105,7 +105,7 @@ record AnvilLayoutTemplateImpl(
         @Override
         public AnvilLayoutTemplate build() {
             return new AnvilLayoutTemplateImpl(
-                    CollectionUtil.copyOf(inputUpdateListeners),
+                    Queues.copyOf(inputUpdateListeners),
                     Set.copyOf(buttons),
                     Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry")
             );

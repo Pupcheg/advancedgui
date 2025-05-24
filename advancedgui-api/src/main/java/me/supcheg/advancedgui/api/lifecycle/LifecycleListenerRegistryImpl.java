@@ -1,7 +1,7 @@
 package me.supcheg.advancedgui.api.lifecycle;
 
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
-import me.supcheg.advancedgui.api.util.CollectionUtil;
+import me.supcheg.advancedgui.api.util.Queues;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -30,7 +30,7 @@ public record LifecycleListenerRegistryImpl<S>(
     @NotNull
     @Override
     public Queue<LifecycleListener<S>> listeners(@NotNull Pointcut pointcut) {
-        return listeners.getOrDefault(pointcut, CollectionUtil.emptyQueue());
+        return listeners.getOrDefault(pointcut, Queues.emptyQueue());
     }
 
     @NotNull
@@ -72,7 +72,7 @@ public record LifecycleListenerRegistryImpl<S>(
                                             HashMap::new,
                                             collectingAndThen(
                                                     toCollection(PriorityQueue::new),
-                                                    CollectionUtil::unmodifiableQueue
+                                                    Queues::unmodifiableQueue
                                             )
                                     )
                             )
