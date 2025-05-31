@@ -24,7 +24,7 @@ public class LayoutImplConstructor implements TemplateConstructor<LayoutTemplate
             case AnvilLayoutTemplate anvil -> new AnvilLayoutImpl(
                     anvil.buttons().stream()
                             .map(buttonConstructor::construct)
-                            .flatMap(Collection::stream)
+                            .<ButtonImpl>mapMulti(Iterable::forEach)
                             .collect(Collectors.toUnmodifiableSet()),
                     anvil.inputUpdateListeners(),
                     anvil.lifecycleListenerRegistry()

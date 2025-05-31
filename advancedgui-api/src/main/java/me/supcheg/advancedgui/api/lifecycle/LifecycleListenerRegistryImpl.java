@@ -4,7 +4,6 @@ import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.util.Queues;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,9 +17,12 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toCollection;
 
-public record LifecycleListenerRegistryImpl<S>(
+record LifecycleListenerRegistryImpl<S>(
         @NotNull Map<Pointcut, Queue<LifecycleListener<S>>> listeners
 ) implements LifecycleListenerRegistry<S> {
+
+    static final LifecycleListenerRegistry<Object> EMPTY = new LifecycleListenerRegistryImpl<>(Map.of());
+
     @NotNull
     @Override
     public Set<Pointcut> pointcuts() {
@@ -45,7 +47,7 @@ public record LifecycleListenerRegistryImpl<S>(
         BuilderImpl(@NotNull LifecycleListenerRegistryImpl<S> impl) {
             this.listeners = impl.listeners.values()
                     .stream()
-                    .flatMap(Collection::stream)
+                    .<LifecycleListener<S>>mapMulti(Iterable::forEach)
                     .collect(Collectors.toSet());
         }
 
@@ -64,6 +66,10 @@ public record LifecycleListenerRegistryImpl<S>(
         @NotNull
         @Override
         public LifecycleListenerRegistry<S> build() {
+            if (listeners.isEmpty()) {
+                return LifecycleListenerRegistry.emptyLifecycleListenerRegistry();
+            }
+
             return new LifecycleListenerRegistryImpl<>(
                     listeners.stream()
                             .collect(

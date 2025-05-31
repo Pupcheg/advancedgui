@@ -3,7 +3,6 @@ package me.supcheg.advancedgui.api.loader.configurate.serializer.layout;
 import me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate;
 import me.supcheg.advancedgui.api.layout.template.LayoutTemplate;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
@@ -29,7 +28,7 @@ public final class LayoutTemplateTypeSerializer implements TypeSerializer<Layout
 
     @Override
     public LayoutTemplate<?, ?, ?> deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        String nodeType = node.node(TYPE).getString();
+       @Nullable String nodeType = node.node(TYPE).getString();
         if (nodeType == null) {
             throw new SerializationException("Node type is required");
         }
@@ -56,7 +55,6 @@ public final class LayoutTemplateTypeSerializer implements TypeSerializer<Layout
         node.set(nodeType.getValue(), obj);
     }
 
-    @NotNull
     private Map.Entry<String, Type> findTypeEntry(Type requestedType) throws SerializationException {
         for (Map.Entry<String, Type> entry : key2type.entrySet()) {
             Type type = entry.getValue();

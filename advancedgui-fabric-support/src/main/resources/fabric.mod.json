@@ -11,7 +11,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "me.supcheg.advancedgui.AdvancedguiFabricSupport"
+      "me.supcheg.advancedgui.fabric.AdvancedguiFabricSupport"
     ]
   },
   "depends": {

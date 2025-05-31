@@ -7,7 +7,6 @@ import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static me.supcheg.advancedgui.api.lifecycle.LifecycleListener.lifecycleListener;
+import static me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry.emptyLifecycleListenerRegistry;
 import static me.supcheg.advancedgui.api.loader.configurate.ConfigurateUtil.findTypeSerializer;
 import static org.spongepowered.configurate.BasicConfigurationNode.root;
 
@@ -48,15 +48,13 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
         return builder.build();
     }
 
-    @NotNull
     @Override
     public LifecycleListenerRegistry<?> emptyValue(Type specificType, ConfigurationOptions options) {
-        return LifecycleListenerRegistry.lifecycleListenerRegistry().build();
+        return emptyLifecycleListenerRegistry();
     }
 
-    @NotNull
-    private static LifecycleListener<Object> rawLifecycleListenerToLifecycleListener(@NotNull Pointcut pointcut,
-                                                                                     @NotNull RawLifecycleListener raw) {
+    private static LifecycleListener<Object> rawLifecycleListenerToLifecycleListener(Pointcut pointcut,
+                                                                                     RawLifecycleListener raw) {
         return lifecycleListener(lifecycleListener -> lifecycleListener
                 .pointcut(pointcut)
                 .priority(raw.priority())
@@ -64,8 +62,7 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
         );
     }
 
-    @NotNull
-    private static RawLifecycleListener lifecycleListenerToRawLifecycleListener(@NotNull LifecycleListener<Object> lifecycleListener) {
+    private static RawLifecycleListener lifecycleListenerToRawLifecycleListener(LifecycleListener<Object> lifecycleListener) {
         return new RawLifecycleListener(
                 lifecycleListener.priority(),
                 lifecycleListener.action()
@@ -74,7 +71,7 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
 
     @Override
     public void serialize(Type type, @Nullable LifecycleListenerRegistry<?> obj, ConfigurationNode node) throws SerializationException {
-        if (obj == null) {
+        if (obj == null || obj == emptyLifecycleListenerRegistry()) {
             node.set(null);
             return;
         }
@@ -95,9 +92,8 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
         }
     }
 
-    @NotNull
-    private static String serializeAsString(@NotNull ConfigurationOptions options,
-                                            @NotNull Pointcut pointcut) throws SerializationException {
+    private static String serializeAsString(ConfigurationOptions options,
+                                            Pointcut pointcut) throws SerializationException {
         return (String) Objects.requireNonNull(
                 root(options).set(pointcut).rawScalar(),
                 () -> "Serialized %s to null".formatted(pointcut)
@@ -106,8 +102,8 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
 
     @ConfigSerializable
     record RawLifecycleListener(
-            @NotNull Priority priority,
-            @NotNull LifecycleAction<Object> action
+            Priority priority,
+            LifecycleAction<Object> action
     ) {
     }
 }

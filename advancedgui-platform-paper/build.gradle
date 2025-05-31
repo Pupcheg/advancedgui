@@ -1,11 +1,8 @@
-plugins {
-    id 'io.papermc.paperweight.userdev' version '2.0.0-beta.14'
-}
+apply plugin: 'io.papermc.paperweight.userdev'
 
 dependencies {
-    implementation project(':advancedgui-api')
-    implementation project(':advancedgui-api-loader')
-    compileOnly "org.spongepowered:configurate-core:$configurate_version"
-    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
-    paperweight.paperDevBundle '1.21.4-R0.1-SNAPSHOT'
+    paperweight.paperDevBundle "$minecraft_version-R0.1-SNAPSHOT"
+
+    api project(':advancedgui-api')
+    api project(':advancedgui-api-loader')
 }

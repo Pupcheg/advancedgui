@@ -6,6 +6,8 @@ import org.spongepowered.configurate.serialize.AbstractListChildSerializer;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.util.CheckedConsumer;
 
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.PriorityQueue;
@@ -27,16 +29,16 @@ public final class QueueTypeSerializer extends AbstractListChildSerializer<Queue
     }
 
     @Override
-    protected Type elementType(Type containerType) throws SerializationException {
-        if (containerType instanceof ParameterizedType parameterizedType) {
-            return parameterizedType.getActualTypeArguments()[0];
+    protected AnnotatedType elementType(AnnotatedType containerType) throws SerializationException {
+        if (containerType instanceof AnnotatedParameterizedType parameterizedType) {
+            return parameterizedType.getAnnotatedActualTypeArguments()[0];
         }
 
         throw new SerializationException(containerType, "Raw types are not supported for collections");
     }
 
     @Override
-    protected Queue<? extends Sequenced<?>> createNew(int length, Type elementType) {
+    protected Queue<? extends Sequenced<?>> createNew(int length, AnnotatedType elementType) {
         return new PriorityQueue<>();
     }
 

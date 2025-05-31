@@ -1,11 +1,10 @@
 dependencies {
-    implementation project(':advancedgui-api')
-    implementation "net.kyori:adventure-api:$adventure_api_version"
-    implementation "org.jetbrains:annotations:$jetbrains_annotations_version"
+    api project(':advancedgui-api')
 
-    implementation "org.slf4j:slf4j-api:$slf4j_version"
-    implementation "net.kyori:adventure-text-minimessage:$adventure_api_version"
+    api "org.slf4j:slf4j-api:$slf4j_version"
+    api "net.kyori:adventure-text-minimessage:$adventure_api_version"
 
-    implementation "org.spongepowered:configurate-core:$configurate_version"
-    implementation "org.spongepowered:configurate-yaml:$configurate_version"
+    api "org.spongepowered:configurate-core:$configurate_version"
+    api "org.spongepowered:configurate-yaml:$configurate_version"
+    api "org.spongepowered:configurate-jackson:$configurate_version"
 }

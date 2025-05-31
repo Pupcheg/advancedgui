@@ -1,0 +1,3 @@
+- name: any
+  context-parser: me.supcheg.advancedgui.fabric.interpret.AnyActionInterpretContextParser
+  interpreter: me.supcheg.advancedgui.fabric.interpret.AnyActionInterpreter

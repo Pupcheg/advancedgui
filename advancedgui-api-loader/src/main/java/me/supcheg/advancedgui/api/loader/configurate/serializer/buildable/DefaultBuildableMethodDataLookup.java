@@ -3,7 +3,6 @@ package me.supcheg.advancedgui.api.loader.configurate.serializer.buildable;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.util.NamingScheme;
 
 import java.lang.invoke.MethodHandle;
@@ -23,9 +22,8 @@ public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLook
     private final MethodHandles.Lookup lookup = MethodHandles.publicLookup();
     private final NamingScheme namingScheme;
 
-    @NotNull
     @Override
-    public MethodDataReport buildReport(@NotNull Class<?> buildableClass) {
+    public MethodDataReport buildReport(Class<?> buildableClass) {
         Class<?> builderClass = findBuilderClass(buildableClass);
 
         MethodHandle builderFactory = Arrays.stream(buildableClass.getMethods())
@@ -63,7 +61,7 @@ public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLook
         return new MethodDataReport(builderFactory, values);
     }
 
-    private static void validateBuilderFactory(@NotNull MethodHandle methodHandle) {
+    private static void validateBuilderFactory(MethodHandle methodHandle) {
         MethodType type = methodHandle.type();
         if (type.parameterCount() != 0) {
             throw new IllegalStateException("Builder factory must have no parameters. Actual: " + type);
@@ -79,8 +77,7 @@ public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLook
         return lookup.unreflect(method);
     }
 
-    @NotNull
-    private static Class<?> findBuilderClass(@NotNull Class<?> buildable) {
+    private static Class<?> findBuilderClass(Class<?> buildable) {
         return Arrays.stream(buildable.getClasses())
                 .filter(clazz -> clazz.getSimpleName().equalsIgnoreCase(BUILDER))
                 .findFirst()

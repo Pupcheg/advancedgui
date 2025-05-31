@@ -16,8 +16,10 @@ import me.supcheg.advancedgui.platform.paper.construct.GuiImplConstructor;
 import me.supcheg.advancedgui.platform.paper.construct.LayoutImplConstructor;
 import me.supcheg.advancedgui.platform.paper.construct.TemplateConstructor;
 import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
+import me.supcheg.advancedgui.platform.paper.network.DelegatingNetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.NetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.NmsNetworkInjection;
+import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
 import me.supcheg.advancedgui.platform.paper.render.DefaultBackgroundComponentRenderer;
 import me.supcheg.advancedgui.platform.paper.render.DefaultButtonItemStackRenderer;
 import me.supcheg.advancedgui.platform.paper.render.DefaultLayoutNonNullListItemStackRenderer;
@@ -27,7 +29,6 @@ import me.supcheg.advancedgui.platform.paper.view.DefaultGuiViewer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.util.Ticks;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -42,6 +43,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -69,16 +72,20 @@ final class PaperGuiControllerImpl implements PaperGuiController {
     private final ComponentRenderer<ComponentRenderContext> componentRenderer;
     private final Plugin plugin;
 
+    private final ExecutorService guiTasksExecutor;
     private final Map<Key, GuiImpl> registry;
     private final Map<Key, Gui> unmodifiableRegistryView;
     private final TemplateConstructor<GuiTemplate, GuiImpl> guiConstructor;
     private final NetworkInjection networkInjection;
     private final ScheduledTask tickTask;
+    private final AdvancedguiPluginChannel channel;
 
     PaperGuiControllerImpl(
             @NotNull Plugin plugin,
             @NotNull ComponentRenderer<ComponentRenderContext> componentRenderer
     ) {
+        this.guiTasksExecutor = Executors.newSingleThreadExecutor();
+
         this.componentRenderer = componentRenderer;
         this.plugin = plugin;
 
@@ -86,6 +93,9 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         this.unmodifiableRegistryView = Collections.unmodifiableMap(registry);
 
         Renderer<Button, ItemStack> buttonItemStackRenderer = new DefaultButtonItemStackRenderer();
+
+        this.channel = new AdvancedguiPluginChannel(plugin);
+        channel.register();
 
         DefaultGuiViewer guiViewer = new DefaultGuiViewer(
                 new DefaultPlatformAudienceConverter(Bukkit.getName()),
@@ -96,22 +106,8 @@ final class PaperGuiControllerImpl implements PaperGuiController {
                         buttonItemStackRenderer
                 ),
                 buttonItemStackRenderer,
-                new NetworkInjection() {
-                    @Override
-                    public void inject(ServerPlayer player) {
-                        PaperGuiControllerImpl.this.networkInjection.inject(player);
-                    }
-
-                    @Override
-                    public void uninject(ServerPlayer player) {
-                        PaperGuiControllerImpl.this.networkInjection.uninject(player);
-                    }
-
-                    @Override
-                    public void close() throws IOException {
-                        PaperGuiControllerImpl.this.networkInjection.close();
-                    }
-                }
+                (DelegatingNetworkInjection) () -> PaperGuiControllerImpl.this.networkInjection,
+                channel
         );
 
         this.guiConstructor = new GuiImplConstructor(
@@ -121,7 +117,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
                 guiViewer
         );
 
-        this.networkInjection = new NmsNetworkInjection(guiViewer);
+        this.networkInjection = new NmsNetworkInjection(guiViewer, guiTasksExecutor);
 
         this.tickTask = startTicking();
     }
@@ -205,8 +201,10 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         Closeable tickTaskCloseable = tickTask::cancel;
 
         try (
+                guiTasksExecutor;
                 tickTaskCloseable;
-                networkInjection
+                networkInjection;
+                channel
         ) {
             // this try-with-resources will generate safe close for each Closeable
         }

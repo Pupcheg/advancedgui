@@ -22,45 +22,44 @@ import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.Lifecy
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PriorityTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.QueueTypeSerializer;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 import org.spongepowered.configurate.util.NamingSchemes;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Objects;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
-import static me.supcheg.advancedgui.api.loader.configurate.io.BufferedIO.lazyBufferedOrNull;
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
 public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader<?>, B extends AbstractConfigurationLoader.Builder<B, L>> implements GuiLoader {
 
     private final TypeSerializerCollection serializers = makeSerializers(TypeSerializerCollection.defaults());
 
-    @NotNull
     protected abstract B configurationLoaderBuilder();
 
-    protected void configureConfigurationLoaderBuilder(@NotNull B builder) {
+    protected void configureConfigurationLoaderBuilder(B builder) {
         builder.defaultOptions(defaultOptions -> defaultOptions.serializers(serializers));
     }
 
-    @NotNull
-    protected L buildConfigurationLoader(@NotNull B builder) {
+    protected L buildConfigurationLoader(B builder) {
         return builder.build();
     }
 
-    @NotNull
-    private L readLoader(@NotNull Reader in) {
+    private L readLoader(InputStream in) {
         Objects.requireNonNull(in, "in");
 
         B builder = configurationLoaderBuilder();
 
         configureConfigurationLoaderBuilder(builder);
-        builder.source(lazyBufferedOrNull(in));
+        builder.source(() -> new BufferedReader(new InputStreamReader(in)));
 
         L loader = buildConfigurationLoader(builder);
 
@@ -71,14 +70,13 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
         return loader;
     }
 
-    @NotNull
-    private L writeLoader(@NotNull Writer out) {
+    private L writeLoader(OutputStream out) {
         Objects.requireNonNull(out, "out");
 
         B builder = configurationLoaderBuilder();
 
         configureConfigurationLoaderBuilder(builder);
-        builder.sink(lazyBufferedOrNull(out));
+        builder.sink(() -> new BufferedWriter(new OutputStreamWriter(out)));
 
         L loader = buildConfigurationLoader(builder);
 
@@ -89,8 +87,7 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
         return loader;
     }
 
-    @NotNull
-    public static TypeSerializerCollection makeSerializers(@NotNull TypeSerializerCollection root) {
+    public static TypeSerializerCollection makeSerializers(TypeSerializerCollection root) {
         ObjectMapper.Factory objectFactory = ObjectMapper.factory();
 
         return root.childBuilder()
@@ -149,17 +146,16 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
                 .build();
     }
 
-    @NotNull
     @Override
-    public GuiTemplate loadResource(@NotNull Reader in) throws IOException {
+    public GuiTemplate read(InputStream in) throws IOException {
         return readLoader(in)
                 .load()
                 .require(GuiTemplate.class);
     }
 
     @Override
-    public void saveResource(@NotNull GuiTemplate template, @NotNull Writer writer) throws IOException {
-        L loader = writeLoader(writer);
+    public void write(GuiTemplate template, OutputStream out) throws IOException {
+        L loader = writeLoader(out);
         loader.save(
                 loader.createNode()
                         .set(GuiTemplate.class, template)

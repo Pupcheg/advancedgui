@@ -5,6 +5,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.platform.paper.PaperGuiController;
+import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
 import me.supcheg.advancedgui.platform.paper.util.AdvancedguiCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,7 @@ import static me.supcheg.advancedgui.platform.paper.PaperGuiController.paperGuiC
 public class TestPlugin extends JavaPlugin {
 
     private PaperGuiController controller;
+    private AdvancedguiPluginChannel channel;
 
     @Override
     public void onEnable() {
@@ -45,8 +47,8 @@ public class TestPlugin extends JavaPlugin {
     @SneakyThrows
     @NotNull
     private GuiTemplate loadGuiTemplate(@NotNull String path) {
-        try (var in = Objects.requireNonNull(getTextResource(path))) {
-            var template = yamlGuiLoader().loadResource(in);
+        try (var in = Objects.requireNonNull(getResource(path))) {
+            var template = yamlGuiLoader().read(in);
             getSLF4JLogger().info("Successfully loaded template '{}' from '{}'", template.key(), path);
             return template;
         }

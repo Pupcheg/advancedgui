@@ -1,44 +1,26 @@
-plugins {
-    id 'xyz.jpenilla.run-paper' version '2.3.1'
-    id 'xyz.jpenilla.resource-factory-paper-convention' version '1.2.0'
-}
-
-def minecraft_version = '1.21.4'
-
-configurations {
-    jarInclude {
-        canBeConsumed = false
-        canBeResolved = true
-    }
-}
+apply plugin: 'xyz.jpenilla.run-paper'
+apply plugin: 'xyz.jpenilla.resource-factory-paper-convention'
+apply plugin: 'com.gradleup.shadow'
 
 dependencies {
-    implementation project(':advancedgui-api')
-    implementation project(':advancedgui-api-loader')
-    implementation project(':advancedgui-platform-paper')
-
-    jarInclude 'net.bytebuddy:byte-buddy:1.17.5'
+    api project(':advancedgui-platform-paper')
 
     compileOnly "io.papermc.paper:paper-api:$minecraft_version-R0.1-SNAPSHOT"
 }
 
-jar {
-    from(project(':advancedgui-api').sourceSets.main.output)
-    from(project(':advancedgui-api-loader').sourceSets.main.output)
-    from(project(':advancedgui-platform-paper').sourceSets.main.output)
-
-    from {
-        duplicatesStrategy = DuplicatesStrategy.WARN
-        configurations.jarInclude.collect { it.isDirectory() ? it : zipTree(it) }
+shadowJar {
+    dependencies {
+        include(dependency('me.supcheg.advancedgui:.*'))
+        include(dependency('org.spongepowered:configurate-jackson:.*'))
     }
 }
 
 runServer {
-    minecraftVersion minecraft_version
+    minecraftVersion "$minecraft_version"
 }
 
 paperPluginYaml {
     name.set 'testplugin'
     main.set 'me.supcheg.advancedgui.testplugin.TestPlugin'
-    apiVersion.set minecraft_version
+    apiVersion.set "$minecraft_version"
 }

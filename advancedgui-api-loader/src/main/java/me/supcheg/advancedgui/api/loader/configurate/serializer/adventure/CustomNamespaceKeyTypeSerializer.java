@@ -2,7 +2,6 @@ package me.supcheg.advancedgui.api.loader.configurate.serializer.adventure;
 
 import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.serialize.CoercionFailedException;
 import org.spongepowered.configurate.serialize.ScalarSerializer;
 import org.spongepowered.configurate.serialize.SerializationException;
@@ -14,7 +13,7 @@ import java.util.function.Predicate;
 public final class CustomNamespaceKeyTypeSerializer extends ScalarSerializer<Key> {
     private final String namespace;
 
-    public CustomNamespaceKeyTypeSerializer(@NotNull String namespace) {
+    public CustomNamespaceKeyTypeSerializer(String namespace) {
         super(Key.class);
         Objects.requireNonNull(namespace);
         this.namespace = namespace;

@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -19,13 +18,18 @@ import java.util.stream.Stream;
 public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<LifecycleListenerRegistry<S>, LifecycleListenerRegistry.Builder<S>> {
 
     @NotNull
+    static <S> LifecycleListenerRegistry<S> emptyLifecycleListenerRegistry() {
+        // noinspection unchecked
+        return (LifecycleListenerRegistry<S>) LifecycleListenerRegistryImpl.EMPTY;
+    }
+
+    @NotNull
     @Contract("-> new")
     static <S> Builder<S> lifecycleListenerRegistry() {
         return new LifecycleListenerRegistryImpl.BuilderImpl<>();
     }
 
     @NotNull
-    @Contract("_ -> new")
     static <S> LifecycleListenerRegistry<S> lifecycleListenerRegistry(@NotNull Consumer<Builder<S>> consumer) {
         return Buildable.configureAndBuild(lifecycleListenerRegistry(), consumer);
     }
@@ -42,10 +46,11 @@ public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<Life
     @Unmodifiable
     Map<Pointcut, Queue<LifecycleListener<S>>> listeners();
 
+    @NotNull
     @Override
-    default @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+    default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
-                ExaminableProperty.of("listeners", listeners().values().stream().flatMap(Collection::stream))
+                ExaminableProperty.of("listeners", listeners().values().stream().mapMulti(Iterable::forEach))
         );
     }
 

@@ -9,8 +9,6 @@ import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
 import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
@@ -132,18 +130,18 @@ class YamlGuiLoaderTests {
     }
 
     @Test
-    void yamlLoad() throws IOException {
+    void yamlLoad() {
         assertEquals(
                 template,
-                loader.loadString(yamlTemplate)
+                loader.readString(yamlTemplate)
         );
     }
 
     @Test
-    void yamlSaveAndLoad() throws IOException {
+    void yamlSaveAndLoad() {
         assertEquals(
                 template,
-                loader.loadString(loader.saveString(template))
+                loader.readString(loader.writeString(template))
         );
     }
 }

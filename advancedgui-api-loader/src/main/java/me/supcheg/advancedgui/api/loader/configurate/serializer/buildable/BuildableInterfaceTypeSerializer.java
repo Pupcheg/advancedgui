@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.serialize.SerializationException;
@@ -37,7 +36,6 @@ public final class BuildableInterfaceTypeSerializer implements TypeSerializer<Bu
     }
 
     @SneakyThrows
-    @NotNull
     @Override
     public Buildable emptyValue(Type specificType, ConfigurationOptions options) {
         MethodDataReport report = methodDataLookup.buildReport(erase(specificType));

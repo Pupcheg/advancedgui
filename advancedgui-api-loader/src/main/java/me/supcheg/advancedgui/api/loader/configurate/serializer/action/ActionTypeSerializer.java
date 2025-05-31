@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.loader.configurate.serializer.action;
 
+import lombok.extern.slf4j.Slf4j;
 import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContextParser;
@@ -7,7 +8,6 @@ import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreterEntry;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.interpret.InterpretedContext;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
@@ -25,10 +25,11 @@ import java.util.List;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
 
+@Slf4j
 public final class ActionTypeSerializer implements TypeSerializer<Action> {
     private final List<ActionInterpreterEntry<?>> interpreters;
 
-    public static boolean isAction(@NotNull Type type) {
+    public static boolean isAction(Type type) {
         return Action.class.isAssignableFrom(erase(type));
     }
 
@@ -36,15 +37,17 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
         this(Arrays.asList(interpreterSources));
     }
 
-    public ActionTypeSerializer(@NotNull Collection<ActionInterpreterSource> interpreterSources) {
+    public ActionTypeSerializer(Collection<ActionInterpreterSource> interpreterSources) {
         this.interpreters = interpreterSources.stream()
                 .flatMap(ActionInterpreterSource::interpreters)
                 .toList();
+        if (log.isDebugEnabled()) {
+            log.debug("Loaded interpreters: {}", interpreters.stream().map(ActionInterpreterEntry::name).toList());
+        }
     }
 
-    @NotNull
     @Override
-    public Action deserialize(@NotNull Type type, @NotNull ConfigurationNode node) throws SerializationException {
+    public Action deserialize(Type type, ConfigurationNode node) throws SerializationException {
         Class<?> actionType = erase(type);
         String interfaceMethodName = findFunctionalInterfaceMethodName(actionType);
         InterpretedContext interpretedContext = interpret(node);
@@ -56,8 +59,7 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
         );
     }
 
-    @NotNull
-    private static String findFunctionalInterfaceMethodName(@NotNull Class<?> interfaceClass) throws SerializationException {
+    private static String findFunctionalInterfaceMethodName(Class<?> interfaceClass) throws SerializationException {
         if (!interfaceClass.isInterface()) {
             throw new SerializationException("Interface class " + interfaceClass + " is not an interface");
         }
@@ -70,8 +72,8 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
     }
 
     private record InterpretedContextInvocationHandler(
-            @NotNull InterpretedContext interpretedContext,
-            @NotNull String interfaceMethodName
+            InterpretedContext interpretedContext,
+            String interfaceMethodName
     ) implements InvocationHandler {
         @Override
         public Object invoke(Object proxy, Method proxiedMethod, Object[] args) throws Throwable {
@@ -101,8 +103,7 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
         }
     }
 
-    @NotNull
-    private InterpretedContext interpret(@NotNull ConfigurationNode node) throws SerializationException {
+    private InterpretedContext interpret(ConfigurationNode node) throws SerializationException {
         for (ActionInterpreterEntry<?> interpreter : interpreters) {
             if (interpreter.isAcceptable(node)) {
                 InterpretedContext context = interpreter.parseAndInterpret(node);
@@ -113,7 +114,7 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
         throw new SerializationException("Not found interpreter for " + node);
     }
 
-    private void assertIsValid(@NotNull MethodHandle handle, @NotNull ActionInterpreterEntry<?> interpreter) {
+    private void assertIsValid(MethodHandle handle, ActionInterpreterEntry<?> interpreter) {
         MethodType type = handle.type();
         if (!void.class.equals(type.returnType())) {
             throw new IllegalArgumentException(
@@ -124,7 +125,7 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
     }
 
     @Override
-    public void serialize(@NotNull Type type, @Nullable Action obj, @NotNull ConfigurationNode node) throws SerializationException {
+    public void serialize(Type type, @Nullable Action obj, ConfigurationNode node) throws SerializationException {
         if (!(obj instanceof ContextInterpreted interpreted)) {
             throw new SerializationException("Cannot serialize " + obj);
         }
@@ -138,10 +139,8 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
     }
 
     private interface ContextInterpreted {
-        @NotNull
         ActionInterpretContextParser<?> parser();
 
-        @NotNull
         ActionInterpretContext context();
     }
 }

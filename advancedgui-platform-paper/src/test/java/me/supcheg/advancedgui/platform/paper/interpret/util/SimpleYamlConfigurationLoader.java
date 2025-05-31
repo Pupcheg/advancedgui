@@ -7,9 +7,8 @@ import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
+import java.io.BufferedReader;
 import java.io.StringReader;
-
-import static me.supcheg.advancedgui.api.loader.configurate.io.BufferedIO.lazyBufferedOrNull;
 
 @RequiredArgsConstructor
 public final class SimpleYamlConfigurationLoader {
@@ -21,7 +20,7 @@ public final class SimpleYamlConfigurationLoader {
                 .defaultOptions(defaultOptions -> defaultOptions
                         .serializers(serializers)
                 )
-                .source(lazyBufferedOrNull(new StringReader(raw)))
+                .source(() -> new BufferedReader(new StringReader(raw)))
                 .build()
                 .load()
                 .require(type);

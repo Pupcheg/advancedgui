@@ -16,20 +16,18 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class NmsNetworkInjection implements NetworkInjection {
     private final PacketHandlerRegistry handlers;
     private final GuiViewLookup lookup;
     private final ExecutorService packetHandlerExecutor;
 
-    public NmsNetworkInjection(GuiViewLookup lookup) {
+    public NmsNetworkInjection(GuiViewLookup lookup, ExecutorService packetHandlerExecutor) {
         this.handlers = new PacketHandlerRegistry();
-        this.packetHandlerExecutor = Executors.newSingleThreadExecutor();
+        this.packetHandlerExecutor = packetHandlerExecutor;
 
         handlers.registerPacketHandler(GamePacketTypes.SERVERBOUND_CONTAINER_CLICK, this::handleContainerClick);
         handlers.registerPacketHandler(GamePacketTypes.SERVERBOUND_CONTAINER_CLOSE, this::handleContainerClose);
@@ -42,7 +40,7 @@ public class NmsNetworkInjection implements NetworkInjection {
     }
 
     private void handleContainerClick(ServerPlayer subject, GuiView view, ServerboundContainerClickPacket packet) {
-        int index = packet.getSlotNum();
+        int index = packet.slotNum();
 
         if (index < 0) {
             return;
@@ -62,8 +60,8 @@ public class NmsNetworkInjection implements NetworkInjection {
         var ctx = new PaperPlatformButtonInteractionContextAdapter(
                 view,
                 button,
-                packet.getClickType(),
-                packet.getButtonNum()
+                packet.clickType(),
+                packet.buttonNum()
         );
 
         for (ButtonInteraction interaction : button.interactions()) {
@@ -102,13 +100,6 @@ public class NmsNetworkInjection implements NetworkInjection {
 
     @Override
     public void close() throws IOException {
-        Closeable uninjectCloseable =
-                () -> MinecraftServer.getServer().getPlayerList().getPlayers().forEach(this::uninject);
-
-        try (
-                uninjectCloseable;
-                packetHandlerExecutor
-        ) {
-        }
+        MinecraftServer.getServer().getPlayerList().getPlayers().forEach(this::uninject);
     }
 }

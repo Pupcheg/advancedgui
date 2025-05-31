@@ -1,11 +1,17 @@
 plugins {
-    id 'java'
-    id 'io.freefair.lombok' version '8.6' apply false
-    id 'fabric-loom' version '1.10-SNAPSHOT' apply false
+    // @formatter:off
+    id 'java-library'
+    id 'io.freefair.lombok'                             version "$lombok_version"      apply false
+    id 'fabric-loom'                                    version "$fabric_loom_version" apply false
+    id 'io.papermc.paperweight.userdev'                 version "$paperweight_version" apply false
+    id 'xyz.jpenilla.run-paper'                         version "$run_paper_version"   apply false
+    id 'xyz.jpenilla.resource-factory-paper-convention' version "$paper_yaml_version"  apply false
+    id 'com.gradleup.shadow'                            version "$shadow_version"      apply false
+    // @formatter:on
 }
 
 allprojects {
-    apply plugin: 'java'
+    apply plugin: 'java-library'
     apply plugin: 'io.freefair.lombok'
 
     group = 'me.supcheg.advancedgui'
@@ -14,6 +20,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url = "https://repo.papermc.io/repository/maven-public/" }
+        maven { url = "https://api.modrinth.com/maven" }
     }
 
     // tests configuration

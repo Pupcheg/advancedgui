@@ -6,8 +6,6 @@ import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreterEntry;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.interpret.SimpleActionInterpretContextParser;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -30,8 +28,6 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
                     .register(RawActionInterpreterEntry.class, ObjectMapper.factory().asTypeSerializer())
             );
 
-
-    @NotNull
     @Override
     public Stream<ActionInterpreterEntry<?>> interpreters() {
         return classLoader.resources(INTERPRETERS_FILE)
@@ -40,9 +36,7 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
                 .map(YamlClasspathActionInterpreterSource::parseRawActionInterpreterEntry);
     }
 
-    @NotNull
-    @Contract("_ -> new")
-    private static ActionInterpreterEntry<?> parseRawActionInterpreterEntry(@NotNull RawActionInterpreterEntry raw) {
+    private static ActionInterpreterEntry<?> parseRawActionInterpreterEntry(RawActionInterpreterEntry raw) {
         String name = raw.name();
         return new ActionInterpreterEntry<>(
                 name,
@@ -52,8 +46,7 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
     }
 
     @SneakyThrows
-    @NotNull
-    private static <T> T constructInstance(@NotNull String classname, @NotNull String typename) {
+    private static <T> T constructInstance(String classname, String typename) {
         Object instance = constructInstance(Class.forName(classname), typename);
 
         if (instance instanceof SimpleActionInterpretContextParser<?> parser) {
@@ -65,8 +58,7 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
         return cast;
     }
 
-    @NotNull
-    private static Object constructInstance(@NotNull Class<?> clazz, @NotNull Object additionalParameter)
+    private static Object constructInstance(Class<?> clazz, Object additionalParameter)
             throws InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 
@@ -100,7 +92,7 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
     }
 
     @SneakyThrows
-    private List<RawActionInterpreterEntry> parseInterpreters(@NotNull URL url) {
+    private List<RawActionInterpreterEntry> parseInterpreters(URL url) {
         return YamlConfigurationLoader.builder()
                 .defaultOptions(configurationOptions)
                 .source(() -> new BufferedReader(new InputStreamReader(url.openStream())))
@@ -111,9 +103,9 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
     }
 
     private record RawActionInterpreterEntry(
-            @NotNull String name,
-            @NotNull String interpreter,
-            @NotNull String contextParser
+            String name,
+            String interpreter,
+            String contextParser
     ) {
     }
 }
