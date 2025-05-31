@@ -3,7 +3,6 @@ package me.supcheg.advancedgui.api.coordinate.builtin;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -40,7 +39,7 @@ final class RowedPartitionCoordinateTranslator implements PartitionCoordinateTra
     }
 
     @Override
-    public boolean acceptable(@NotNull Coordinate coordinate) {
+    public boolean acceptable(Coordinate coordinate) {
         int x = coordinate.x();
         int y = coordinate.y();
         return y >= startRow && y < endRow
@@ -48,11 +47,10 @@ final class RowedPartitionCoordinateTranslator implements PartitionCoordinateTra
     }
 
     @Override
-    public int toIndex(@NotNull Coordinate coordinate) {
+    public int toIndex(Coordinate coordinate) {
         return coordinate.x() + coordinate.y() * 9;
     }
 
-    @NotNull
     @Override
     public Coordinate toCoordinate(int index) {
         return coordinate(index % 9, index / 9);
@@ -63,7 +61,6 @@ final class RowedPartitionCoordinateTranslator implements PartitionCoordinateTra
         return endIndex - startIndex;
     }
 
-    @NotNull
     @Override
     public Stream<Coordinate> availableCoordinates() {
         return IntStream.range(startIndex, endIndex)

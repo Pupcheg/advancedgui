@@ -11,34 +11,25 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public interface GuiTemplate extends Keyed, Examinable, Buildable<GuiTemplate, GuiTemplate.Builder>, Lifecycled<Gui> {
 
-    @NotNull
-    @Contract("-> new")
     static Builder gui() {
         return new GuiTemplateImpl.BuilderImpl();
     }
 
-    @NotNull
-    @Contract("_ -> new")
-    static GuiTemplate gui(@NotNull Consumer<GuiTemplate.Builder> consumer) {
+    static GuiTemplate gui(Consumer<GuiTemplate.Builder> consumer) {
         return Buildable.configureAndBuild(gui(), consumer);
     }
 
-    @NotNull
     Background background();
 
-    @NotNull
     LayoutTemplate<?, ?, ?> layout();
 
-    @NotNull
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
@@ -51,41 +42,29 @@ public interface GuiTemplate extends Keyed, Examinable, Buildable<GuiTemplate, G
 
     interface Builder extends AbstractBuilder<GuiTemplate>, Lifecycled.Builder<Gui, Builder> {
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder key(@NotNull Key key);
+        Builder key(Key key);
 
         @Nullable
         Key key();
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder layout(@NotNull LayoutTemplate<?, ?, ?> layout);
+        Builder layout(LayoutTemplate<?, ?, ?> layout);
 
-        @NotNull
-        @Contract("_, _ -> this")
-        default <L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull B builder, @NotNull Consumer<B> consumer) {
+        default <L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(B builder, Consumer<B> consumer) {
             return layout(Buildable.configureAndBuild(builder, consumer));
         }
 
-        @NotNull
-        @Contract("_ -> this")
-        default <L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(@NotNull B layout) {
+        default <L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>> Builder layout(B layout) {
             return layout(layout.build());
         }
 
         @Nullable
         LayoutTemplate<?, ?, ?> layout();
 
-        @NotNull
-        @Contract("_ -> this")
-        default Builder background(@NotNull Consumer<Background.Builder> consumer) {
+        default Builder background(Consumer<Background.Builder> consumer) {
             return background(Background.background(consumer));
         }
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder background(@NotNull Background background);
+        Builder background(Background background);
 
         @Nullable
         Background background();

@@ -13,9 +13,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Queue;
@@ -27,44 +25,34 @@ import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 import static me.supcheg.advancedgui.api.util.CollectionUtil.makeNoNullsList;
 
 public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
-    @NotNull
-    @Contract("-> new")
+
     static Builder button() {
         return new ButtonTemplateImpl.BuilderImpl();
     }
 
-    @NotNull
-    @Contract("_ -> new")
-    static ButtonTemplate button(@NotNull Consumer<Builder> consumer) {
+    static ButtonTemplate button(Consumer<Builder> consumer) {
         return Buildable.configureAndBuild(button(), consumer);
     }
 
-    @NotNull
     @Unmodifiable
     Set<Coordinate> coordinates();
 
-    @NotNull
     @Unmodifiable
     Queue<ButtonInteraction> interactions();
 
-    @NotNull
     Key texture();
 
-    @NotNull
     Component name();
 
-    @NotNull
     Description description();
 
-    @NotNull
     @Unmodifiable
     Set<ButtonAttribute> attributes();
 
-    default boolean hasAttribute(@NotNull ButtonAttribute attribute) {
+    default boolean hasAttribute(ButtonAttribute attribute) {
         return attributes().contains(attribute);
     }
 
-    @NotNull
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
@@ -80,106 +68,70 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
 
     interface Builder extends AbstractBuilder<ButtonTemplate>, Lifecycled.Builder<Button, Builder> {
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder addCoordinate(@NotNull Coordinate coordinate);
+        Builder addCoordinate(Coordinate coordinate);
 
-        @NotNull
-        @Contract("_, _ -> this")
         default Builder addCoordinate(int x, int y) {
             return addCoordinate(coordinate(x, y));
         }
 
-        @NotNull
-        @Contract("_, _, _ -> this")
-        default Builder addCoordinates(@NotNull Coordinate first, @NotNull Coordinate second,
-                                       @NotNull Coordinate @NotNull ... coordinates) {
+        default Builder addCoordinates(Coordinate first, Coordinate second, Coordinate... coordinates) {
             return addCoordinates(Set.copyOf(makeNoNullsList(first, second, coordinates)));
         }
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder addCoordinates(@NotNull Set<Coordinate> coordinates);
+        Builder addCoordinates(Set<Coordinate> coordinates);
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder coordinates(@NotNull Set<Coordinate> coordinates);
+        Builder coordinates(Set<Coordinate> coordinates);
 
-        @NotNull
         Set<Coordinate> coordinates();
 
-        @NotNull
-        @Contract("_ -> this")
-        default Builder addInteraction(@NotNull Consumer<ButtonInteraction.Builder> consumer) {
+        default Builder addInteraction(Consumer<ButtonInteraction.Builder> consumer) {
             return addInteraction(ButtonInteraction.buttonInteraction(consumer));
         }
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder addInteraction(@NotNull ButtonInteraction interaction);
+        Builder addInteraction(ButtonInteraction interaction);
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder interactions(@NotNull Queue<ButtonInteraction> interactions);
+        Builder interactions(Queue<ButtonInteraction> interactions);
 
-        @NotNull
         Queue<ButtonInteraction> interactions();
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder texture(@NotNull Key location);
+        Builder texture(Key location);
 
         @Nullable
         Key texture();
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder name(@NotNull Component name);
+        Builder name(Component name);
 
         @Nullable
         Component name();
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder description(@NotNull Description description);
+        Builder description(Description description);
 
-        @NotNull
-        @Contract("_ -> this")
-        default Builder description(@NotNull Consumer<Description.Builder> consumer) {
+        default Builder description(Consumer<Description.Builder> consumer) {
             return description(Description.description(consumer));
         }
 
         @Nullable
         Description description();
 
-        @NotNull
         Set<ButtonAttribute> attributes();
 
-        @NotNull
-        Builder attributes(@NotNull Set<ButtonAttribute> attributes);
+        Builder attributes(Set<ButtonAttribute> attributes);
 
-        @NotNull
-        default Builder attributes(@NotNull ButtonAttribute attribute) {
+        default Builder attributes(ButtonAttribute attribute) {
             return attributes(Set.of(attribute));
         }
 
-        @NotNull
-        default Builder attributes(@NotNull ButtonAttribute first, @NotNull ButtonAttribute second,
-                                   @NotNull ButtonAttribute @NotNull ... other) {
+        default Builder attributes(ButtonAttribute first, ButtonAttribute second, ButtonAttribute... other) {
             return attributes(CollectionUtil.makeNoNullsSet(first, second, other));
         }
 
-        @NotNull
-        Builder addAttributes(@NotNull Set<ButtonAttribute> attributes);
+        Builder addAttributes(Set<ButtonAttribute> attributes);
 
-        @NotNull
-        default Builder addAttributes(@NotNull ButtonAttribute attribute) {
+        default Builder addAttributes(ButtonAttribute attribute) {
             return addAttributes(Set.of(attribute));
         }
 
-        @NotNull
-        default Builder addAttributes(@NotNull ButtonAttribute first, @NotNull ButtonAttribute second,
-                                      @NotNull ButtonAttribute @NotNull ... other) {
+        default Builder addAttributes(ButtonAttribute first, ButtonAttribute second, ButtonAttribute... other) {
             return addAttributes(CollectionUtil.makeNoNullsSet(first, second, other));
         }
     }

@@ -8,7 +8,6 @@ import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
@@ -19,14 +18,11 @@ public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemp
         extends Examinable, Buildable<T, B>, Lifecycled<L>
         permits AnvilLayoutTemplate {
 
-    @NotNull
     @Unmodifiable
     Set<ButtonTemplate> buttons();
 
-    @NotNull
     CoordinateTranslator coordinateTranslator();
 
-    @NotNull
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
@@ -38,23 +34,18 @@ public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemp
 
     interface Builder<L, T, B extends Builder<L, T, B>> extends AbstractBuilder<T>, Lifecycled.Builder<L, B> {
 
-        @NotNull
-        B addButton(@NotNull ButtonTemplate button);
+        B addButton(ButtonTemplate button);
 
-        @NotNull
-        default B addButton(@NotNull Consumer<ButtonTemplate.Builder> consumer) {
+        default B addButton(Consumer<ButtonTemplate.Builder> consumer) {
             return addButton(ButtonTemplate.button(consumer));
         }
 
-        @NotNull
-        default B addButton(@NotNull ButtonTemplate.Builder button) {
+        default B addButton(ButtonTemplate.Builder button) {
             return addButton(button.build());
         }
 
-        @NotNull
-        B buttons(@NotNull Set<ButtonTemplate> buttons);
+        B buttons(Set<ButtonTemplate> buttons);
 
-        @NotNull
         Set<ButtonTemplate> buttons();
     }
 }

@@ -9,9 +9,7 @@ import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.support.PointcutSupport;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
@@ -20,52 +18,42 @@ import java.util.function.Consumer;
 
 public interface GuiController<T extends GuiController<T, B>, B extends GuiController.Builder<T, B>> extends Buildable<T, B>, AutoCloseable {
 
-    @NotNull
     ComponentRenderer<ComponentRenderContext> componentRenderer();
 
-    @NotNull
     PointcutSupport pointcutSupport();
 
     @UnmodifiableView
-    @NotNull
     Collection<Gui> guis();
 
-    @NotNull
-    default Gui guiOrThrow(@NotNull Key key) {
+    default Gui guiOrThrow(Key key) {
         return Objects.requireNonNull(gui(key), "Not found gui with key=" + key);
     }
 
     @Nullable
-    Gui gui(@NotNull Key key);
+    Gui gui(Key key);
 
-    @NotNull
-    @Contract("_ -> new")
-    Gui register(@NotNull GuiTemplate template);
+    Gui register(GuiTemplate template);
 
-    void unregister(@NotNull Key key);
+    void unregister(Key key);
 
-    default void unregister(@NotNull Gui gui) {
+    default void unregister(Gui gui) {
         unregister(gui.key());
     }
 
     interface Builder<T extends GuiController<T, B>, B extends Builder<T, B>> extends AbstractBuilder<T> {
-        @NotNull
-        @Contract("_ -> this")
-        default B componentRenderer(@NotNull Consumer<ComponentRendererBuilder> consumer) {
+
+        default B componentRenderer(Consumer<ComponentRendererBuilder> consumer) {
             ComponentRendererBuilder builder = ComponentRendererBuilder.componentRenderer();
             consumer.accept(builder);
             return componentRenderer(builder);
         }
 
-        @NotNull
-        @Contract("_ -> this")
-        default B componentRenderer(@NotNull ComponentRendererBuilder renderer) {
+        default B componentRenderer(ComponentRendererBuilder renderer) {
             return componentRenderer(renderer.build());
         }
 
-        @NotNull
-        @Contract("_ -> this")
-        B componentRenderer(@NotNull ComponentRenderer<ComponentRenderContext> componentRenderer);
+
+        B componentRenderer(ComponentRenderer<ComponentRenderContext> componentRenderer);
 
         @Nullable
         ComponentRenderer<ComponentRenderContext> componentRenderer();

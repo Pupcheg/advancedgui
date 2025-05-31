@@ -5,48 +5,34 @@ import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<LifecycleListenerRegistry<S>, LifecycleListenerRegistry.Builder<S>> {
 
-    @NotNull
     static <S> LifecycleListenerRegistry<S> emptyLifecycleListenerRegistry() {
         // noinspection unchecked
         return (LifecycleListenerRegistry<S>) LifecycleListenerRegistryImpl.EMPTY;
     }
 
-    @NotNull
-    @Contract("-> new")
     static <S> Builder<S> lifecycleListenerRegistry() {
         return new LifecycleListenerRegistryImpl.BuilderImpl<>();
     }
 
-    @NotNull
-    static <S> LifecycleListenerRegistry<S> lifecycleListenerRegistry(@NotNull Consumer<Builder<S>> consumer) {
+    static <S> LifecycleListenerRegistry<S> lifecycleListenerRegistry(Consumer<Builder<S>> consumer) {
         return Buildable.configureAndBuild(lifecycleListenerRegistry(), consumer);
     }
 
-    @NotNull
     @Unmodifiable
-    Set<Pointcut> pointcuts();
+    Queue<LifecycleListener<S>> listeners(Pointcut pointcut);
 
-    @NotNull
-    @Unmodifiable
-    Queue<LifecycleListener<S>> listeners(@NotNull Pointcut pointcut);
-
-    @NotNull
     @Unmodifiable
     Map<Pointcut, Queue<LifecycleListener<S>>> listeners();
 
-    @NotNull
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
@@ -55,13 +41,10 @@ public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<Life
     }
 
     interface Builder<S> extends AbstractBuilder<LifecycleListenerRegistry<S>> {
-        @NotNull
-        @Contract("_ -> this")
-        Builder<S> add(@NotNull LifecycleListener<S> listener);
 
-        @NotNull
-        @Contract("_ -> this")
-        default Builder<S> add(@NotNull Consumer<LifecycleListener.Builder<S>> consumer) {
+        Builder<S> add(LifecycleListener<S> listener);
+
+        default Builder<S> add(Consumer<LifecycleListener.Builder<S>> consumer) {
             return add(LifecycleListener.lifecycleListener(consumer));
         }
     }

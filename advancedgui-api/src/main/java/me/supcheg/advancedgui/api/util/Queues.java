@@ -3,7 +3,7 @@ package me.supcheg.advancedgui.api.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -15,17 +15,16 @@ import java.util.Queue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Queues {
-    @NotNull
+
     @Unmodifiable
-    public static <E> Queue<E> copyOf(@NotNull Queue<E> original) {
+    public static <E> Queue<E> copyOf(Queue<E> original) {
         return original.isEmpty() ?
                 emptyQueue() :
                 unmodifiableQueue(new PriorityQueue<>(original));
     }
 
-    @NotNull
     @UnmodifiableView
-    public static <E> Queue<E> unmodifiableQueue(@NotNull Queue<E> original) {
+    public static <E> Queue<E> unmodifiableQueue(Queue<E> original) {
         return original instanceof UnmodifiableQueue<?> ?
                 original :
                 new UnmodifiableQueue<>(original);
@@ -35,7 +34,6 @@ public final class Queues {
     private static class UnmodifiableQueue<E> extends AbstractQueue<E> {
         private final Queue<E> delegate;
 
-        @NotNull
         @Override
         public Iterator<E> iterator() {
             var it = delegate.iterator();
@@ -69,21 +67,21 @@ public final class Queues {
         }
 
         @Override
+        @Nullable
         public E peek() {
             return delegate.peek();
         }
     }
 
-    @NotNull
     @Unmodifiable
     public static <E> Queue<E> emptyQueue() {
+        // noinspection unchecked
         return (Queue<E>) EmptyQueue.INSTANCE;
     }
 
     private static class EmptyQueue extends AbstractQueue<Object> {
         private static final EmptyQueue INSTANCE = new EmptyQueue();
 
-        @NotNull
         @Override
         public Iterator<Object> iterator() {
             return Collections.emptyIterator();
@@ -105,6 +103,7 @@ public final class Queues {
         }
 
         @Override
+        @Nullable
         public Object peek() {
             return null;
         }

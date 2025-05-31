@@ -2,7 +2,7 @@ package me.supcheg.advancedgui.api.component;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -12,40 +12,35 @@ import java.util.Objects;
 
 final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
     private final Deque<ComponentRenderer<ComponentRenderContext>> queue = new LinkedList<>();
-    private ComponentRendererCacheProvider cacheProvider;
+    private @Nullable ComponentRendererCacheProvider cacheProvider;
 
-    @NotNull
     @Override
-    public ComponentRendererBuilder enableCache(@NotNull ComponentRendererCacheProvider cacheProvider) {
+    public ComponentRendererBuilder enableCache(ComponentRendererCacheProvider cacheProvider) {
         Objects.requireNonNull(cacheProvider, "cacheProvider");
         this.cacheProvider = cacheProvider;
         return this;
     }
 
-    @NotNull
     @Override
     public ComponentRendererBuilder disableCache() {
         cacheProvider = null;
         return this;
     }
 
-    @NotNull
     @Override
-    public ComponentRendererBuilder addHead(@NotNull ComponentRenderer<ComponentRenderContext> head) {
+    public ComponentRendererBuilder addHead(ComponentRenderer<ComponentRenderContext> head) {
         Objects.requireNonNull(head, "head");
         queue.addFirst(head);
         return this;
     }
 
-    @NotNull
     @Override
-    public ComponentRendererBuilder addTail(@NotNull ComponentRenderer<ComponentRenderContext> tail) {
+    public ComponentRendererBuilder addTail(ComponentRenderer<ComponentRenderContext> tail) {
         Objects.requireNonNull(tail, "tail");
         queue.addLast(tail);
         return this;
     }
 
-    @NotNull
     @Override
     public ComponentRenderer<ComponentRenderContext> build() {
         if (queue.isEmpty()) {
@@ -66,11 +61,10 @@ final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
     }
 
     private record SequencedComponentRenderer(
-            @NotNull Iterable<ComponentRenderer<ComponentRenderContext>> renderers
+            Iterable<ComponentRenderer<ComponentRenderContext>> renderers
     ) implements ComponentRenderer<ComponentRenderContext> {
-        @NotNull
         @Override
-        public Component render(@NotNull Component component, @NotNull ComponentRenderContext ctx) {
+        public Component render(Component component, ComponentRenderContext ctx) {
             for (ComponentRenderer<ComponentRenderContext> renderer : renderers) {
                 component = renderer.render(component, ctx);
             }
@@ -79,12 +73,11 @@ final class ComponentRendererBuilderImpl implements ComponentRendererBuilder {
     }
 
     private record CachingComponentRenderer(
-            @NotNull Map<Component, Component> cache,
-            @NotNull ComponentRenderer<ComponentRenderContext> delegate
+            Map<Component, Component> cache,
+            ComponentRenderer<ComponentRenderContext> delegate
     ) implements ComponentRenderer<ComponentRenderContext> {
-        @NotNull
         @Override
-        public Component render(@NotNull Component original, @NotNull ComponentRenderContext ctx) {
+        public Component render(Component original, ComponentRenderContext ctx) {
             return cache.computeIfAbsent(original, component -> delegate.render(component, ctx));
         }
     }

@@ -2,8 +2,6 @@ package me.supcheg.advancedgui.api.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.AbstractList;
@@ -16,9 +14,7 @@ public final class CollectionUtil {
 
     @SafeVarargs
     @Unmodifiable
-    @NotNull
-    @Contract("_, _, _ -> new")
-    public static <T> List<T> makeNoNullsList(@NotNull T first, @NotNull T second, @NotNull T @NotNull ... other) {
+    public static <T> List<T> makeNoNullsList(T first, T second, T ... other) {
         return new NoNullsFirstSecondOtherList<>(first, second, other);
     }
 
@@ -27,11 +23,7 @@ public final class CollectionUtil {
         private final T second;
         private final T[] other;
 
-        public NoNullsFirstSecondOtherList(
-                @NotNull T first,
-                @NotNull T second,
-                @NotNull T @NotNull [] other
-        ) {
+        private NoNullsFirstSecondOtherList(T first, T second, T [] other) {
             this.first = Objects.requireNonNull(first);
             this.second = Objects.requireNonNull(second);
 
@@ -58,9 +50,7 @@ public final class CollectionUtil {
 
     @SafeVarargs
     @Unmodifiable
-    @NotNull
-    @Contract("_, _, _ -> new")
-    public static <T> Set<T> makeNoNullsSet(@NotNull T first, @NotNull T second, @NotNull T @NotNull ... other) {
+    public static <T> Set<T> makeNoNullsSet(T first, T second, T ... other) {
         return Set.copyOf(makeNoNullsList(first, second, other));
     }
 

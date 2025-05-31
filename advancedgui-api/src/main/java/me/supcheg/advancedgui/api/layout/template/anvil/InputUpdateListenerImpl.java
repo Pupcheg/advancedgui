@@ -2,16 +2,14 @@ package me.supcheg.advancedgui.api.layout.template.anvil;
 
 import lombok.NoArgsConstructor;
 import me.supcheg.advancedgui.api.sequence.Priority;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Objects;
 
 record InputUpdateListenerImpl(
-        @NotNull Priority priority,
-        @NotNull InputUpdateAction action
+        Priority priority,
+        InputUpdateAction action
 ) implements InputUpdateListener {
-    @NotNull
     @Override
     public Builder toBuilder() {
         return new BuilderImpl(this);
@@ -19,43 +17,40 @@ record InputUpdateListenerImpl(
 
     @NoArgsConstructor
     static class BuilderImpl implements Builder {
-        private Priority priority;
-        private InputUpdateAction action;
+        private @Nullable Priority priority;
+        private @Nullable InputUpdateAction action;
 
-        public BuilderImpl(@NotNull InputUpdateListenerImpl impl) {
+        public BuilderImpl(InputUpdateListenerImpl impl) {
             this.priority = impl.priority;
             this.action = impl.action;
         }
 
-        @NotNull
         @Override
-        public Builder priority(@NotNull Priority priority) {
+        public Builder priority(Priority priority) {
             Objects.requireNonNull(priority, "priority");
             this.priority = priority;
             return this;
         }
 
-        @Nullable
         @Override
+        @Nullable
         public Priority priority() {
             return priority;
         }
 
-        @NotNull
         @Override
-        public Builder action(@NotNull InputUpdateAction action) {
+        public Builder action(InputUpdateAction action) {
             Objects.requireNonNull(action, "action");
             this.action = action;
             return this;
         }
 
-        @Nullable
         @Override
+        @Nullable
         public InputUpdateAction action() {
             return action;
         }
 
-        @NotNull
         @Override
         public InputUpdateListener build() {
             return new InputUpdateListenerImpl(

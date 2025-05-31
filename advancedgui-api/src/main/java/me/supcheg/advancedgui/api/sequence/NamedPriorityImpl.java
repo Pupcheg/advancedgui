@@ -1,28 +1,25 @@
 package me.supcheg.advancedgui.api.sequence;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 record NamedPriorityImpl(
-        @NotNull String name,
+        String name,
         int value
 ) implements NamedPriority {
-    @NotNull
-    @Contract("_, _ -> new")
-    static NamedPriorityImpl namedPriorityImpl(@NotNull String name, int value) {
+
+    static NamedPriorityImpl namedPriorityImpl(String name, int value) {
         Objects.requireNonNull(name, "name");
         NamedPriorityImpl impl = new NamedPriorityImpl(name, value);
         Cache.register(impl);
         return impl;
     }
 
-    @NotNull
-    static NamedPriorityImpl byNameOrThrow(@NotNull String name) {
+    static NamedPriorityImpl byNameOrThrow(String name) {
         return Cache.byNameOrThrow(name);
     }
 
@@ -35,15 +32,14 @@ record NamedPriorityImpl(
         private static final Map<String, NamedPriorityImpl> name2instance = new HashMap<>();
         private static final Map<Integer, NamedPriorityImpl> value2instance = new HashMap<>();
 
-        private static void register(@NotNull NamedPriorityImpl impl) {
+        private static void register(NamedPriorityImpl impl) {
             name2instance.put(impl.name(), impl);
             value2instance.put(impl.value(), impl);
         }
 
-        @NotNull
-        private static NamedPriorityImpl byNameOrThrow(@NotNull String name) {
+        private static NamedPriorityImpl byNameOrThrow(String name) {
             Objects.requireNonNull(name, "name");
-            NamedPriorityImpl impl = name2instance.get(name.toLowerCase());
+            @Nullable NamedPriorityImpl impl = name2instance.get(name.toLowerCase());
             if (impl == null) {
                 throw new IllegalArgumentException("No such name: " + name);
             }

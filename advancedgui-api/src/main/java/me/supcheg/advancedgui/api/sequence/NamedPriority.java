@@ -1,7 +1,6 @@
 package me.supcheg.advancedgui.api.sequence;
 
 import net.kyori.examination.ExaminableProperty;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
@@ -14,15 +13,12 @@ public sealed interface NamedPriority extends Priority permits NamedPriorityImpl
     NamedPriority HIGH = namedPriorityImpl("high", -500);
     NamedPriority HIGHEST = namedPriorityImpl("highest", -1000);
 
-    @NotNull
-    static NamedPriority namedPriority(@NotNull String name) {
+    static NamedPriority namedPriority(String name) {
         return NamedPriorityImpl.byNameOrThrow(name);
     }
 
-    @NotNull
     String name();
 
-    @NotNull
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(

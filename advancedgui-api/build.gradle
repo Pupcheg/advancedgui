@@ -1,4 +1,3 @@
 dependencies {
     api "net.kyori:adventure-api:$adventure_api_version"
-    api "org.jetbrains:annotations:$jetbrains_annotations_version"
 }

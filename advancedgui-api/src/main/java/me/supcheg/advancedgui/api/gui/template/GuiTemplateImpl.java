@@ -6,18 +6,16 @@ import me.supcheg.advancedgui.api.gui.background.Background;
 import me.supcheg.advancedgui.api.layout.template.LayoutTemplate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Objects;
 
 record GuiTemplateImpl(
-        @NotNull Key key,
-        @NotNull LifecycleListenerRegistry<Gui> lifecycleListenerRegistry,
-        @NotNull LayoutTemplate<?, ?, ?> layout,
-        @NotNull Background background
+        Key key,
+        LifecycleListenerRegistry<Gui> lifecycleListenerRegistry,
+        LayoutTemplate<?, ?, ?> layout,
+        Background background
 ) implements GuiTemplate {
-    @NotNull
     @Override
     public Builder toBuilder() {
         return new BuilderImpl(this);
@@ -25,75 +23,70 @@ record GuiTemplateImpl(
 
     @NoArgsConstructor
     static final class BuilderImpl implements GuiTemplate.Builder {
-        private Key key;
-        private LifecycleListenerRegistry<Gui> lifecycleListenerRegistry;
-        private LayoutTemplate<?, ?, ?> layout;
-        private Background background;
+        private @Nullable Key key;
+        private @Nullable LifecycleListenerRegistry<Gui> lifecycleListenerRegistry;
+        private @Nullable LayoutTemplate<?, ?, ?> layout;
+        private @Nullable Background background;
 
-        BuilderImpl(@NotNull GuiTemplateImpl impl) {
+        BuilderImpl(GuiTemplateImpl impl) {
             this.key = impl.key;
             this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
             this.layout = impl.layout;
             this.background = impl.background;
         }
 
-        @NotNull
         @Override
-        public Builder key(@NotNull Key key) {
+        public Builder key(Key key) {
             Objects.requireNonNull(key, "key");
             this.key = key;
             return this;
         }
 
-        @Nullable
         @Override
+        @Nullable
         public Key key() {
             return key;
         }
 
-        @NotNull
         @Override
-        public Builder layout(@NotNull LayoutTemplate<?, ?, ?> layout) {
+        public Builder layout(LayoutTemplate<?, ?, ?> layout) {
             Objects.requireNonNull(layout, "layout");
             this.layout = layout;
             return this;
         }
 
-        @Nullable
         @Override
+        @Nullable
         public LayoutTemplate<?, ?, ?> layout() {
             return layout;
         }
 
-        @Nullable
         @Override
+        @Nullable
         public LifecycleListenerRegistry<Gui> lifecycleListenerRegistry() {
             return lifecycleListenerRegistry;
         }
 
-        @NotNull
         @Override
-        public Builder lifecycleListenerRegistry(@NotNull LifecycleListenerRegistry<Gui> lifecycleListenerRegistry) {
+        public Builder lifecycleListenerRegistry(LifecycleListenerRegistry<Gui> lifecycleListenerRegistry) {
             Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry");
             this.lifecycleListenerRegistry = lifecycleListenerRegistry;
             return this;
         }
 
-        @NotNull
         @Override
-        public Builder background(@NotNull Background background) {
+        public Builder background(Background background) {
             Objects.requireNonNull(background, "background");
             this.background = background;
             return this;
         }
 
-        @Nullable
         @Override
+        @Nullable
         public Background background() {
             return background;
         }
 
-        @NotNull
         @Override
         public GuiTemplate build() {
             return new GuiTemplateImpl(

@@ -1,35 +1,31 @@
 package me.supcheg.advancedgui.api.coordinate.builtin;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import me.supcheg.advancedgui.api.Advancedgui;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 import static net.kyori.adventure.key.Key.key;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BuiltinCoordinateTranslators {
 
     private static final int PLAYER_INVENTORY_ROWS = 4;
     private static final int MAX_CHEST_INVENTORY_ROWS = 6;
 
-    private BuiltinCoordinateTranslators() {
-    }
-
-    @NotNull
     public static CoordinateTranslator chest(int rows) {
         return CHEST[rows - 1];
     }
 
-    @NotNull
     public static CoordinateTranslator furnace() {
         return FURNACE;
     }
 
-    @NotNull
     public static CoordinateTranslator anvil() {
         return ANVIL;
     }
@@ -50,24 +46,22 @@ public final class BuiltinCoordinateTranslators {
             key(Advancedgui.NAMESPACE, "furnace"),
             new SimplePartitionCoordinateTranslator(3) {
                 @Override
-                public int toIndex(@NotNull Coordinate coordinate) {
+                public int toIndex(Coordinate coordinate) {
                     return coordinate.y();
                 }
 
                 @Override
-                public boolean acceptable(@NotNull Coordinate coordinate) {
+                public boolean acceptable(Coordinate coordinate) {
                     int x = coordinate.x();
                     int y = coordinate.y();
                     return x == 0 && y >= 0 && y < slotsCount;
                 }
 
-                @NotNull
                 @Override
                 public Coordinate toCoordinate(int index) {
                     return coordinate(0, index);
                 }
 
-                @NotNull
                 @Override
                 public Stream<Coordinate> availableCoordinates() {
                     return Stream.of(
@@ -84,24 +78,22 @@ public final class BuiltinCoordinateTranslators {
             Key.key(Advancedgui.NAMESPACE, "anvil"),
             new SimplePartitionCoordinateTranslator(3) {
                 @Override
-                public boolean acceptable(@NotNull Coordinate coordinate) {
+                public boolean acceptable(Coordinate coordinate) {
                     int x = coordinate.x();
                     int y = coordinate.y();
                     return x >= 0 && x < slotsCount && y == 0;
                 }
 
                 @Override
-                public int toIndex(@NotNull Coordinate coordinate) {
+                public int toIndex(Coordinate coordinate) {
                     return coordinate.x();
                 }
 
-                @NotNull
                 @Override
                 public Coordinate toCoordinate(int index) {
                     return coordinate(index, 0);
                 }
 
-                @NotNull
                 @Override
                 public Stream<Coordinate> availableCoordinates() {
                     return Stream.of(

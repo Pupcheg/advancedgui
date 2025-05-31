@@ -2,16 +2,16 @@ package me.supcheg.advancedgui.api.sequence;
 
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.stream.Stream;
 
 import static me.supcheg.advancedgui.api.sequence.PriorityImpl.priorityImpl;
 
 public sealed interface Priority extends Examinable, Comparable<Priority> permits NamedPriority, PriorityImpl {
-    @NotNull
+
     static Priority priority(int value) {
-        Priority named = NamedPriorityImpl.byValue(value);
+        @Nullable Priority named = NamedPriorityImpl.byValue(value);
         if (named != null) {
             return named;
         }
@@ -20,7 +20,6 @@ public sealed interface Priority extends Examinable, Comparable<Priority> permit
 
     int value();
 
-    @NotNull
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
@@ -28,28 +27,24 @@ public sealed interface Priority extends Examinable, Comparable<Priority> permit
         );
     }
 
-    @NotNull
     default Priority earlier(int value) {
         return priority(this.value() - value);
     }
 
-    @NotNull
-    default Priority earlier(@NotNull Priority priority) {
+    default Priority earlier(Priority priority) {
         return earlier(priority.value());
     }
 
-    @NotNull
     default Priority later(int value) {
         return priority(this.value() + value);
     }
 
-    @NotNull
-    default Priority later(@NotNull Priority priority) {
+    default Priority later(Priority priority) {
         return later(priority.value());
     }
 
     @Override
-    default int compareTo(@NotNull Priority o) {
+    default int compareTo(Priority o) {
         return Integer.compare(value(), o.value());
     }
 }

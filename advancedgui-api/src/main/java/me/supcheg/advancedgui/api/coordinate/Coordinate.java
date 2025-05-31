@@ -4,21 +4,16 @@ import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.stream.Stream;
 
 public interface Coordinate extends Examinable, Buildable<Coordinate, Coordinate.Builder> {
-    @NotNull
-    @Contract(value = "-> new", pure = true)
+
     static Builder coordinate() {
         return new CoordinateImpl.BuilderImpl();
     }
 
-    @NotNull
-    @Contract(value = "_, _ -> new", pure = true)
     static Coordinate coordinate(int x, int y) {
         return new CoordinateImpl(x, y);
     }
@@ -27,7 +22,6 @@ public interface Coordinate extends Examinable, Buildable<Coordinate, Coordinate
 
     int y();
 
-    @NotNull
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
@@ -43,18 +37,12 @@ public interface Coordinate extends Examinable, Buildable<Coordinate, Coordinate
         @Nullable
         Integer y();
 
-        @NotNull
-        @Contract("_, _ -> this")
         default Builder xy(int x, int y) {
             return x(x).y(y);
         }
 
-        @NotNull
-        @Contract("_ -> this")
         Builder x(int x);
 
-        @NotNull
-        @Contract("_ -> this")
         Builder y(int y);
     }
 }

@@ -1,0 +1,7 @@
+package java.util;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public class Objects {
+   public static <T> T requireNonNull(@Nullable T obj, String message);
+}

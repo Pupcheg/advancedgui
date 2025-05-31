@@ -6,8 +6,6 @@ import me.supcheg.advancedgui.api.coordinate.CoordinateTranslators;
 import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import net.kyori.examination.ExaminableProperty;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Queue;
@@ -16,29 +14,22 @@ import java.util.stream.Stream;
 
 public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayout, AnvilLayoutTemplate, AnvilLayoutTemplate.Builder> {
 
-    @NotNull
-    @Contract("-> new")
     static Builder anvilLayout() {
         return new AnvilLayoutTemplateImpl.BuilderImpl();
     }
 
-    @NotNull
-    @Contract("_ -> new")
-    static AnvilLayoutTemplate anvilLayout(@NotNull Consumer<Builder> consumer) {
+    static AnvilLayoutTemplate anvilLayout(Consumer<Builder> consumer) {
         return Buildable.configureAndBuild(anvilLayout(), consumer);
     }
 
-    @NotNull
     @Unmodifiable
     Queue<InputUpdateListener> inputUpdateListeners();
 
-    @NotNull
     @Override
     default CoordinateTranslator coordinateTranslator() {
         return CoordinateTranslators.anvilCoordinateTranslator();
     }
 
-    @NotNull
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.concat(
@@ -51,26 +42,18 @@ public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayo
 
     interface Builder extends LayoutTemplate.Builder<AnvilLayout, AnvilLayoutTemplate, Builder> {
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder addInputUpdateListener(@NotNull InputUpdateListener inputUpdateListener);
+        Builder addInputUpdateListener(InputUpdateListener inputUpdateListener);
 
-        @NotNull
-        @Contract("_ -> this")
-        default Builder addInputUpdateListener(@NotNull InputUpdateListener.Builder inputUpdateListener) {
+        default Builder addInputUpdateListener(InputUpdateListener.Builder inputUpdateListener) {
             return addInputUpdateListener(inputUpdateListener.build());
         }
 
-        @NotNull
-        @Contract("_ -> this")
-        default Builder addInputUpdateListener(@NotNull Consumer<InputUpdateListener.Builder> consumer) {
+        default Builder addInputUpdateListener(Consumer<InputUpdateListener.Builder> consumer) {
             return addInputUpdateListener(InputUpdateListener.inputUpdateListener(consumer));
         }
 
-        @NotNull
-        Builder inputUpdateListeners(@NotNull Queue<InputUpdateListener> inputUpdateListeners);
+        Builder inputUpdateListeners(Queue<InputUpdateListener> inputUpdateListeners);
 
-        @NotNull
         Queue<InputUpdateListener> inputUpdateListeners();
     }
 }

@@ -3,18 +3,16 @@ package me.supcheg.advancedgui.api.coordinate.builtin;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
 record CombinedCoordinateTranslator(
-        @NotNull Key key,
-        @NotNull PartitionCoordinateTranslator upper,
-        @NotNull PartitionCoordinateTranslator lower
+        Key key,
+        PartitionCoordinateTranslator upper,
+        PartitionCoordinateTranslator lower
 ) implements CoordinateTranslator {
     @Override
-    public boolean isInBounds(@NotNull Coordinate coordinate) {
+    public boolean isInBounds(Coordinate coordinate) {
         return upper.acceptable(coordinate) || lower.acceptable(coordinate);
     }
 
@@ -24,7 +22,7 @@ record CombinedCoordinateTranslator(
     }
 
     @Override
-    public int toIndex(@NotNull Coordinate coordinate) {
+    public int toIndex(Coordinate coordinate) {
         if (upper.acceptable(coordinate)) {
             return upper.toIndex(coordinate);
         }
@@ -36,7 +34,6 @@ record CombinedCoordinateTranslator(
         throw indexOutOfBoundsException(coordinate);
     }
 
-    @NotNull
     @Override
     public Coordinate toCoordinate(int index) {
         if (upper.acceptable(index)) {
@@ -60,22 +57,17 @@ record CombinedCoordinateTranslator(
         return lower.slotsCount();
     }
 
-    @NotNull
     @Override
     public Stream<Coordinate> availableCoordinates() {
         return Stream.concat(upper.availableCoordinates(), lower.availableCoordinates());
     }
 
-    @NotNull
-    @Contract("_ -> new")
-    private IndexOutOfBoundsException indexOutOfBoundsException(@NotNull Coordinate coordinate) {
+    private IndexOutOfBoundsException indexOutOfBoundsException(Coordinate coordinate) {
         return new IndexOutOfBoundsException(
                 "Coordinate out of bounds in %s: (%d, %d)".formatted(key, coordinate.x(), coordinate.y())
         );
     }
 
-    @NotNull
-    @Contract("_ -> new")
     private IndexOutOfBoundsException indexOutOfBoundsException(int index) {
         return new IndexOutOfBoundsException("Index out of range in %s: %d".formatted(key, index));
     }
