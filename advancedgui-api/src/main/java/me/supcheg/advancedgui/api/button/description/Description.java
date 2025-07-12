@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.button.description;
 
+import com.google.common.collect.Lists;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import net.kyori.adventure.text.Component;
@@ -10,8 +11,6 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static me.supcheg.advancedgui.api.util.CollectionUtil.makeNoNullsList;
 
 public interface Description extends Examinable, Buildable<Description, Description.Builder> {
 
@@ -44,7 +43,7 @@ public interface Description extends Examinable, Buildable<Description, Descript
         }
 
         default Builder addLines(Component first, Component second, Component... other) {
-            return addLines(makeNoNullsList(first, second, other));
+            return addLines(Lists.asList(first, second, other));
         }
 
         Builder lines(List<Component> lines);
@@ -54,7 +53,7 @@ public interface Description extends Examinable, Buildable<Description, Descript
         }
 
         default Builder lines(Component first, Component second, Component... other) {
-            return lines(makeNoNullsList(first, second, other));
+            return lines(Lists.asList(first, second, other));
         }
     }
 }

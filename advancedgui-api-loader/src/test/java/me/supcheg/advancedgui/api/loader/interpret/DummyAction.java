@@ -6,7 +6,6 @@ import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
-import org.jetbrains.annotations.NotNull;
 
 import static org.spongepowered.configurate.BasicConfigurationNode.root;
 
@@ -19,7 +18,7 @@ public final class DummyAction {
     );
 
     @SafeVarargs
-    public static <A extends Action> A dummyAction(@NotNull A @NotNull ... typeResolver) {
+    public static <A extends Action> A dummyAction(A ... typeResolver) {
         assert typeResolver.length == 0;
         @SuppressWarnings("unchecked")
         Class<A> type = (Class<A>) typeResolver.getClass().getComponentType();
@@ -27,7 +26,7 @@ public final class DummyAction {
     }
 
     @SneakyThrows
-    public static <A extends Action> A dummyAction(@NotNull Class<A> type) {
+    public static <A extends Action> A dummyAction(Class<A> type) {
         @SuppressWarnings("unchecked")
         A action = (A) ACTION_TYPE_SERIALIZER.deserialize(type, root().set(NAME));
         return action;

@@ -1,8 +1,7 @@
 package me.supcheg.advancedgui.api.loader.interpret;
 
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -11,18 +10,17 @@ final class DummyActionInterpretContextParser implements ActionInterpretContextP
     private final String name;
 
     @Override
-    public boolean isAcceptable(@NotNull ConfigurationNode node) {
+    public boolean isAcceptable(ConfigurationNode node) {
         return name.equals(ActionInterpretContextParser.parseType(node));
     }
 
-    @NotNull
     @Override
-    public DummyActionInterpretContext deserialize(@NotNull ConfigurationNode node) {
+    public DummyActionInterpretContext deserialize(ConfigurationNode node) {
         return DummyActionInterpretContext.INSTANCE;
     }
 
     @Override
-    public void serialize(@Nullable DummyActionInterpretContext ctx, @NotNull ConfigurationNode node) throws SerializationException {
+    public void serialize(@Nullable DummyActionInterpretContext ctx, ConfigurationNode node) throws SerializationException {
         node.set(name);
     }
 }

@@ -1,14 +1,14 @@
 package me.supcheg.advancedgui.api.lifecycle;
 
+import com.google.common.collect.ImmutableSortedMultiset;
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
-import me.supcheg.advancedgui.api.util.Queues;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,14 +17,14 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toCollection;
 
 record LifecycleListenerRegistryImpl<S>(
-        Map<Pointcut, Queue<LifecycleListener<S>>> listeners
+        Map<Pointcut, SortedMultiset<LifecycleListener<S>>> listeners
 ) implements LifecycleListenerRegistry<S> {
 
     static final LifecycleListenerRegistry<Object> EMPTY = new LifecycleListenerRegistryImpl<>(Map.of());
 
     @Override
-    public Queue<LifecycleListener<S>> listeners(Pointcut pointcut) {
-        return listeners.getOrDefault(pointcut, Queues.emptyQueue());
+    public SortedMultiset<LifecycleListener<S>> listeners(Pointcut pointcut) {
+        return listeners.getOrDefault(pointcut, ImmutableSortedMultiset.of());
     }
 
     @Override
@@ -66,8 +66,8 @@ record LifecycleListenerRegistryImpl<S>(
                                             LifecycleListener::pointcut,
                                             HashMap::new,
                                             collectingAndThen(
-                                                    toCollection(PriorityQueue::new),
-                                                    Queues::unmodifiableQueue
+                                                    toCollection(TreeMultiset::create),
+                                                    ImmutableSortedMultiset::copyOfSorted
                                             )
                                     )
                             )

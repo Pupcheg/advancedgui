@@ -1,6 +1,6 @@
 package me.supcheg.advancedgui.api.loader.interpret;
 
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -8,8 +8,7 @@ public interface ActionInterpretContextParser<C extends ActionInterpretContext> 
 
     String TYPE_KEY = "type";
 
-    @Nullable
-    static String parseType(ConfigurationNode node) {
+    static @Nullable String parseType(ConfigurationNode node) {
         @Nullable String scalar = node.getString();
 
         return scalar != null ? scalar

@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.layout.template;
 
+import com.google.common.collect.SortedMultiset;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslators;
@@ -8,7 +9,6 @@ import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -23,7 +23,7 @@ public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayo
     }
 
     @Unmodifiable
-    Queue<InputUpdateListener> inputUpdateListeners();
+    SortedMultiset<InputUpdateListener> inputUpdateListeners();
 
     @Override
     default CoordinateTranslator coordinateTranslator() {
@@ -52,8 +52,8 @@ public non-sealed interface AnvilLayoutTemplate extends LayoutTemplate<AnvilLayo
             return addInputUpdateListener(InputUpdateListener.inputUpdateListener(consumer));
         }
 
-        Builder inputUpdateListeners(Queue<InputUpdateListener> inputUpdateListeners);
+        Builder inputUpdateListeners(SortedMultiset<InputUpdateListener> inputUpdateListeners);
 
-        Queue<InputUpdateListener> inputUpdateListeners();
+        SortedMultiset<InputUpdateListener> inputUpdateListeners();
     }
 }

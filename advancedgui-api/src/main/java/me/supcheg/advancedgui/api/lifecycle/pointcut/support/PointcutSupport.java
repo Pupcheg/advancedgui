@@ -1,9 +1,9 @@
 package me.supcheg.advancedgui.api.lifecycle.pointcut.support;
 
+import com.google.common.collect.Lists;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
-import me.supcheg.advancedgui.api.util.CollectionUtil;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -46,7 +46,7 @@ public interface PointcutSupport extends Buildable<PointcutSupport, PointcutSupp
         Builder supports(Collection<Pointcut> pointcuts);
 
         default Builder supports(Pointcut first, Pointcut second, Pointcut ... other) {
-            return supports(CollectionUtil.makeNoNullsList(first, second, other));
+            return supports(Lists.asList(first, second, other));
         }
     }
 }

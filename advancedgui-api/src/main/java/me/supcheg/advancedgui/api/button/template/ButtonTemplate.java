@@ -1,5 +1,7 @@
 package me.supcheg.advancedgui.api.button.template;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.SortedMultiset;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.Button;
@@ -8,7 +10,6 @@ import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
-import me.supcheg.advancedgui.api.util.CollectionUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.examination.Examinable;
@@ -16,13 +17,11 @@ import net.kyori.examination.ExaminableProperty;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
-import static me.supcheg.advancedgui.api.util.CollectionUtil.makeNoNullsList;
 
 public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
 
@@ -38,7 +37,7 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
     Set<Coordinate> coordinates();
 
     @Unmodifiable
-    Queue<ButtonInteraction> interactions();
+    SortedMultiset<ButtonInteraction> interactions();
 
     Key texture();
 
@@ -75,7 +74,7 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
         }
 
         default Builder addCoordinates(Coordinate first, Coordinate second, Coordinate... coordinates) {
-            return addCoordinates(Set.copyOf(makeNoNullsList(first, second, coordinates)));
+            return addCoordinates(Set.copyOf(Lists.asList(first, second, coordinates)));
         }
 
         Builder addCoordinates(Set<Coordinate> coordinates);
@@ -90,9 +89,9 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
 
         Builder addInteraction(ButtonInteraction interaction);
 
-        Builder interactions(Queue<ButtonInteraction> interactions);
+        Builder interactions(SortedMultiset<ButtonInteraction> interactions);
 
-        Queue<ButtonInteraction> interactions();
+        SortedMultiset<ButtonInteraction> interactions();
 
         Builder texture(Key location);
 
@@ -122,7 +121,7 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
         }
 
         default Builder attributes(ButtonAttribute first, ButtonAttribute second, ButtonAttribute... other) {
-            return attributes(CollectionUtil.makeNoNullsSet(first, second, other));
+            return attributes(Set.copyOf(Lists.asList(first, second, other)));
         }
 
         Builder addAttributes(Set<ButtonAttribute> attributes);
@@ -132,7 +131,7 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
         }
 
         default Builder addAttributes(ButtonAttribute first, ButtonAttribute second, ButtonAttribute... other) {
-            return addAttributes(CollectionUtil.makeNoNullsSet(first, second, other));
+            return addAttributes(Set.copyOf(Lists.asList(first, second, other)));
         }
     }
 }

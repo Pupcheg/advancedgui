@@ -3,10 +3,10 @@ package me.supcheg.advancedgui.api.loader.base64;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.loader.GuiLoader;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import java.util.function.Consumer;
 
 public interface Base64GuiLoader extends GuiLoader, Buildable<Base64GuiLoader, Base64GuiLoader.Builder> {
@@ -18,12 +18,10 @@ public interface Base64GuiLoader extends GuiLoader, Buildable<Base64GuiLoader, B
         return Base64GuiLoaderImpl.Instances.YAML_DOWNSTREAM;
     }
 
-    @Contract(value = "-> new", pure = true)
     static Builder base64GuiLoader() {
         return new Base64GuiLoaderImpl.BuilderImpl();
     }
 
-    @Contract(value = "_ -> new", pure = true)
     static Base64GuiLoader base64GuiLoader(Consumer<Builder> consumer) {
         return Buildable.configureAndBuild(base64GuiLoader(), consumer);
     }
@@ -38,19 +36,16 @@ public interface Base64GuiLoader extends GuiLoader, Buildable<Base64GuiLoader, B
         @Nullable
         GuiLoader downstream();
 
-        @Contract("_ -> this")
         Builder downstream(GuiLoader downstream);
 
         @Nullable
-        Base64.Encoder encoder();
+        Encoder encoder();
 
-        @Contract("_ -> this")
-        Builder encoder(Base64.Encoder encoder);
+        Builder encoder(Encoder encoder);
 
         @Nullable
-        Base64.Decoder decoder();
+        Decoder decoder();
 
-        @Contract("_ -> this")
-        Builder decoder(Base64.Decoder decoder);
+        Builder decoder(Decoder decoder);
     }
 }

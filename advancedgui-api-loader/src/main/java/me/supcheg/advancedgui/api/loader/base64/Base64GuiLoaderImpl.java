@@ -8,13 +8,15 @@ import me.supcheg.advancedgui.api.loader.GuiLoader;
 import me.supcheg.advancedgui.api.loader.json.JsonGuiLoader;
 import me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader;
 import net.kyori.adventure.util.Services;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,8 +28,8 @@ final class Base64GuiLoaderImpl implements Base64GuiLoader {
     private static final Optional<Provider> SERVICE = Services.service(Provider.class);
 
     private final GuiLoader downstream;
-    private final Base64.Decoder decoder;
-    private final Base64.Encoder encoder;
+    private final Decoder decoder;
+    private final Encoder encoder;
 
     @Override
     public GuiTemplate read(InputStream in) throws IOException {
@@ -83,8 +85,8 @@ final class Base64GuiLoaderImpl implements Base64GuiLoader {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     static final class BuilderImpl implements Builder {
         private @Nullable GuiLoader downstream;
-        private @Nullable Base64.Decoder decoder;
-        private @Nullable Base64.Encoder encoder;
+        private @Nullable Decoder decoder;
+        private @Nullable Encoder encoder;
 
         BuilderImpl(Base64GuiLoaderImpl impl) {
             this.downstream = impl.downstream;
@@ -92,8 +94,8 @@ final class Base64GuiLoaderImpl implements Base64GuiLoader {
             this.encoder = impl.encoder;
         }
 
-        @Nullable
         @Override
+        @Nullable
         public GuiLoader downstream() {
             return downstream;
         }
@@ -105,27 +107,27 @@ final class Base64GuiLoaderImpl implements Base64GuiLoader {
             return this;
         }
 
-        @Nullable
         @Override
-        public Base64.Encoder encoder() {
+        @Nullable
+        public Encoder encoder() {
             return encoder;
         }
 
         @Override
-        public Builder encoder(Base64.Encoder encoder) {
+        public Builder encoder(Encoder encoder) {
             Objects.requireNonNull(encoder, "encoder");
             this.encoder = encoder;
             return this;
         }
 
-        @Nullable
         @Override
-        public Base64.Decoder decoder() {
+        @Nullable
+        public Decoder decoder() {
             return decoder;
         }
 
         @Override
-        public Builder decoder(Base64.Decoder decoder) {
+        public Builder decoder(Decoder decoder) {
             Objects.requireNonNull(decoder, "decoder");
             this.decoder = decoder;
             return this;

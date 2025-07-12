@@ -7,7 +7,6 @@ plugins {
     id 'xyz.jpenilla.run-paper'                         version "$run_paper_version"               apply false
     id 'xyz.jpenilla.resource-factory-paper-convention' version "$paper_yaml_version"              apply false
     id 'com.gradleup.shadow'                            version "$shadow_version"                  apply false
-    id 'org.checkerframework'                           version "$checkerframework_gradle_version" apply false
     // @formatter:on
 }
 
@@ -16,7 +15,6 @@ def java_version = Integer.parseInt("$java_version")
 allprojects {
     apply plugin: 'java-library'
     apply plugin: 'io.freefair.lombok'
-    apply plugin: 'org.checkerframework'
 
     group = 'me.supcheg.advancedgui'
     version = '1.0.0'
@@ -27,20 +25,16 @@ allprojects {
         maven { url = "https://api.modrinth.com/maven" }
     }
 
-    // tests configuration
     dependencies {
+        api "org.checkerframework:checker:$checkerframework_version"
+        api "org.jetbrains:annotations:$jetbrains_annotations_version"
+
         testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
         testImplementation "org.assertj:assertj-core:$assertj_version"
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
         testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_version"
         testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_version"
         testImplementation "org.mockito:mockito-junit-jupiter:$mockito_version"
-    }
-
-    checkerFramework {
-        excludeTests = true
-        checkers = ['org.checkerframework.checker.nullness.NullnessChecker']
-        extraJavacArgs = ["-Astubs=${rootProject.file('.checker/stubs/')}"]
     }
 
     test {

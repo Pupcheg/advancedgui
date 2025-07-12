@@ -1,25 +1,25 @@
 package me.supcheg.advancedgui.api.button.template;
 
+import com.google.common.collect.ImmutableSortedMultiset;
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
 import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
-import me.supcheg.advancedgui.api.util.Queues;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Set;
 
 record ButtonTemplateImpl(
         Set<Coordinate> coordinates,
-        Queue<ButtonInteraction> interactions,
+        SortedMultiset<ButtonInteraction> interactions,
         Key texture,
         Component name,
         Description description,
@@ -33,7 +33,7 @@ record ButtonTemplateImpl(
 
     static final class BuilderImpl implements ButtonTemplate.Builder {
         private final Set<Coordinate> coordinates;
-        private final Queue<ButtonInteraction> interactions;
+        private final SortedMultiset<ButtonInteraction> interactions;
         private final Set<ButtonAttribute> attributes;
         private @Nullable Key texture;
         private @Nullable Component name;
@@ -42,13 +42,13 @@ record ButtonTemplateImpl(
 
         BuilderImpl() {
             this.coordinates = new HashSet<>();
-            this.interactions = new PriorityQueue<>();
+            this.interactions = TreeMultiset.create();
             this.attributes = new HashSet<>();
         }
 
         BuilderImpl(ButtonTemplateImpl impl) {
             this.coordinates = new HashSet<>(impl.coordinates);
-            this.interactions = new PriorityQueue<>(impl.interactions);
+            this.interactions = TreeMultiset.create(impl.interactions);
             this.attributes = new HashSet<>(impl.attributes);
             this.texture = impl.texture;
             this.name = impl.name;
@@ -90,7 +90,7 @@ record ButtonTemplateImpl(
         }
 
         @Override
-        public Builder interactions(Queue<ButtonInteraction> interactions) {
+        public Builder interactions(SortedMultiset<ButtonInteraction> interactions) {
             Objects.requireNonNull(interactions, "interactions");
             this.interactions.clear();
             this.interactions.addAll(interactions);
@@ -98,7 +98,7 @@ record ButtonTemplateImpl(
         }
 
         @Override
-        public Queue<ButtonInteraction> interactions() {
+        public SortedMultiset<ButtonInteraction> interactions() {
             return interactions;
         }
 
@@ -176,7 +176,7 @@ record ButtonTemplateImpl(
         public ButtonTemplate build() {
             return new ButtonTemplateImpl(
                     Set.copyOf(coordinates),
-                    Queues.copyOf(interactions),
+                    ImmutableSortedMultiset.copyOfSorted(interactions),
                     Objects.requireNonNull(texture, "texture"),
                     Objects.requireNonNull(name, "name"),
                     Objects.requireNonNull(description, "description"),

@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
 
@@ -76,7 +77,8 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
             String interfaceMethodName
     ) implements InvocationHandler {
         @Override
-        public Object invoke(Object proxy, Method proxiedMethod, Object[] args) throws Throwable {
+        @Nullable
+        public Object invoke(Object proxy, Method proxiedMethod, @Nullable Object[] args) throws Throwable {
             String proxiedMethodName = proxiedMethod.getName();
 
             if (interfaceMethodName.equals(proxiedMethodName)) {
@@ -96,8 +98,8 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
         /**
          * {@link #equals(Object)}
          */
-        private Object equalsImpl(Object[] args) {
-            Object other = args[0];
+        private Object equalsImpl(@Nullable Object[] args) {
+            Object other = Objects.requireNonNull(args[0]);
             return other instanceof ContextInterpreted contextInterpreted &&
                    interpretedContext.context().equals(contextInterpreted.context());
         }

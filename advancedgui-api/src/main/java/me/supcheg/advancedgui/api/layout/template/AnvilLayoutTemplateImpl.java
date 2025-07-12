@@ -1,20 +1,20 @@
 package me.supcheg.advancedgui.api.layout.template;
 
+import com.google.common.collect.ImmutableSortedMultiset;
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
 import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
-import me.supcheg.advancedgui.api.util.Queues;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Set;
 
 record AnvilLayoutTemplateImpl(
-        Queue<InputUpdateListener> inputUpdateListeners,
+        SortedMultiset<InputUpdateListener> inputUpdateListeners,
         Set<ButtonTemplate> buttons,
         LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry
 ) implements AnvilLayoutTemplate {
@@ -24,18 +24,18 @@ record AnvilLayoutTemplateImpl(
     }
 
     static class BuilderImpl implements Builder {
-        private final Queue<InputUpdateListener> inputUpdateListeners;
+        private final SortedMultiset<InputUpdateListener> inputUpdateListeners;
         private final Set<ButtonTemplate> buttons;
         private @Nullable LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry;
 
         BuilderImpl(AnvilLayoutTemplateImpl impl) {
-            this.inputUpdateListeners = new PriorityQueue<>(impl.inputUpdateListeners);
+            this.inputUpdateListeners = TreeMultiset.create(impl.inputUpdateListeners);
             this.buttons = new HashSet<>(impl.buttons);
             this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
         }
 
         BuilderImpl() {
-            this.inputUpdateListeners = new PriorityQueue<>();
+            this.inputUpdateListeners = TreeMultiset.create();
             this.buttons = new HashSet<>();
         }
 
@@ -47,7 +47,7 @@ record AnvilLayoutTemplateImpl(
         }
 
         @Override
-        public Builder inputUpdateListeners(Queue<InputUpdateListener> inputUpdateListeners) {
+        public Builder inputUpdateListeners(SortedMultiset<InputUpdateListener> inputUpdateListeners) {
             Objects.requireNonNull(inputUpdateListeners, "inputUpdateListeners");
             this.inputUpdateListeners.clear();
             this.inputUpdateListeners.addAll(inputUpdateListeners);
@@ -55,7 +55,7 @@ record AnvilLayoutTemplateImpl(
         }
 
         @Override
-        public Queue<InputUpdateListener> inputUpdateListeners() {
+        public SortedMultiset<InputUpdateListener> inputUpdateListeners() {
             return inputUpdateListeners;
         }
 
@@ -95,7 +95,7 @@ record AnvilLayoutTemplateImpl(
         @Override
         public AnvilLayoutTemplate build() {
             return new AnvilLayoutTemplateImpl(
-                    Queues.copyOf(inputUpdateListeners),
+                    ImmutableSortedMultiset.copyOfSorted(inputUpdateListeners),
                     Set.copyOf(buttons),
                     Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry")
             );

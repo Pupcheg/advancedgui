@@ -1,5 +1,7 @@
 package me.supcheg.advancedgui.api.loader.configurate.serializer.sequence;
 
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 import me.supcheg.advancedgui.api.sequence.Sequenced;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.serialize.AbstractListChildSerializer;
@@ -10,21 +12,19 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
 
-public final class QueueTypeSerializer extends AbstractListChildSerializer<Queue<? extends Sequenced<?>>> {
+public final class SortedMultisetTypeSerializer extends AbstractListChildSerializer<SortedMultiset<? extends Sequenced<?>>> {
 
-    public static boolean isQueue(Type type) {
+    public static boolean isSortedMultiset(Type type) {
         if (!(type instanceof ParameterizedType parameterizedType)) {
             return false;
         }
 
         Type[] arguments = parameterizedType.getActualTypeArguments();
         return
-                erase(type) == Queue.class
+                erase(type) == SortedMultiset.class
                 && Sequenced.class.isAssignableFrom(erase(arguments[0]));
     }
 
@@ -38,26 +38,26 @@ public final class QueueTypeSerializer extends AbstractListChildSerializer<Queue
     }
 
     @Override
-    protected Queue<? extends Sequenced<?>> createNew(int length, AnnotatedType elementType) {
-        return new PriorityQueue<>();
+    protected SortedMultiset<? extends Sequenced<?>> createNew(int length, AnnotatedType elementType) {
+        return TreeMultiset.create();
     }
 
     @Override
-    protected void forEachElement(Queue<? extends Sequenced<?>> collection, CheckedConsumer<Object, SerializationException> action) throws SerializationException {
+    protected void forEachElement(SortedMultiset<? extends Sequenced<?>> collection, CheckedConsumer<Object, SerializationException> action) throws SerializationException {
         for (Sequenced<?> sequenced : collection) {
             action.accept(sequenced);
         }
     }
 
     @Override
-    protected void deserializeSingle(int index, Queue<? extends Sequenced<?>> collection, @Nullable Object deserialized) {
+    protected void deserializeSingle(int index, SortedMultiset<? extends Sequenced<?>> collection, @Nullable Object deserialized) {
         if (deserialized == null) {
             return;
         }
 
         Sequenced<?> sequenced = (Sequenced<?>) deserialized;
         @SuppressWarnings("unchecked")
-        Queue<Sequenced<?>> sequencedSet = ((Queue<Sequenced<?>>) collection);
+        SortedMultiset<Sequenced<?>> sequencedSet = ((SortedMultiset<Sequenced<?>>) collection);
         sequencedSet.add(sequenced);
     }
 }

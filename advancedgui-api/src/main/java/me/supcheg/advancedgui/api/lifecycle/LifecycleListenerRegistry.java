@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.lifecycle;
 
+import com.google.common.collect.SortedMultiset;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
@@ -8,14 +9,13 @@ import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Map;
-import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<LifecycleListenerRegistry<S>, LifecycleListenerRegistry.Builder<S>> {
 
+    @SuppressWarnings("unchecked")
     static <S> LifecycleListenerRegistry<S> emptyLifecycleListenerRegistry() {
-        // noinspection unchecked
         return (LifecycleListenerRegistry<S>) LifecycleListenerRegistryImpl.EMPTY;
     }
 
@@ -28,10 +28,10 @@ public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<Life
     }
 
     @Unmodifiable
-    Queue<LifecycleListener<S>> listeners(Pointcut pointcut);
+    SortedMultiset<LifecycleListener<S>> listeners(Pointcut pointcut);
 
     @Unmodifiable
-    Map<Pointcut, Queue<LifecycleListener<S>>> listeners();
+    Map<Pointcut, SortedMultiset<LifecycleListener<S>>> listeners();
 
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {

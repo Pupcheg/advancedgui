@@ -20,7 +20,7 @@ import me.supcheg.advancedgui.api.loader.configurate.serializer.coordinate.Coord
 import me.supcheg.advancedgui.api.loader.configurate.serializer.layout.LayoutTemplateTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.LifecycleListenerRegistryTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PriorityTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.QueueTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.SortedMultisetTypeSerializer;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
@@ -97,12 +97,14 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
                 .register(
                         ActionTypeSerializer::isAction,
                         new ActionTypeSerializer(
-                                new YamlClasspathActionInterpreterSource(ConfigurateGuiLoader.class.getClassLoader())
+                                new YamlClasspathActionInterpreterSource(
+                                        Objects.requireNonNull(ConfigurateGuiLoader.class.getClassLoader(), "classLoader")
+                                )
                         )
                 )
                 .register(
-                        QueueTypeSerializer::isQueue,
-                        new QueueTypeSerializer()
+                        SortedMultisetTypeSerializer::isSortedMultiset,
+                        new SortedMultisetTypeSerializer()
                 )
                 .register(
                         LayoutTemplateTypeSerializer::isExactLayoutTemplate,
