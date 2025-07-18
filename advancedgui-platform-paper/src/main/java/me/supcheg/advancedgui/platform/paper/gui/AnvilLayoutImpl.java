@@ -1,9 +1,9 @@
 package me.supcheg.advancedgui.platform.paper.gui;
 
-import com.google.common.collect.SortedMultiset;
 import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
+import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.beforeT
 
 public record AnvilLayoutImpl(
         @NotNull Set<ButtonImpl> buttons,
-        @NotNull SortedMultiset<InputUpdateListener> inputUpdateListeners,
+        @NotNull SequencedSortedSet<InputUpdateListener> inputUpdateListeners,
         @NotNull LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry
 ) implements AnvilLayout, LayoutImpl<AnvilLayout> {
 

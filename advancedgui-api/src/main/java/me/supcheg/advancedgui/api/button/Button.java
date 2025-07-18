@@ -1,11 +1,11 @@
 package me.supcheg.advancedgui.api.button;
 
-import com.google.common.collect.SortedMultiset;
 import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
 import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
+import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Unmodifiable;
@@ -16,7 +16,7 @@ public interface Button extends Lifecycled<Button> {
     Coordinate coordinate();
 
     @Unmodifiable
-    SortedMultiset<ButtonInteraction> interactions();
+    SequencedSortedSet<ButtonInteraction> interactions();
 
     Key texture();
 

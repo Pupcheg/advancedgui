@@ -3,6 +3,7 @@ package me.supcheg.advancedgui.api.loader.configurate.interpret;
 import io.leangen.geantyref.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreterEntry;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.interpret.SimpleActionInterpretContextParser;
@@ -18,6 +19,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 @RequiredArgsConstructor
 public final class YamlClasspathActionInterpreterSource implements ActionInterpreterSource {
     private static final String INTERPRETERS_FILE = "action_interpreters.yml";
@@ -30,10 +32,17 @@ public final class YamlClasspathActionInterpreterSource implements ActionInterpr
 
     @Override
     public Stream<ActionInterpreterEntry<?>> interpreters() {
-        return classLoader.resources(INTERPRETERS_FILE)
+        Stream<ActionInterpreterEntry<?>> interpreters = classLoader.resources(INTERPRETERS_FILE)
                 .map(this::parseInterpreters)
                 .<RawActionInterpreterEntry>mapMulti(Iterable::forEach)
                 .map(YamlClasspathActionInterpreterSource::parseRawActionInterpreterEntry);
+
+        if (log.isDebugEnabled()) {
+            interpreters = interpreters
+                    .peek(entry -> log.debug("Loaded '{}' interpreter", entry.name()));
+        }
+
+        return interpreters;
     }
 
     private static ActionInterpreterEntry<?> parseRawActionInterpreterEntry(RawActionInterpreterEntry raw) {

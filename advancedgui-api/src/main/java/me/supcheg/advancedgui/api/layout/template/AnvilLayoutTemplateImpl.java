@@ -1,12 +1,11 @@
 package me.supcheg.advancedgui.api.layout.template;
 
-import com.google.common.collect.ImmutableSortedMultiset;
-import com.google.common.collect.SortedMultiset;
-import com.google.common.collect.TreeMultiset;
 import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
 import me.supcheg.advancedgui.api.layout.AnvilLayout;
 import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
+import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
+import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSets;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
@@ -14,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 record AnvilLayoutTemplateImpl(
-        SortedMultiset<InputUpdateListener> inputUpdateListeners,
+        SequencedSortedSet<InputUpdateListener> inputUpdateListeners,
         Set<ButtonTemplate> buttons,
         LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry
 ) implements AnvilLayoutTemplate {
@@ -24,18 +23,18 @@ record AnvilLayoutTemplateImpl(
     }
 
     static class BuilderImpl implements Builder {
-        private final SortedMultiset<InputUpdateListener> inputUpdateListeners;
+        private final SequencedSortedSet<InputUpdateListener> inputUpdateListeners;
         private final Set<ButtonTemplate> buttons;
         private @Nullable LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry;
 
         BuilderImpl(AnvilLayoutTemplateImpl impl) {
-            this.inputUpdateListeners = TreeMultiset.create(impl.inputUpdateListeners);
+            this.inputUpdateListeners = SequencedSortedSets.create(impl.inputUpdateListeners);
             this.buttons = new HashSet<>(impl.buttons);
             this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
         }
 
         BuilderImpl() {
-            this.inputUpdateListeners = TreeMultiset.create();
+            this.inputUpdateListeners = SequencedSortedSets.create();
             this.buttons = new HashSet<>();
         }
 
@@ -47,7 +46,7 @@ record AnvilLayoutTemplateImpl(
         }
 
         @Override
-        public Builder inputUpdateListeners(SortedMultiset<InputUpdateListener> inputUpdateListeners) {
+        public Builder inputUpdateListeners(SequencedSortedSet<InputUpdateListener> inputUpdateListeners) {
             Objects.requireNonNull(inputUpdateListeners, "inputUpdateListeners");
             this.inputUpdateListeners.clear();
             this.inputUpdateListeners.addAll(inputUpdateListeners);
@@ -55,7 +54,7 @@ record AnvilLayoutTemplateImpl(
         }
 
         @Override
-        public SortedMultiset<InputUpdateListener> inputUpdateListeners() {
+        public SequencedSortedSet<InputUpdateListener> inputUpdateListeners() {
             return inputUpdateListeners;
         }
 
@@ -95,7 +94,7 @@ record AnvilLayoutTemplateImpl(
         @Override
         public AnvilLayoutTemplate build() {
             return new AnvilLayoutTemplateImpl(
-                    ImmutableSortedMultiset.copyOfSorted(inputUpdateListeners),
+                    SequencedSortedSets.copyOf(inputUpdateListeners),
                     Set.copyOf(buttons),
                     Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry")
             );

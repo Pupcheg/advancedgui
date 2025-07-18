@@ -1,7 +1,6 @@
 package me.supcheg.advancedgui.api.button.template;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.SortedMultiset;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.Button;
@@ -10,6 +9,7 @@ import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
+import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.examination.Examinable;
@@ -37,7 +37,7 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
     Set<Coordinate> coordinates();
 
     @Unmodifiable
-    SortedMultiset<ButtonInteraction> interactions();
+    SequencedSortedSet<ButtonInteraction> interactions();
 
     Key texture();
 
@@ -89,9 +89,9 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
 
         Builder addInteraction(ButtonInteraction interaction);
 
-        Builder interactions(SortedMultiset<ButtonInteraction> interactions);
+        Builder interactions(SequencedSortedSet<ButtonInteraction> interactions);
 
-        SortedMultiset<ButtonInteraction> interactions();
+        SequencedSortedSet<ButtonInteraction> interactions();
 
         Builder texture(Key location);
 

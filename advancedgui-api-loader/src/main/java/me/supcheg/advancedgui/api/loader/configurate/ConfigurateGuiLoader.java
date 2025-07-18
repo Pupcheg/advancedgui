@@ -10,6 +10,7 @@ import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.loader.GuiLoader;
 import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.action.factory.ProxyActionFactory;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.CustomNamespaceKeyTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.KeyedTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.StringComponentSerializerWrapperTypeSerializer;
@@ -20,7 +21,7 @@ import me.supcheg.advancedgui.api.loader.configurate.serializer.coordinate.Coord
 import me.supcheg.advancedgui.api.loader.configurate.serializer.layout.LayoutTemplateTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.LifecycleListenerRegistryTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.PriorityTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.SortedMultisetTypeSerializer;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.sequence.SequencedSetTypeSerializer;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
@@ -97,14 +98,15 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
                 .register(
                         ActionTypeSerializer::isAction,
                         new ActionTypeSerializer(
+                                new ProxyActionFactory(),
                                 new YamlClasspathActionInterpreterSource(
                                         Objects.requireNonNull(ConfigurateGuiLoader.class.getClassLoader(), "classLoader")
                                 )
                         )
                 )
                 .register(
-                        SortedMultisetTypeSerializer::isSortedMultiset,
-                        new SortedMultisetTypeSerializer()
+                        SequencedSetTypeSerializer::isSequencedSet,
+                        new SequencedSetTypeSerializer()
                 )
                 .register(
                         LayoutTemplateTypeSerializer::isExactLayoutTemplate,

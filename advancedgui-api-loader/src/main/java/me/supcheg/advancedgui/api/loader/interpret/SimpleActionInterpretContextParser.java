@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.loader.interpret;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
@@ -7,7 +8,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import java.util.Objects;
 
 public abstract class SimpleActionInterpretContextParser<C extends ActionInterpretContext> implements ActionInterpretContextParser<C> {
-    protected final @Nullable String name;
+    protected final @MonotonicNonNull String name;
     protected final Class<C> contextType;
 
     protected SimpleActionInterpretContextParser(@Nullable String name, Class<C> contextType) {

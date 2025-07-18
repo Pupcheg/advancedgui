@@ -1,9 +1,9 @@
 package me.supcheg.advancedgui.api.lifecycle;
 
-import com.google.common.collect.SortedMultiset;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
+import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Unmodifiable;
@@ -28,10 +28,10 @@ public interface LifecycleListenerRegistry<S> extends Examinable, Buildable<Life
     }
 
     @Unmodifiable
-    SortedMultiset<LifecycleListener<S>> listeners(Pointcut pointcut);
+    SequencedSortedSet<LifecycleListener<S>> listeners(Pointcut pointcut);
 
     @Unmodifiable
-    Map<Pointcut, SortedMultiset<LifecycleListener<S>>> listeners();
+    Map<Pointcut, SequencedSortedSet<LifecycleListener<S>>> listeners();
 
     @Override
     default Stream<? extends ExaminableProperty> examinableProperties() {
