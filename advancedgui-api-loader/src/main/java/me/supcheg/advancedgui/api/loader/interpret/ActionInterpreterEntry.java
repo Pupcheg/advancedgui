@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.loader.interpret;
 
+import me.supcheg.advancedgui.api.action.ActionContext;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -13,12 +14,12 @@ public record ActionInterpreterEntry<C extends ActionInterpretContext>(
         return contextParser.isAcceptable(node);
     }
 
-    public InterpretedContext parseAndInterpret(ConfigurationNode node) throws SerializationException {
+    public InterpretedContext parseAndInterpret(ConfigurationNode node, Class<? extends ActionContext> targetActionContextType) throws SerializationException {
         C ctx = contextParser.deserialize(node);
         return new InterpretedContext(
                 contextParser,
                 ctx,
-                actionInterpreter.interpretMethodHandle(ctx)
+                actionInterpreter.interpretActionHandle(ctx, targetActionContextType)
         );
     }
 }

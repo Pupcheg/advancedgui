@@ -6,7 +6,7 @@ import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.action.Action;
 import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.action.factory.ProxyActionFactory;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.action.factory.EnvironmentActionFactoryProvider;
 
 import static org.spongepowered.configurate.BasicConfigurationNode.root;
 
@@ -15,7 +15,7 @@ public final class DummyAction {
     private static final String NAME = "dummy";
 
     private static final ActionTypeSerializer ACTION_TYPE_SERIALIZER = new ActionTypeSerializer(
-            new ProxyActionFactory(),
+            new EnvironmentActionFactoryProvider().makeActionFactory(),
             new YamlClasspathActionInterpreterSource(DummyAction.class.getClassLoader())
     );
 

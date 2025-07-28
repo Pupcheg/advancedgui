@@ -1,17 +1,12 @@
 package me.supcheg.advancedgui.platform.paper.interpret.close;
 
-import lombok.extern.slf4j.Slf4j;
 import me.supcheg.advancedgui.api.action.AudienceActionContext;
-import me.supcheg.advancedgui.api.loader.interpret.GenericActionInterpreter;
-import org.jetbrains.annotations.NotNull;
+import me.supcheg.advancedgui.api.loader.interpret.ActionHandle;
+import me.supcheg.advancedgui.api.loader.interpret.AudienceActionInterpreter;
 
-@Slf4j
-final class CloseActionInterpreter implements GenericActionInterpreter<CloseActionInterpretContext> {
-    private final GenericAction action = ctx -> ((AudienceActionContext) ctx).audience().close();
-
-    @NotNull
+final class CloseActionInterpreter implements AudienceActionInterpreter<CloseActionInterpretContext> {
     @Override
-    public GenericAction interpretGenericAction(@NotNull CloseActionInterpretContext ctx) {
-        return action;
+    public <AC extends AudienceActionContext> ActionHandle<AC> interpretAudienceActionHandle(CloseActionInterpretContext interpretContext, Class<AC> targetActionContextType) {
+        return ctx -> ctx.audience().close();
     }
 }

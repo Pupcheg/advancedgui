@@ -1,6 +1,7 @@
 package me.supcheg.advancedgui.api.loader.configurate.serializer.action;
 
 import me.supcheg.advancedgui.api.action.Action;
+import me.supcheg.advancedgui.api.action.ActionContext;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.factory.ActionFactory;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.factory.ContextInterpreted;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
@@ -13,8 +14,7 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,28 +43,23 @@ public final class ActionTypeSerializer implements TypeSerializer<Action> {
 
     @Override
     public Action deserialize(Type type, ConfigurationNode node) throws SerializationException {
-        return actionFactory.createAction(erase(type), interpret(node));
+        Class<?> erased = erase(type);
+        // noinspection unchecked, rawtypes
+        return actionFactory.createAction((Class) erased, interpret(erased, node));
     }
 
-    private InterpretedContext interpret(ConfigurationNode node) throws SerializationException {
+    private InterpretedContext interpret(Class<?> type, ConfigurationNode node) throws SerializationException {
         for (ActionInterpreterEntry<?> interpreter : interpreters) {
             if (interpreter.isAcceptable(node)) {
-                InterpretedContext context = interpreter.parseAndInterpret(node);
-                assertIsValid(context.methodHandle(), interpreter);
-                return context;
+                return interpreter.parseAndInterpret(node, getContextType(FunctionalInterfaceUtilities.getFunctionalInterfaceMethod(type)));
             }
         }
         throw new SerializationException("Not found interpreter for " + node);
     }
 
-    private static void assertIsValid(MethodHandle handle, ActionInterpreterEntry<?> interpreter) {
-        MethodType type = handle.type();
-        if (!void.class.equals(type.returnType())) {
-            throw new IllegalArgumentException(
-                    "Required %s return type, but got %s from %s"
-                            .formatted(void.class, type, interpreter.actionInterpreter())
-            );
-        }
+    private static Class<? extends ActionContext> getContextType(Method method) {
+        // noinspection unchecked
+        return (Class<? extends ActionContext>) method.getParameterTypes()[0];
     }
 
     @Override

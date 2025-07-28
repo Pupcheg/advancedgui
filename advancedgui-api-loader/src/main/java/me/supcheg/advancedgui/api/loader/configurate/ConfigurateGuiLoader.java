@@ -10,7 +10,7 @@ import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.loader.GuiLoader;
 import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
-import me.supcheg.advancedgui.api.loader.configurate.serializer.action.factory.ProxyActionFactory;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.action.factory.EnvironmentActionFactoryProvider;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.CustomNamespaceKeyTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.KeyedTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.StringComponentSerializerWrapperTypeSerializer;
@@ -98,7 +98,7 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
                 .register(
                         ActionTypeSerializer::isAction,
                         new ActionTypeSerializer(
-                                new ProxyActionFactory(),
+                                new EnvironmentActionFactoryProvider().makeActionFactory(),
                                 new YamlClasspathActionInterpreterSource(
                                         Objects.requireNonNull(ConfigurateGuiLoader.class.getClassLoader(), "classLoader")
                                 )

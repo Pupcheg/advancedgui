@@ -13,14 +13,15 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Objects;
 
-public final class ProxyActionFactory implements ActionFactory {
+final class ProxyActionFactory implements ActionFactory {
     @Override
-    public <A extends Action & ContextInterpreted> A createAction(Class<?> requiredType, InterpretedContext ctx) {
+    public <A extends Action & ContextInterpreted> A createAction(Class<A> requiredType, InterpretedContext ctx) {
         Object generatedClass = Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class[]{requiredType, ContextInterpreted.class},
                 new InterpretedContextInvocationHandler(ctx, findFunctionalInterfaceMethodName(requiredType))
         );
+        // noinspection unchecked
         return (A) generatedClass;
     }
 
@@ -42,11 +43,11 @@ public final class ProxyActionFactory implements ActionFactory {
     ) implements InvocationHandler {
         @Override
         @Nullable
-        public Object invoke(Object proxy, Method proxiedMethod, @Nullable Object[] args) throws Throwable {
+        public Object invoke(Object proxy, Method proxiedMethod, Object[] args) throws Throwable {
             String proxiedMethodName = proxiedMethod.getName();
 
             if (interfaceMethodName.equals(proxiedMethodName)) {
-                interpretedContext.methodHandle().invokeExact((ActionContext) args[0]);
+                interpretedContext.actionHandle().handle(uncheckedCast(args[0]));
                 return null;
             }
 
@@ -57,6 +58,10 @@ public final class ProxyActionFactory implements ActionFactory {
                 case "toString" -> ActionTypeSerializer.class + " proxy for " + interpretedContext;
                 default -> proxiedMethod.invoke(interpretedContext, args);
             };
+        }
+
+        private static <C extends ActionContext> C uncheckedCast(Object ctx) {
+            return (C) ctx;
         }
 
         /**

@@ -1,20 +1,21 @@
 package me.supcheg.advancedgui.fabric.interpret;
 
 import me.supcheg.advancedgui.api.action.ActionContext;
+import me.supcheg.advancedgui.api.loader.interpret.ActionHandle;
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpreter;
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.invoke.MethodHandle;
-
-import static java.lang.invoke.MethodHandles.empty;
-import static java.lang.invoke.MethodType.methodType;
 
 final class AnyActionInterpreter implements ActionInterpreter<AnyActionInterpretContext> {
-    private final MethodHandle action = empty(methodType(void.class, ActionContext.class));
-
-    @NotNull
     @Override
-    public MethodHandle interpretMethodHandle(@NotNull AnyActionInterpretContext ctx) {
-        return action;
+    public <AC extends ActionContext> ActionHandle<AC> interpretActionHandle(
+            AnyActionInterpretContext interpretContext,
+            Class<AC> targetActionContextType
+    ) {
+        return ctx -> {
+            if (!targetActionContextType.isInstance(ctx)) {
+                throw new IllegalArgumentException(
+                        "Target action context is not an instance of " + targetActionContextType.getName()
+                );
+            }
+        };
     }
 }
