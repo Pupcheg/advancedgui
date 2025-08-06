@@ -29,7 +29,8 @@ public final class BuildableInterfaceTypeSerializer implements TypeSerializer<Bu
         for (ValueMethodData valueMethodData : report.values()) {
             Object value = node.node(valueMethodData.name())
                     .require(valueMethodData.type());
-            valueMethodData.setter().invokeWithArguments(builder, value);
+            valueMethodData.setter()
+                    .invokeExact((Object) builder, (Object) value);
         }
 
         return (Buildable) builder.build();
@@ -57,7 +58,7 @@ public final class BuildableInterfaceTypeSerializer implements TypeSerializer<Bu
 
         for (ValueMethodData value : report.values()) {
             node.node(value.name())
-                    .set(value.type(), value.getter().invokeWithArguments(objBuilder));
+                    .set(value.type(), (Object) value.getter().invokeExact((Object) objBuilder));
         }
     }
 }

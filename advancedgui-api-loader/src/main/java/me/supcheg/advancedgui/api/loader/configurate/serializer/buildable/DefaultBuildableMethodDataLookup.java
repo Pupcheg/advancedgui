@@ -13,6 +13,9 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.invoke.MethodHandles.dropReturn;
+import static java.lang.invoke.MethodHandles.explicitCastArguments;
+import static java.lang.invoke.MethodType.methodType;
 import static java.lang.reflect.Modifier.isStatic;
 
 @RequiredArgsConstructor
@@ -50,9 +53,18 @@ public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLook
                                                     returnType.equals(setMethod.getGenericParameterTypes()[0])
                                             )
                                             .map(this::unreflect)
+                                            .map(setMethod ->
+                                                    explicitCastArguments(
+                                                            dropReturn(setMethod),
+                                                            methodType(void.class, Object.class, Object.class)
+                                                    )
+                                            )
                                             .findFirst()
                                             .orElseThrow(() -> new IllegalStateException("No setMethod found for " + getMethod.getName())),
-                                    unreflect(getMethod)
+                                    explicitCastArguments(
+                                            unreflect(getMethod),
+                                            methodType(Object.class, Object.class)
+                                    )
                             );
                         }
                 )
