@@ -7,19 +7,16 @@ import me.supcheg.advancedgui.api.sequence.Sequenced;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 
-final class GuavaBackedSequencedSortedSet<E extends Sequenced<E>> extends AbstractSet<E> implements SequencedSortedSet<E> {
+final class GuavaBackedSequencedSortedSet<E extends Sequenced<E>>
+        extends AbstractSet<E>
+        implements SequencedSortedSet<E> {
     private final SetMultimap<Priority, E> map;
     private final Collection<E> values;
 
     GuavaBackedSequencedSortedSet(SetMultimap<Priority, E> map) {
         this.map = map;
         this.values = map.values();
-    }
-
-    SetMultimap<Priority, E> asMultimap() {
-        return map;
     }
 
     @Override
@@ -74,11 +71,6 @@ final class GuavaBackedSequencedSortedSet<E extends Sequenced<E>> extends Abstra
     @Override
     public boolean contains(Object o) {
         return values.contains(o);
-    }
-
-    @Override
-    public Set<E> subsetWithPriority(Priority priority) {
-        return map.get(priority);
     }
 
     @Override

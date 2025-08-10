@@ -47,7 +47,7 @@ record ButtonTemplateImpl(
 
         BuilderImpl(ButtonTemplateImpl impl) {
             this.coordinates = new HashSet<>(impl.coordinates);
-            this.interactions = SequencedSortedSets.create(impl.interactions);
+            this.interactions = SequencedSortedSets.createCopy(impl.interactions);
             this.attributes = new HashSet<>(impl.attributes);
             this.texture = impl.texture;
             this.name = impl.name;

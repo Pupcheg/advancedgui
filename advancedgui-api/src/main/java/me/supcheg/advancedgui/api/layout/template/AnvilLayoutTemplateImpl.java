@@ -28,7 +28,7 @@ record AnvilLayoutTemplateImpl(
         private @Nullable LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry;
 
         BuilderImpl(AnvilLayoutTemplateImpl impl) {
-            this.inputUpdateListeners = SequencedSortedSets.create(impl.inputUpdateListeners);
+            this.inputUpdateListeners = SequencedSortedSets.createCopy(impl.inputUpdateListeners);
             this.buttons = new HashSet<>(impl.buttons);
             this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
         }
