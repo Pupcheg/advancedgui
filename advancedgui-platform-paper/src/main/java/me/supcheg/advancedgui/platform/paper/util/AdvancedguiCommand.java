@@ -13,7 +13,6 @@ import me.supcheg.advancedgui.api.controller.GuiController;
 import me.supcheg.advancedgui.api.gui.Gui;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -51,7 +50,7 @@ public final class AdvancedguiCommand {
                 .build();
     }
 
-    private int open(@NotNull CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    private int open(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Gui gui = ctx.getArgument(GUI_ARG, Gui.class);
         List<Player> players = ctx.getArgument(PLAYERS_ARG, PlayerSelectorArgumentResolver.class)
                 .resolve(ctx.getSource());
@@ -62,7 +61,7 @@ public final class AdvancedguiCommand {
     }
 
     @SneakyThrows
-    private int print(@NotNull CommandContext<CommandSourceStack> ctx) {
+    private int print(CommandContext<CommandSourceStack> ctx) {
         Gui gui = ctx.getArgument(GUI_ARG, Gui.class);
         PrintStrategy strategy = ctx.getArgument(PRINT_STRATEGY_ARG, PrintStrategy.class);
 

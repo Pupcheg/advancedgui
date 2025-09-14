@@ -8,22 +8,21 @@ import me.supcheg.advancedgui.platform.paper.lifecycle.DefaultLifecycled;
 import me.supcheg.advancedgui.platform.paper.view.GuiViewer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.NotNull;
 
 import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTickPointcut;
 import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.beforeTickPointcut;
 
 public record GuiImpl(
-        @NotNull Key key,
-        @NotNull Background background,
-        @NotNull LayoutImpl<?> layout,
-        @NotNull LifecycleListenerRegistry<Gui> lifecycleListenerRegistry,
-        @NotNull GuiViewer viewer,
-        @NotNull GuiTemplate source
+        Key key,
+        Background background,
+        LayoutImpl<?> layout,
+        LifecycleListenerRegistry<Gui> lifecycleListenerRegistry,
+        GuiViewer viewer,
+        GuiTemplate source
 ) implements Gui, DefaultLifecycled<Gui> {
 
     @Override
-    public void open(@NotNull Audience audience) {
+    public void open(Audience audience) {
         viewer.open(audience, this);
     }
 

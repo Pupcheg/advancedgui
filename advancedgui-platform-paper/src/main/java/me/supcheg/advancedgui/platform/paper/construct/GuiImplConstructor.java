@@ -7,16 +7,14 @@ import me.supcheg.advancedgui.api.lifecycle.pointcut.ObjectPointcut;
 import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
 import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
 import me.supcheg.advancedgui.platform.paper.view.GuiViewer;
-import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class GuiImplConstructor implements TemplateConstructor<GuiTemplate, GuiImpl> {
     private final TemplateConstructor<LayoutTemplate<?, ?, ?>, LayoutImpl<?>> layoutConstructor;
     private final GuiViewer guiViewer;
 
-    @NotNull
     @Override
-    public GuiImpl construct(@NotNull GuiTemplate template) {
+    public GuiImpl construct(GuiTemplate template) {
         var gui = new GuiImpl(
                 template.key(),
                 template.background(),

@@ -10,16 +10,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
-import org.jetbrains.annotations.NotNull;
 
 import static io.papermc.paper.adventure.PaperAdventure.asVanilla;
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
 
 public class DefaultButtonItemStackRenderer implements Renderer<Button, ItemStack> {
-    @NotNull
     @Override
-    public ItemStack render(@NotNull Button input) {
+    public ItemStack render(Button input) {
 
         if (input.hasAttribute(hidden())) {
             return ItemStack.EMPTY;
@@ -41,12 +39,12 @@ public class DefaultButtonItemStackRenderer implements Renderer<Button, ItemStac
         return PaperAdventure.asVanilla(key);
     }
 
-    private ItemLore lore(@NotNull Description description) {
+    private ItemLore lore(Description description) {
         var transform = PaperAdventure.asVanilla(description.lines());
         return new ItemLore(transform, transform);
     }
 
-    private Component name(@NotNull net.kyori.adventure.text.Component name) {
+    private Component name(net.kyori.adventure.text.Component name) {
         return asVanilla(name);
     }
 }

@@ -14,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.api.controller.GuiController;
 import me.supcheg.advancedgui.api.gui.Gui;
 import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -41,17 +39,14 @@ public final class GuiArgumentType implements CustomArgumentType<Gui, Key> {
     private final ArgumentType<Key> keyType = ArgumentTypes.key();
     private final GuiController<?, ?> controller;
 
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    public static GuiArgumentType gui(@NotNull GuiController<?, ?> controller) {
+    public static GuiArgumentType gui(GuiController<?, ?> controller) {
         return new GuiArgumentType(
                 Objects.requireNonNull(controller, "controller")
         );
     }
 
-    @NotNull
     @Override
-    public Gui parse(@NotNull StringReader reader) throws CommandSyntaxException {
+    public Gui parse(StringReader reader) throws CommandSyntaxException {
         int cursor = reader.getCursor();
 
         Key key = keyType.parse(reader);
@@ -64,16 +59,14 @@ public final class GuiArgumentType implements CustomArgumentType<Gui, Key> {
         return gui;
     }
 
-    @NotNull
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         for (Gui gui : controller.guis()) {
             builder.suggest(gui.key().asString());
         }
         return builder.buildFuture();
     }
 
-    @NotNull
     @Override
     public ArgumentType<Key> getNativeType() {
         return keyType;

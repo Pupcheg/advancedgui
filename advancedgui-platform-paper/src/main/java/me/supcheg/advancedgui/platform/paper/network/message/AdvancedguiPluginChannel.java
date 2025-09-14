@@ -7,7 +7,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -16,7 +15,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class AdvancedguiPluginChannel implements Closeable {
-    private final List<Key> REGISTERED_MESSAGES = new ArrayList<>();
+    private final List<Key> registeredMessages = new ArrayList<>();
 
     private final Plugin plugin;
 
@@ -24,12 +23,12 @@ public class AdvancedguiPluginChannel implements Closeable {
         register(DebugInfoMessage.KEY);
     }
 
-    private void register(@NotNull Key key) {
+    private void register(Key key) {
         Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, key.asString());
-        REGISTERED_MESSAGES.add(key);
+        registeredMessages.add(key);
     }
 
-    public void sendMessage(@NotNull Player player, @NotNull Message message) {
+    public void sendMessage(Player player, Message message) {
         FriendlyByteBuf buf = new FriendlyByteBuf(ByteBufAllocator.DEFAULT.buffer());
         message.write(buf);
 
@@ -41,7 +40,7 @@ public class AdvancedguiPluginChannel implements Closeable {
 
     @Override
     public void close() throws IOException {
-        for (Key key : REGISTERED_MESSAGES) {
+        for (Key key : registeredMessages) {
             Bukkit.getMessenger().unregisterOutgoingPluginChannel(plugin, key.asString());
         }
     }

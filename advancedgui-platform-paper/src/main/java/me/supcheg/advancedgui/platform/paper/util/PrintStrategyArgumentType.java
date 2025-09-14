@@ -11,8 +11,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.papermc.paper.command.brigadier.argument.CustomArgumentType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -37,15 +35,12 @@ public final class PrintStrategyArgumentType implements CustomArgumentType<Print
 
     private final ArgumentType<String> stringType = StringArgumentType.string();
 
-    @NotNull
-    @Contract(value = "-> new", pure = true)
     public static PrintStrategyArgumentType printStrategy() {
         return new PrintStrategyArgumentType();
     }
 
-    @NotNull
     @Override
-    public PrintStrategy parse(@NotNull StringReader reader) throws CommandSyntaxException {
+    public PrintStrategy parse(StringReader reader) throws CommandSyntaxException {
         int cursor = reader.getCursor();
 
         String key = stringType.parse(reader).toUpperCase();
@@ -61,16 +56,14 @@ public final class PrintStrategyArgumentType implements CustomArgumentType<Print
         return strategy;
     }
 
-    @NotNull
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         for (PrintStrategy value : VALUES) {
             builder.suggest(value.toString().toLowerCase());
         }
         return builder.buildFuture();
     }
 
-    @NotNull
     @Override
     public ArgumentType<String> getNativeType() {
         return stringType;

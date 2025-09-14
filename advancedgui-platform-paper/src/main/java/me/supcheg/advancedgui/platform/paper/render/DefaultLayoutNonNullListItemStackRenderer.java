@@ -6,7 +6,6 @@ import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -14,9 +13,8 @@ import java.util.Arrays;
 public class DefaultLayoutNonNullListItemStackRenderer implements Renderer<LayoutImpl<?>, NonNullList<ItemStack>> {
     private final Renderer<Button, ItemStack> buttonItemStackRenderer;
 
-    @NotNull
     @Override
-    public NonNullList<ItemStack> render(@NotNull LayoutImpl<?> input) {
+    public NonNullList<ItemStack> render(LayoutImpl<?> input) {
         CoordinateTranslator coordinateTranslator = input.coordinateTranslator();
 
         ItemStack[] itemStacks = new ItemStack[coordinateTranslator.slotsCount()];

@@ -3,7 +3,6 @@ package me.supcheg.advancedgui.platform.paper.util;
 import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.joining;
@@ -14,9 +13,8 @@ import static net.kyori.examination.string.MultiLineStringExaminer.simpleEscapin
 
 public enum PrintStrategy {
     EXAMINATION {
-        @NotNull
         @Override
-        public Component print(@NotNull GuiTemplate template) {
+        public Component print(GuiTemplate template) {
             return simpleEscaping()
                     .examine(template)
                     .collect(collectingAndThen(joining("\n"), Component::text));
@@ -24,9 +22,8 @@ public enum PrintStrategy {
     },
     YAML {
         @SneakyThrows
-        @NotNull
         @Override
-        public Component print(@NotNull GuiTemplate template) {
+        public Component print(GuiTemplate template) {
             return Component.text(
                     yamlGuiLoader().writeString(template)
             );
@@ -34,9 +31,8 @@ public enum PrintStrategy {
     },
     JSON {
         @SneakyThrows
-        @NotNull
         @Override
-        public Component print(@NotNull GuiTemplate template) {
+        public Component print(GuiTemplate template) {
             return Component.text(
                     jsonGuiLoader().writeString(template)
             );
@@ -44,15 +40,13 @@ public enum PrintStrategy {
     },
     BASE64 {
         @SneakyThrows
-        @NotNull
         @Override
-        public Component print(@NotNull GuiTemplate template) {
+        public Component print(GuiTemplate template) {
             return Component.text(
                     jsonDownstreamBase64GuiLoader().writeString(template)
             );
         }
     };
 
-    @NotNull
-    public abstract Component print(@NotNull GuiTemplate template);
+    public abstract Component print(GuiTemplate template);
 }

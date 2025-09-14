@@ -14,7 +14,6 @@ import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -70,7 +69,7 @@ public class NmsNetworkInjection implements NetworkInjection {
     }
 
     @Override
-    public void inject(@NotNull ServerPlayer player) {
+    public void inject(ServerPlayer player) {
         ChannelPipeline pipeline = pipeline(player);
 
         if (pipeline.get(AdvancedGuiChannelInboundHandler.NAME) != null) {
@@ -85,7 +84,7 @@ public class NmsNetworkInjection implements NetworkInjection {
     }
 
     @Override
-    public void uninject(@NotNull ServerPlayer player) {
+    public void uninject(ServerPlayer player) {
         ChannelPipeline pipeline = pipeline(player);
         ChannelHandler channelHandler = pipeline.get(AdvancedGuiChannelInboundHandler.NAME);
         if (channelHandler != null) {
@@ -93,8 +92,7 @@ public class NmsNetworkInjection implements NetworkInjection {
         }
     }
 
-    @NotNull
-    private static ChannelPipeline pipeline(@NotNull ServerPlayer serverPlayer) {
+    private static ChannelPipeline pipeline(ServerPlayer serverPlayer) {
         return serverPlayer.connection.connection.channel.pipeline();
     }
 

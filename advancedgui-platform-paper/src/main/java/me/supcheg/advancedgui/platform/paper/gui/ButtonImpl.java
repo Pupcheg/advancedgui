@@ -10,7 +10,6 @@ import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
 import me.supcheg.advancedgui.platform.paper.lifecycle.DefaultLifecycled;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -18,13 +17,13 @@ import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTi
 import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.beforeTickPointcut;
 
 public record ButtonImpl(
-        @NotNull Coordinate coordinate,
-        @NotNull SequencedSortedSet<ButtonInteraction> interactions,
-        @NotNull Key texture,
-        @NotNull Component name,
-        @NotNull Description description,
-        @NotNull Set<ButtonAttribute> attributes,
-        @NotNull LifecycleListenerRegistry<Button> lifecycleListenerRegistry
+        Coordinate coordinate,
+        SequencedSortedSet<ButtonInteraction> interactions,
+        Key texture,
+        Component name,
+        Description description,
+        Set<ButtonAttribute> attributes,
+        LifecycleListenerRegistry<Button> lifecycleListenerRegistry
 ) implements Button, DefaultLifecycled<Button> {
 
     public void tick() {

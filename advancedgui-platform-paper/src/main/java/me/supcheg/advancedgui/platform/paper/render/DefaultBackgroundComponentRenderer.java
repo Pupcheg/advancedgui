@@ -12,7 +12,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
 import java.util.List;
@@ -26,9 +25,8 @@ public class DefaultBackgroundComponentRenderer implements Renderer<Background, 
                     .setStyle(createStyle(fromNamespaceAndPath(Advancedgui.NAMESPACE, "negative_spaces")));
     private final BackgroundImageMetaLookup backgroundImageMetaLookup;
 
-    @NotNull
     @Override
-    public Component render(@NotNull Background input) {
+    public Component render(Background input) {
         var result = MutableComponent.create(PlainTextContents.EMPTY);
 
 

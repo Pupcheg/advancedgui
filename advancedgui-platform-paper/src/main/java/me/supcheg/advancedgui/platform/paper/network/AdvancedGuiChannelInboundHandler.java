@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.concurrent.Executor;
 
-@Slf4j
 @RequiredArgsConstructor
 public class AdvancedGuiChannelInboundHandler extends SimpleChannelInboundHandler<Packet<?>> {
     public static final String NAME = Advancedgui.NAMESPACE + "_packet_handler";

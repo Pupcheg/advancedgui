@@ -32,8 +32,8 @@ import net.kyori.adventure.util.Ticks;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.Closeable;
@@ -81,8 +81,8 @@ final class PaperGuiControllerImpl implements PaperGuiController {
     private final AdvancedguiPluginChannel channel;
 
     PaperGuiControllerImpl(
-            @NotNull Plugin plugin,
-            @NotNull ComponentRenderer<ComponentRenderContext> componentRenderer
+            Plugin plugin,
+            ComponentRenderer<ComponentRenderContext> componentRenderer
     ) {
         this.guiTasksExecutor = Executors.newSingleThreadExecutor();
 
@@ -122,20 +122,17 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         this.tickTask = startTicking();
     }
 
-    @NotNull
     @Override
     public ComponentRenderer<ComponentRenderContext> componentRenderer() {
         return componentRenderer;
     }
 
-    @NotNull
     @Override
     public PointcutSupport pointcutSupport() {
         return POINTCUT_SUPPORT;
     }
 
     @UnmodifiableView
-    @NotNull
     @Override
     public Collection<Gui> guis() {
         return unmodifiableRegistryView.values();
@@ -143,14 +140,13 @@ final class PaperGuiControllerImpl implements PaperGuiController {
 
     @Nullable
     @Override
-    public Gui gui(@NotNull Key key) {
+    public Gui gui(Key key) {
         Objects.requireNonNull(key, "key");
         return registry.get(key);
     }
 
-    @NotNull
     @Override
-    public Gui register(@NotNull GuiTemplate template) {
+    public Gui register(GuiTemplate template) {
         Objects.requireNonNull(template, "template");
 
         GuiImpl gui = guiConstructor.construct(template);
@@ -163,7 +159,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
     }
 
     @Override
-    public void unregister(@NotNull Key key) {
+    public void unregister(Key key) {
         Objects.requireNonNull(key, "key");
 
         GuiImpl gui = registry.get(key);
@@ -174,7 +170,6 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         }
     }
 
-    @NotNull
     private ScheduledTask startTicking() {
         return Bukkit.getAsyncScheduler()
                 .runAtFixedRate(
@@ -186,7 +181,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
                 );
     }
 
-    private void tick(@NotNull ScheduledTask task) {
+    private void tick(ScheduledTask task) {
         for (GuiImpl gui : registry.values()) {
             try {
                 gui.tick();
@@ -210,34 +205,33 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         }
     }
 
-    @NotNull
     @Override
     public Builder toBuilder() {
         return new BuilderImpl(this);
     }
 
-    @NotNull
     @Override
     public Plugin plugin() {
         return plugin;
     }
 
     static final class BuilderImpl implements Builder {
+        @MonotonicNonNull
         private ComponentRenderer<ComponentRenderContext> componentRenderer;
+        @MonotonicNonNull
         private Plugin plugin;
 
         BuilderImpl() {
             componentRenderer = ComponentRenderers.noopComponentRenderer();
         }
 
-        BuilderImpl(@NotNull PaperGuiControllerImpl impl) {
+        BuilderImpl(PaperGuiControllerImpl impl) {
             componentRenderer = impl.componentRenderer;
             plugin = impl.plugin;
         }
 
-        @NotNull
         @Override
-        public Builder componentRenderer(@NotNull ComponentRenderer<ComponentRenderContext> componentRenderer) {
+        public Builder componentRenderer(ComponentRenderer<ComponentRenderContext> componentRenderer) {
             Objects.requireNonNull(componentRenderer, "componentRenderer");
             this.componentRenderer = componentRenderer;
             return this;
@@ -255,15 +249,13 @@ final class PaperGuiControllerImpl implements PaperGuiController {
             return plugin;
         }
 
-        @NotNull
         @Override
-        public Builder plugin(@NotNull Plugin plugin) {
+        public Builder plugin(Plugin plugin) {
             Objects.requireNonNull(plugin, "plugin");
             this.plugin = plugin;
             return this;
         }
 
-        @NotNull
         @Override
         public PaperGuiController build() {
             return new PaperGuiControllerImpl(

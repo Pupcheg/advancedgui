@@ -3,28 +3,21 @@ package me.supcheg.advancedgui.platform.paper;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.controller.GuiController;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 
 public interface PaperGuiController extends GuiController<PaperGuiController, PaperGuiController.Builder> {
 
-    @NotNull
-    @Contract("-> new")
     static Builder paperGuiController() {
         return new PaperGuiControllerImpl.BuilderImpl();
     }
 
-    @NotNull
-    @Contract("_ -> new")
-    static PaperGuiController paperGuiController(@NotNull Consumer<Builder> consumer) {
+    static PaperGuiController paperGuiController(Consumer<Builder> consumer) {
         return Buildable.configureAndBuild(paperGuiController(), consumer);
     }
 
-    @NotNull
     Plugin plugin();
 
     @Override
@@ -34,8 +27,6 @@ public interface PaperGuiController extends GuiController<PaperGuiController, Pa
         @Nullable
         Plugin plugin();
 
-        @NotNull
-        @Contract("_ -> this")
-        Builder plugin(@NotNull Plugin plugin);
+        Builder plugin(Plugin plugin);
     }
 }

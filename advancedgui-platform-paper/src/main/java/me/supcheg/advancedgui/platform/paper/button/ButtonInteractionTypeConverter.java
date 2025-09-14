@@ -4,14 +4,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteractionType;
 import net.minecraft.world.inventory.ClickType;
-import org.jetbrains.annotations.NotNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ButtonInteractionTypeConverter {
 
     // see https://minecraft.wiki/w/Java_Edition_protocol/Packets#Click_Container
-    @NotNull
-    public static ButtonInteractionType fromVanilla(@NotNull ClickType clickType, int buttonNum) {
+    public static ButtonInteractionType fromVanilla(ClickType clickType, int buttonNum) {
         return switch (clickType) {
             case PICKUP -> isRightClick(buttonNum) ?
                     ButtonInteractionType.RIGHT_CLICK :

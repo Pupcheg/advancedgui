@@ -7,14 +7,12 @@ import net.kyori.adventure.text.Component;
 
 final class SendActionInterpreter implements AudienceActionInterpreter<SendActionInterpretContext> {
     @Override
-    public <AC extends AudienceActionContext> ActionHandle<AC> interpretAudienceActionHandle(SendActionInterpretContext interpretContext, Class<AC> targetActionContextType) {
+    public <AC extends AudienceActionContext> ActionHandle<AC> interpretAudienceActionHandle(
+            SendActionInterpretContext interpretContext,
+            Class<AC> targetActionContextType
+    ) {
         SendActionTarget target = interpretContext.target();
         Component content = interpretContext.content();
-        return ctx -> {
-            switch (target) {
-                case CHAT -> ctx.audience().sendMessage(content);
-                case ACTION_BAR -> ctx.audience().sendActionBar(content);
-            }
-        };
+        return ctx -> target.send(ctx.audience(), content);
     }
 }

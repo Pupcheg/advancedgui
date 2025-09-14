@@ -8,7 +8,6 @@ import me.supcheg.advancedgui.api.lifecycle.pointcut.ObjectPointcut;
 import me.supcheg.advancedgui.platform.paper.gui.AnvilLayoutImpl;
 import me.supcheg.advancedgui.platform.paper.gui.ButtonImpl;
 import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -17,9 +16,8 @@ import java.util.stream.Collectors;
 public class LayoutImplConstructor implements TemplateConstructor<LayoutTemplate<?, ?, ?>, LayoutImpl<?>> {
     private final TemplateConstructor<ButtonTemplate, Collection<ButtonImpl>> buttonConstructor;
 
-    @NotNull
     @Override
-    public LayoutImpl<?> construct(@NotNull LayoutTemplate<?, ?, ?> template) {
+    public LayoutImpl<?> construct(LayoutTemplate<?, ?, ?> template) {
         var layout = switch (template) {
             case AnvilLayoutTemplate anvil -> new AnvilLayoutImpl(
                     anvil.buttons().stream()

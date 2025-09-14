@@ -5,7 +5,6 @@ import me.supcheg.advancedgui.api.layout.template.anvil.InputUpdateListener;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
 import net.minecraft.world.inventory.MenuType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -13,12 +12,11 @@ import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTi
 import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.beforeTickPointcut;
 
 public record AnvilLayoutImpl(
-        @NotNull Set<ButtonImpl> buttons,
-        @NotNull SequencedSortedSet<InputUpdateListener> inputUpdateListeners,
-        @NotNull LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry
+        Set<ButtonImpl> buttons,
+        SequencedSortedSet<InputUpdateListener> inputUpdateListeners,
+        LifecycleListenerRegistry<AnvilLayout> lifecycleListenerRegistry
 ) implements AnvilLayout, LayoutImpl<AnvilLayout> {
 
-    @NotNull
     @Override
     public MenuType<?> menuType() {
         return MenuType.ANVIL;

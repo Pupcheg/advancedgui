@@ -17,7 +17,6 @@ import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class GuiView {
@@ -52,7 +51,7 @@ public class GuiView {
         send(layoutPacket());
     }
 
-    public void sendSlot(@NotNull Coordinate coordinate) {
+    public void sendSlot(Coordinate coordinate) {
         send(slotPacket(coordinate));
     }
 
@@ -60,7 +59,7 @@ public class GuiView {
         send(slotPacket(index));
     }
 
-    public void sendButton(@NotNull Button button) {
+    public void sendButton(Button button) {
         send(slotPacket(button));
     }
 
@@ -72,7 +71,7 @@ public class GuiView {
         send(closePacket());
     }
 
-    private void send(@NotNull Packet<?> packet) {
+    private void send(Packet<?> packet) {
         if (closed) {
             throw new IllegalStateException("GuiView is closed");
         }
@@ -80,7 +79,6 @@ public class GuiView {
         serverPlayer.connection.send(packet);
     }
 
-    @NotNull
     private Packet<?> backgroundPacket() {
         return new ClientboundOpenScreenPacket(
                 containerState.nextContainerId(),
@@ -89,7 +87,6 @@ public class GuiView {
         );
     }
 
-    @NotNull
     private Packet<?> layoutPacket() {
         return new ClientboundContainerSetContentPacket(
                 containerState.containerId(),
@@ -99,8 +96,7 @@ public class GuiView {
         );
     }
 
-    @NotNull
-    private Packet<?> slotPacket(@NotNull Coordinate coordinate) {
+    private Packet<?> slotPacket(Coordinate coordinate) {
         return new ClientboundContainerSetSlotPacket(
                 containerState.containerId(),
                 containerState.nextStateId(),
@@ -111,7 +107,6 @@ public class GuiView {
         );
     }
 
-    @NotNull
     private Packet<?> slotPacket(int index) {
         return new ClientboundContainerSetSlotPacket(
                 containerState.containerId(),
@@ -123,8 +118,7 @@ public class GuiView {
         );
     }
 
-    @NotNull
-    private Packet<?> slotPacket(@NotNull Button button) {
+    private Packet<?> slotPacket(Button button) {
         return new ClientboundContainerSetSlotPacket(
                 containerState.containerId(),
                 containerState.nextStateId(),
@@ -133,12 +127,10 @@ public class GuiView {
         );
     }
 
-    @NotNull
     private Packet<?> emptyCursorPacket() {
         return new ClientboundSetCursorItemPacket(ItemStack.EMPTY);
     }
 
-    @NotNull
     private Packet<?> closePacket() {
         return new ClientboundContainerClosePacket(containerState.containerId());
     }
