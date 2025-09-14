@@ -7,7 +7,6 @@ import me.supcheg.advancedgui.api.loader.configurate.ConfigurateGuiLoader;
 import me.supcheg.advancedgui.platform.paper.interpret.util.SimpleYamlConfigurationLoader;
 import org.bukkit.entity.HumanEntity;
 import org.intellij.lang.annotations.Language;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -24,12 +23,6 @@ abstract class ActionTestsTemplate {
         LOADER = new SimpleYamlConfigurationLoader(ConfigurateGuiLoader.makeSerializers(TypeSerializerCollection.defaults()));
     }
 
-    @SneakyThrows
-    @NotNull
-    static AudienceContextAction loadAction(@Language("yaml") @NotNull String yaml) {
-        return LOADER.require(AudienceContextAction.class, yaml);
-    }
-
     @BeforeEach
     void setup() {
         GuiAudience audience = Mockito.mock(GuiAudience.class);
@@ -37,4 +30,10 @@ abstract class ActionTestsTemplate {
         HumanEntity humanEntity = Mockito.mock(HumanEntity.class);
         humanEntityContext = () -> humanEntity;
     }
+
+    @SneakyThrows
+    static AudienceContextAction loadAction(@Language("yaml") String yaml) {
+        return LOADER.require(AudienceContextAction.class, yaml);
+    }
+
 }
