@@ -6,7 +6,17 @@ import me.supcheg.advancedgui.api.loader.interpret.AudienceActionInterpreter;
 
 final class CloseActionInterpreter implements AudienceActionInterpreter<CloseActionInterpretContext> {
     @Override
-    public <AC extends AudienceActionContext> ActionHandle<AC> interpretAudienceActionHandle(CloseActionInterpretContext interpretContext, Class<AC> targetActionContextType) {
-        return ctx -> ctx.audience().close();
+    public <AC extends AudienceActionContext> ActionHandle<AC> interpretAudienceActionHandle(
+            CloseActionInterpretContext interpretContext,
+            Class<AC> targetActionContextType
+    ) {
+        CloseErrorStrategy errorStrategy = interpretContext.errorStrategy();
+        return ctx -> {
+            try {
+                ctx.audience().close();
+            } catch (Exception exception) {
+                errorStrategy.handle(exception);
+            }
+        };
     }
 }
