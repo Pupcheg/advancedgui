@@ -8,7 +8,7 @@ import me.supcheg.advancedgui.platform.paper.PaperGuiController;
 import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
 import me.supcheg.advancedgui.platform.paper.util.AdvancedguiCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -19,8 +19,9 @@ import static me.supcheg.advancedgui.platform.paper.PaperGuiController.paperGuiC
 
 @SuppressWarnings("UnstableApiUsage")
 public class TestPlugin extends JavaPlugin {
-
+    @MonotonicNonNull
     private PaperGuiController controller;
+    @MonotonicNonNull
     private AdvancedguiPluginChannel channel;
 
     @Override
@@ -45,8 +46,7 @@ public class TestPlugin extends JavaPlugin {
     }
 
     @SneakyThrows
-    @NotNull
-    private GuiTemplate loadGuiTemplate(@NotNull String path) {
+    private GuiTemplate loadGuiTemplate(String path) {
         try (var in = Objects.requireNonNull(getResource(path))) {
             var template = yamlGuiLoader().read(in);
             getSLF4JLogger().info("Successfully loaded template '{}' from '{}'", template.key(), path);

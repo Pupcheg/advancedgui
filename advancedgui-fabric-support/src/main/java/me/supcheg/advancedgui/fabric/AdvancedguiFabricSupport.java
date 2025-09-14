@@ -6,7 +6,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
 import java.util.List;
@@ -23,7 +22,7 @@ public class AdvancedguiFabricSupport implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(DebugInfoCustomPayload.TYPE, this::handlePluginMessage);
     }
 
-    private void handlePluginMessage(@NotNull DebugInfoCustomPayload payload, @NotNull ClientPlayNetworking.Context ctx) {
+    private void handlePluginMessage(DebugInfoCustomPayload payload, ClientPlayNetworking.Context ctx) {
         var screen = ctx.client().screen;
         if (screen != null) {
             ScreenEvents.afterRender(screen).register(appendWithDebugInfo(payload));
@@ -31,8 +30,7 @@ public class AdvancedguiFabricSupport implements ClientModInitializer {
     }
 
     @SneakyThrows
-    @NotNull
-    private ScreenEvents.AfterRender appendWithDebugInfo(@NotNull DebugInfoCustomPayload payload) {
+    private ScreenEvents.AfterRender appendWithDebugInfo(DebugInfoCustomPayload payload) {
         List<String> lines = List.of(yamlGuiLoader().writeString(payload.template()).split("\n"));
 
         return (screen, drawContext, mouseX, mouseY, tickDelta) -> {

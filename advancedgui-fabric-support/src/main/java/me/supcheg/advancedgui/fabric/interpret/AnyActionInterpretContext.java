@@ -1,7 +1,7 @@
 package me.supcheg.advancedgui.fabric.interpret;
 
 import me.supcheg.advancedgui.api.loader.interpret.ActionInterpretContext;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 record AnyActionInterpretContext(
         @Nullable Object value

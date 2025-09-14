@@ -6,10 +6,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 public record DebugInfoCustomPayload(
-        @NotNull GuiTemplate template
+        GuiTemplate template
 ) implements CustomPacketPayload {
 
     public static final Type<DebugInfoCustomPayload> TYPE =
@@ -21,7 +20,6 @@ public record DebugInfoCustomPayload(
                     DebugInfoCustomPayload::new
             );
 
-    @NotNull
     @Override
     public Type<DebugInfoCustomPayload> type() {
         return TYPE;

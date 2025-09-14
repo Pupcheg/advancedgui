@@ -1,6 +1,7 @@
 package me.supcheg.advancedgui.api.sequence.collection;
 
-import org.jetbrains.annotations.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.Iterator;
