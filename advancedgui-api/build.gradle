@@ -1,4 +1,4 @@
 dependencies {
-    api "net.kyori:adventure-api:$adventure_api_version"
-    api 'com.google.guava:guava:33.4.8-jre'
+    api libs.adventure.api
+    api libs.guava
 }

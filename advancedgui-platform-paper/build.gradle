@@ -1,8 +1,7 @@
-apply plugin: 'io.papermc.paperweight.userdev'
+apply plugin: libs.plugins.paperweight.get().pluginId
 
 dependencies {
-    paperweight.paperDevBundle "$minecraft_version-R0.1-SNAPSHOT"
-
+    paperweight.paperDevBundle("${libs.versions.minecraft.get()}-R0.1-SNAPSHOT")
     api project(':advancedgui-api')
     api project(':advancedgui-api-loader')
 }

@@ -1,20 +1,17 @@
 plugins {
-    // @formatter:off
-    id 'java-library'
-    id 'io.freefair.lombok'                             version "$lombok_version"                  apply false
-    id 'fabric-loom'                                    version "$fabric_loom_version"             apply false
-    id 'io.papermc.paperweight.userdev'                 version "$paperweight_version"             apply false
-    id 'xyz.jpenilla.run-paper'                         version "$run_paper_version"               apply false
-    id 'xyz.jpenilla.resource-factory-paper-convention' version "$paper_yaml_version"              apply false
-    id 'com.gradleup.shadow'                            version "$shadow_version"                  apply false
-    // @formatter:on
+    alias(libs.plugins.lombok) apply false
+    alias(libs.plugins.fabric.loom) apply false
+    alias(libs.plugins.paperweight) apply false
+    alias(libs.plugins.run.paper) apply false
+    alias(libs.plugins.resource.factory.paper) apply false
+    alias(libs.plugins.shadow) apply false
 }
 
-def java_version = Integer.parseInt("$java_version")
+def javaVersion = 21
 
 allprojects {
     apply plugin: 'java-library'
-    apply plugin: 'io.freefair.lombok'
+    apply plugin: libs.plugins.lombok.get().pluginId
 
     group = 'me.supcheg.advancedgui'
     version = '1.0.0'
@@ -26,17 +23,17 @@ allprojects {
     }
 
     dependencies {
-        api "org.checkerframework:checker:$checkerframework_version"
-        api "org.jetbrains:annotations:$jetbrains_annotations_version"
+        api libs.checkerframework
+        api libs.jetbrains.annotations
 
-        testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
-        testImplementation "org.assertj:assertj-core:$assertj_version"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
-        testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_version"
-        testImplementation "org.mockito:mockito-junit-jupiter:$mockito_version"
+        testImplementation libs.slf4j.simple
+        testImplementation libs.assertj.core
+        testImplementation libs.junit.jupiter.api
+        testImplementation libs.junit.jupiter.params
+        testImplementation libs.mockito.junit.jupiter
 
-        testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junit_platform_launcher_version"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+        testRuntimeOnly libs.junit.platform.launcher
+        testRuntimeOnly libs.junit.jupiter.engine
     }
 
     test {
@@ -45,7 +42,7 @@ allprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(java_version)
+            languageVersion = JavaLanguageVersion.of(javaVersion)
         }
     }
 }

@@ -1,11 +1,10 @@
-apply plugin: 'xyz.jpenilla.run-paper'
-apply plugin: 'xyz.jpenilla.resource-factory-paper-convention'
-apply plugin: 'com.gradleup.shadow'
+apply plugin: libs.plugins.run.paper.get().pluginId
+apply plugin: libs.plugins.resource.factory.paper.get().pluginId
+apply plugin: libs.plugins.shadow.get().pluginId
 
 dependencies {
     api project(':advancedgui-platform-paper')
-
-    compileOnly "io.papermc.paper:paper-api:$minecraft_version-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:${libs.versions.minecraft.get()}-R0.1-SNAPSHOT"
 }
 
 shadowJar {
@@ -16,11 +15,11 @@ shadowJar {
 }
 
 runServer {
-    minecraftVersion "$minecraft_version"
+    minecraftVersion libs.versions.minecraft.get()
 }
 
 paperPluginYaml {
-    name.set 'testplugin'
-    main.set 'me.supcheg.advancedgui.testplugin.TestPlugin'
-    apiVersion.set "$minecraft_version"
+    name.set('testplugin')
+    main.set('me.supcheg.advancedgui.testplugin.TestPlugin')
+    apiVersion.set(libs.versions.minecraft.get())
 }

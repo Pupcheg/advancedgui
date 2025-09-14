@@ -1,29 +1,29 @@
-apply plugin: 'fabric-loom'
+apply plugin: libs.plugins.fabric.loom.get().pluginId
 
 base {
     archivesName = 'advancedgui-fabric-support'
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:$minecraft_version"
+    minecraft libs.minecraft
     mappings loom.officialMojangMappings()
 
-    modImplementation "net.fabricmc:fabric-loader:$loader_version"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_version"
+    modImplementation libs.fabric.loader
+    modImplementation libs.fabric.api
 
     api project(':advancedgui-api')
     api project(':advancedgui-api-loader')
 }
 
 processResources {
-    inputs.property "version", "$project.version"
-    inputs.property "minecraft_version", "$minecraft_version"
-    inputs.property "loader_version", "$loader_version"
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", libs.versions.minecraft.get()
+    inputs.property "loader_version", libs.versions.fabric.loader.get()
     filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "version": "$project.version",
-                "minecraft_version": "$minecraft_version",
-                "loader_version": "$loader_version"
+        expand "version": project.version,
+                "minecraft_version": libs.versions.minecraft.get(),
+                "loader_version": libs.versions.fabric.loader.get()
     }
 }
