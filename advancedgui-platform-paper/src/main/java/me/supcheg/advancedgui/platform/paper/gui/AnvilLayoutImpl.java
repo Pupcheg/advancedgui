@@ -33,10 +33,4 @@ public record AnvilLayoutImpl(
 
         handleEachLifecycleAction(afterTickPointcut());
     }
-
-    @NotNull
-    @Override
-    public AnvilLayoutImpl lifecycleSubject() {
-        return this;
-    }
 }

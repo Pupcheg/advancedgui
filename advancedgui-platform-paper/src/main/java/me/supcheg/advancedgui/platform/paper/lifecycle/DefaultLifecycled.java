@@ -9,10 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public interface DefaultLifecycled<S> extends Lifecycled<S> {
-    Logger LOGGER = LoggerFactory.getLogger(DefaultLifecycled.class);
+    Logger log = LoggerFactory.getLogger(DefaultLifecycled.class);
 
     @NotNull
-    S lifecycleSubject();
+    default S lifecycleSubject() {
+        // noinspection unchecked
+        return (S) this;
+    }
 
     default void handleEachLifecycleAction(@NotNull Pointcut pointcut) {
         LifecycleContext<S> ctx = this::lifecycleSubject;
@@ -21,7 +24,7 @@ public interface DefaultLifecycled<S> extends Lifecycled<S> {
             try {
                 listener.action().handle(ctx);
             } catch (Exception e) {
-                LOGGER.error("An error occurred while handling lifecycle action {} for {} at {}", listener, this, pointcut, e);
+                log.error("An error occurred while handling lifecycle action {} for {} at {}", listener, this, pointcut, e);
             }
         }
     }

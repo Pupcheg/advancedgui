@@ -33,10 +33,4 @@ public record ButtonImpl(
 
         handleEachLifecycleAction(afterTickPointcut());
     }
-
-    @NotNull
-    @Override
-    public Button lifecycleSubject() {
-        return this;
-    }
 }

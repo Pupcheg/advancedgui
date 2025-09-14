@@ -34,10 +34,4 @@ public record GuiImpl(
 
         handleEachLifecycleAction(afterTickPointcut());
     }
-
-    @NotNull
-    @Override
-    public Gui lifecycleSubject() {
-        return this;
-    }
 }
