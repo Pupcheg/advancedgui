@@ -57,3 +57,29 @@ paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweigh
 run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
 resource-factory-paper = { id = "xyz.jpenilla.resource-factory-paper-convention", version.ref = "paper-yaml" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+
+[bundles]
+annotations = [
+    "checkerframework",
+    "jetbrains-annotations"
+]
+configurate = [
+    "configurate-core",
+    "configurate-yaml",
+    "configurate-jackson"
+]
+fabric = [
+    "fabric-loader",
+    "fabric-api"
+]
+test = [
+    "junit-jupiter-api",
+    "junit-jupiter-params",
+    "mockito-junit-jupiter",
+    "assertj-core",
+    "slf4j-simple"
+]
+test-runtime = [
+    "junit-platform-launcher",
+    "junit-jupiter-engine",
+]
