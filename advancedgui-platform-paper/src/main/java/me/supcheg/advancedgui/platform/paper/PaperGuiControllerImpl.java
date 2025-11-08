@@ -119,7 +119,14 @@ final class PaperGuiControllerImpl implements PaperGuiController {
 
         this.networkInjection = new NmsNetworkInjection(guiViewer, guiTasksExecutor);
 
-        this.tickTask = startTicking();
+        this.tickTask = Bukkit.getAsyncScheduler()
+                .runAtFixedRate(
+                        plugin,
+                        this::tick,
+                        Ticks.SINGLE_TICK_DURATION_MS,
+                        Ticks.SINGLE_TICK_DURATION_MS,
+                        TimeUnit.MILLISECONDS
+                );
     }
 
     @Override
@@ -168,17 +175,6 @@ final class PaperGuiControllerImpl implements PaperGuiController {
             registry.remove(key, gui);
             gui.handleEachLifecycleAction(RegistrationPointcut.postUnregisterPointcut());
         }
-    }
-
-    private ScheduledTask startTicking() {
-        return Bukkit.getAsyncScheduler()
-                .runAtFixedRate(
-                        plugin,
-                        this::tick,
-                        Ticks.SINGLE_TICK_DURATION_MS,
-                        Ticks.SINGLE_TICK_DURATION_MS,
-                        TimeUnit.MILLISECONDS
-                );
     }
 
     private void tick(ScheduledTask task) {

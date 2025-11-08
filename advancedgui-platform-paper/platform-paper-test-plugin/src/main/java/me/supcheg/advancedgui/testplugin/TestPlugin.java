@@ -35,6 +35,7 @@ public class TestPlugin extends JavaPlugin {
         );
 
         controller.register(loadGuiTemplate("testplugin/question.yaml"));
+        controller.register(loadGuiTemplate("testplugin/chest.yaml"));
 
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> event
                 .registrar()

@@ -2,6 +2,8 @@ package me.supcheg.advancedgui.platform.paper.network.message;
 
 import io.netty.buffer.ByteBufAllocator;
 import lombok.RequiredArgsConstructor;
+import me.supcheg.advancedgui.api.messaging.DebugViewGuiTemplate;
+import me.supcheg.advancedgui.api.messaging.Message;
 import net.kyori.adventure.key.Key;
 import net.minecraft.network.FriendlyByteBuf;
 import org.bukkit.Bukkit;
@@ -10,27 +12,31 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
+import static me.supcheg.advancedgui.api.loader.base64.Base64GuiLoader.jsonDownstreamBase64GuiLoader;
 
 @RequiredArgsConstructor
 public class AdvancedguiPluginChannel implements Closeable {
-    private final List<Key> registeredMessages = new ArrayList<>();
+    private final Map<Key, BiConsumer<? extends Message, FriendlyByteBuf>> registeredMessages = new HashMap<>();
 
     private final Plugin plugin;
 
     public void register() {
-        register(DebugInfoMessage.KEY);
+        register(DebugViewGuiTemplate.KEY,  this::writeViewGuiTemplate);
     }
 
-    private void register(Key key) {
+    private <T extends Message> void register(Key key, BiConsumer<T, FriendlyByteBuf> writer) {
         Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, key.asString());
-        registeredMessages.add(key);
+        registeredMessages.put(key, writer);
     }
 
     public void sendMessage(Player player, Message message) {
         FriendlyByteBuf buf = new FriendlyByteBuf(ByteBufAllocator.DEFAULT.buffer());
-        message.write(buf);
+        registeredMessages.get(message.key())
+                        .accept(uncheckedMessageCast(message), buf);
 
         byte[] bytes = new byte[buf.readableBytes()];
         buf.readBytes(bytes);
@@ -38,9 +44,17 @@ public class AdvancedguiPluginChannel implements Closeable {
         player.sendPluginMessage(plugin, message.key().asString(), bytes);
     }
 
+    private static <T extends Message> T uncheckedMessageCast(Message message) {
+        return (T) message;
+    }
+
+    private void writeViewGuiTemplate(DebugViewGuiTemplate message, FriendlyByteBuf buffer) {
+        buffer.writeUtf(jsonDownstreamBase64GuiLoader().writeString(message.template()));
+    }
+
     @Override
     public void close() throws IOException {
-        for (Key key : registeredMessages) {
+        for (Key key : registeredMessages.keySet()) {
             Bukkit.getMessenger().unregisterOutgoingPluginChannel(plugin, key.asString());
         }
     }

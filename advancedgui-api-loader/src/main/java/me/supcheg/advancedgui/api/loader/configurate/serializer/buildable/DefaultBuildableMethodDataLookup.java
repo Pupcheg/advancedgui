@@ -13,6 +13,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.leangen.geantyref.GenericTypeReflector.box;
 import static java.lang.invoke.MethodHandles.dropReturn;
 import static java.lang.invoke.MethodHandles.explicitCastArguments;
 import static java.lang.invoke.MethodType.methodType;
@@ -50,7 +51,7 @@ public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLook
                                     Arrays.stream(builderClassMethods)
                                             .filter(setMethod -> setMethod.getParameterCount() == 1)
                                             .filter(setMethod ->
-                                                    returnType.equals(setMethod.getGenericParameterTypes()[0])
+                                                    returnType.equals(box(setMethod.getGenericParameterTypes()[0]))
                                             )
                                             .map(this::unreflect)
                                             .map(setMethod ->

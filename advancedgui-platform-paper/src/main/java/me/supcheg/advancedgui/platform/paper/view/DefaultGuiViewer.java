@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.api.Advancedgui;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.gui.background.Background;
+import me.supcheg.advancedgui.api.messaging.DebugViewGuiTemplate;
 import me.supcheg.advancedgui.platform.paper.PlatformAudienceConverter;
 import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
 import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
 import me.supcheg.advancedgui.platform.paper.network.NetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
-import me.supcheg.advancedgui.platform.paper.network.message.DebugInfoMessage;
 import me.supcheg.advancedgui.platform.paper.render.Renderer;
 import net.kyori.adventure.audience.Audience;
 import net.minecraft.core.NonNullList;
@@ -64,7 +64,7 @@ public class DefaultGuiViewer implements GuiViewer, GuiViewLookup {
 
         CraftPlayer bukkitEntity = serverPlayer.getBukkitEntity();
         if (bukkitEntity.hasPermission(Advancedgui.NAMESPACE + ".debug")) {
-            channel.sendMessage(bukkitEntity, new DebugInfoMessage(gui.source()));
+            channel.sendMessage(bukkitEntity, new DebugViewGuiTemplate(gui.source()));
         }
         return view;
     }

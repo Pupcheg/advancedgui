@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>>
         extends Examinable, Buildable<T, B>, Lifecycled<L>
-        permits AnvilLayoutTemplate {
+        permits AnvilLayoutTemplate, ChestLayoutTemplate {
 
     @Unmodifiable
     Set<ButtonTemplate> buttons();

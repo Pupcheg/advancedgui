@@ -1,10 +1,11 @@
-key: 'testplugin:question'
+key: 'testplugin:chest'
 layout:
-  type: 'anvil'
+  type: 'chest'
+  rows: 3
   buttons:
     - coordinates:
         - '0:0'
-        - '5:1'
+        - '2:1'
       texture: 'minecraft:paper'
       name: '<bold>Hi!'
       description:
