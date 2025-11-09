@@ -12,18 +12,15 @@ import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.examination.Examinable;
-import net.kyori.examination.ExaminableProperty;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 
-public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
+public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
 
     static Builder button() {
         return new ButtonTemplateImpl.BuilderImpl();
@@ -50,19 +47,6 @@ public interface ButtonTemplate extends Examinable, Buildable<ButtonTemplate, Bu
 
     default boolean hasAttribute(ButtonAttribute attribute) {
         return attributes().contains(attribute);
-    }
-
-    @Override
-    default Stream<? extends ExaminableProperty> examinableProperties() {
-        return Stream.of(
-                ExaminableProperty.of("coordinates", coordinates()),
-                ExaminableProperty.of("interactions", interactions()),
-                ExaminableProperty.of("texture", texture()),
-                ExaminableProperty.of("name", name()),
-                ExaminableProperty.of("description", description()),
-                ExaminableProperty.of("attributes", attributes()),
-                ExaminableProperty.of("lifecycleListenerRegistry", lifecycleListenerRegistry())
-        );
     }
 
     interface Builder extends AbstractBuilder<ButtonTemplate>, Lifecycled.Builder<Button, Builder> {

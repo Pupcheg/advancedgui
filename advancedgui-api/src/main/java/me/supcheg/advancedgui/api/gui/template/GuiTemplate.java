@@ -9,14 +9,11 @@ import me.supcheg.advancedgui.api.layout.template.LayoutTemplate;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
-import net.kyori.examination.Examinable;
-import net.kyori.examination.ExaminableProperty;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-public interface GuiTemplate extends Keyed, Examinable, Buildable<GuiTemplate, GuiTemplate.Builder>, Lifecycled<Gui> {
+public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.Builder>, Lifecycled<Gui> {
 
     static Builder gui() {
         return new GuiTemplateImpl.BuilderImpl();
@@ -29,16 +26,6 @@ public interface GuiTemplate extends Keyed, Examinable, Buildable<GuiTemplate, G
     Background background();
 
     LayoutTemplate<?, ?, ?> layout();
-
-    @Override
-    default Stream<? extends ExaminableProperty> examinableProperties() {
-        return Stream.of(
-                ExaminableProperty.of("key", key()),
-                ExaminableProperty.of("background", background()),
-                ExaminableProperty.of("layout", layout()),
-                ExaminableProperty.of("lifecycleListenerRegistry", lifecycleListenerRegistry())
-        );
-    }
 
     interface Builder extends AbstractBuilder<GuiTemplate>, Lifecycled.Builder<Gui, Builder> {
 

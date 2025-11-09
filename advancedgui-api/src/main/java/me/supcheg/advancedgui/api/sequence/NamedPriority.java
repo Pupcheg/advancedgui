@@ -1,9 +1,5 @@
 package me.supcheg.advancedgui.api.sequence;
 
-import net.kyori.examination.ExaminableProperty;
-
-import java.util.stream.Stream;
-
 import static me.supcheg.advancedgui.api.sequence.NamedPriorityImpl.namedPriorityImpl;
 
 public sealed interface NamedPriority extends Priority permits NamedPriorityImpl {
@@ -18,11 +14,4 @@ public sealed interface NamedPriority extends Priority permits NamedPriorityImpl
     }
 
     String name();
-
-    @Override
-    default Stream<? extends ExaminableProperty> examinableProperties() {
-        return Stream.of(
-                ExaminableProperty.of("name", name())
-        );
-    }
 }

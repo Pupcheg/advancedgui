@@ -1,14 +1,10 @@
 package me.supcheg.advancedgui.api.sequence;
 
-import net.kyori.examination.Examinable;
-import net.kyori.examination.ExaminableProperty;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.stream.Stream;
 
 import static me.supcheg.advancedgui.api.sequence.PriorityImpl.priorityImpl;
 
-public sealed interface Priority extends Examinable, Comparable<Priority> permits NamedPriority, PriorityImpl {
+public sealed interface Priority extends Comparable<Priority> permits NamedPriority, PriorityImpl {
 
     static Priority priority(int value) {
         @Nullable Priority named = NamedPriorityImpl.byValue(value);
@@ -19,13 +15,6 @@ public sealed interface Priority extends Examinable, Comparable<Priority> permit
     }
 
     int value();
-
-    @Override
-    default Stream<? extends ExaminableProperty> examinableProperties() {
-        return Stream.of(
-                ExaminableProperty.of("value", value())
-        );
-    }
 
     default Priority earlier(int value) {
         return priority(this.value() - value);

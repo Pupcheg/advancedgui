@@ -4,15 +4,12 @@ import com.google.common.collect.Lists;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import net.kyori.adventure.text.Component;
-import net.kyori.examination.Examinable;
-import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-public interface Description extends Examinable, Buildable<Description, Description.Builder> {
+public interface Description extends Buildable<Description, Description.Builder> {
 
     static Builder description() {
         return new DescriptionImpl.BuilderImpl();
@@ -24,13 +21,6 @@ public interface Description extends Examinable, Buildable<Description, Descript
 
     @Unmodifiable
     List<Component> lines();
-
-    @Override
-    default Stream<? extends ExaminableProperty> examinableProperties() {
-        return Stream.of(
-                ExaminableProperty.of("lines", lines())
-        );
-    }
 
     interface Builder extends AbstractBuilder<Description> {
 

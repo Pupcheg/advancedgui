@@ -1,12 +1,10 @@
 package me.supcheg.advancedgui.api.coordinate;
 
 import net.kyori.adventure.key.Keyed;
-import net.kyori.examination.Examinable;
-import net.kyori.examination.ExaminableProperty;
 
 import java.util.stream.Stream;
 
-public interface CoordinateTranslator extends Keyed, Examinable {
+public interface CoordinateTranslator extends Keyed {
 
     boolean isInBounds(Coordinate coordinate);
 
@@ -33,11 +31,4 @@ public interface CoordinateTranslator extends Keyed, Examinable {
     }
 
     Stream<Coordinate> availableCoordinates();
-
-    @Override
-    default Stream<? extends ExaminableProperty> examinableProperties() {
-        return Stream.of(
-                ExaminableProperty.of("key", key())
-        );
-    }
 }
