@@ -19,8 +19,8 @@ public class ParameterSpecLookup {
         var parameters = new ArrayList<ParameterSpec>();
 
         for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
-            if (this.isValueMethod(method)) {
-                parameters.add(this.makeParameter(method));
+            if (isValueMethod(method)) {
+                parameters.add(makeParameter(method));
             }
         }
 
@@ -28,20 +28,30 @@ public class ParameterSpecLookup {
     }
 
     private boolean isValueMethod(ExecutableElement method) {
-        return !method.isDefault() && !method.getModifiers().contains(Modifier.STATIC) && method.getReturnType().getKind() != TypeKind.VOID && method.getParameters().isEmpty();
+        return !method.isDefault()
+               && !method.getModifiers().contains(Modifier.STATIC)
+               && method.getReturnType().getKind() != TypeKind.VOID
+               && method.getParameters().isEmpty();
     }
 
     private ParameterSpec makeParameter(ExecutableElement method) {
         var returnType = method.getReturnType();
         return ParameterSpec.builder(TypeName.get(returnType), method.getSimpleName().toString())
-                .addAnnotations(returnType.getAnnotationMirrors().stream().map(this::convertAnnotationMirrorToAnnotationSpec)::iterator)
+                .addAnnotations(
+                        returnType.getAnnotationMirrors().stream()
+                                .map(this::convertAnnotationMirrorToAnnotationSpec)
+                                ::iterator
+                )
                 .build();
     }
 
     private AnnotationSpec convertAnnotationMirrorToAnnotationSpec(AnnotationMirror annotationMirror) {
-        var annotationType = annotationMirror.getAnnotationType();
-        var builder = AnnotationSpec.builder((ClassName) ClassName.get(annotationType));
-        annotationMirror.getElementValues().forEach((element, value) -> builder.addMember(element.getSimpleName().toString(), "$L", value.getValue()));
+        var builder = AnnotationSpec.builder((ClassName) TypeName.get(annotationMirror.getAnnotationType()));
+        annotationMirror.getElementValues()
+                .forEach((element, value) ->
+                        builder.addMember(element.getSimpleName().toString(), "$L", value.getValue())
+                );
+
         return builder.build();
     }
 }

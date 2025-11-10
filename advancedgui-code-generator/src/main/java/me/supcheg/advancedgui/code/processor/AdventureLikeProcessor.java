@@ -32,16 +32,16 @@ public class AdventureLikeProcessor extends AbstractProcessor {
         super.init(processingEnv);
         this.moreTypes = new MoreTypes(processingEnv);
         this.defaultStrategy = new SimpleAdventureLikeGenerationStrategy(new ParameterSpecLookup());
-        this.buildableStrategy = new BuildableAdventureLikeGenerationStrategy(new AnnotationHelper(), this.moreTypes, new ParameterSpecLookup());
+        this.buildableStrategy = new BuildableAdventureLikeGenerationStrategy(new AnnotationHelper(), moreTypes, new ParameterSpecLookup());
     }
 
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (TypeElement annotation : annotations) {
-            for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
+        for (var annotation : annotations) {
+            for (var element : roundEnv.getElementsAnnotatedWith(annotation)) {
                 try {
-                    this.processElement(element);
-                } catch (Exception var8) {
-                    this.processingEnv.getMessager().printError(var8.toString(), element);
+                    processElement(element);
+                } catch (Exception exception) {
+                    processingEnv.getMessager().printError(exception.toString(), element);
                 }
             }
         }
@@ -51,20 +51,25 @@ public class AdventureLikeProcessor extends AbstractProcessor {
 
     private void processElement(Element element) throws IOException {
         if (element.getKind() != ElementKind.INTERFACE) {
-            throw new RuntimeException("Element is not an interface");
-        } else {
-            var interfaceClassPackage = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
-            var typeSpec = this.strategyFor(element).generate(element);
-            var javaFile = JavaFile.builder(interfaceClassPackage, typeSpec).skipJavaLangImports(true).indent("    ").build();
-            javaFile.writeTo(this.processingEnv.getFiler());
+            throw new IllegalArgumentException("Element is not an interface");
         }
+
+        var interfaceClassPackage = ((PackageElement) element.getEnclosingElement()).getQualifiedName().toString();
+        var typeSpec = strategyFor(element).generate(element);
+
+        var javaFile = JavaFile.builder(interfaceClassPackage, typeSpec)
+                .skipJavaLangImports(true)
+                .indent("    ")
+                .build();
+
+        javaFile.writeTo(processingEnv.getFiler());
     }
 
     private AdventureLikeGenerationStrategy strategyFor(Element element) {
-        return this.isBuildable(element) ? this.buildableStrategy : this.defaultStrategy;
+        return isBuildable(element) ? buildableStrategy : defaultStrategy;
     }
 
     private boolean isBuildable(Element element) {
-        return this.moreTypes.isAccessible("net.kyori.adventure.util.Buildable", element.asType());
+        return moreTypes.isAccessible("net.kyori.adventure.util.Buildable", element.asType());
     }
 }

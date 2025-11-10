@@ -14,6 +14,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 
+import static com.palantir.javapoet.TypeSpec.recordBuilder;
+
 @RequiredArgsConstructor
 public class BuildableAdventureLikeGenerationStrategy implements AdventureLikeGenerationStrategy {
     public static final String BUILDER_NAME = "Builder";
@@ -24,12 +26,19 @@ public class BuildableAdventureLikeGenerationStrategy implements AdventureLikeGe
     private final ParameterSpecLookup parameterSpecLookup;
 
     public TypeSpec generate(Element element) {
-        var targetName = ClassName.get(this.getPackageElement(element).getQualifiedName().toString(), element.getSimpleName() + IMPL_SUFFIX);
-        var target = TypeSpec.recordBuilder(targetName).addSuperinterface(element.asType());
-        var parameters = this.parameterSpecLookup.listRecordParametersForInterface(element);
-        (new ConstructorGenerationStep(parameters)).generate(target);
-        (new BuilderImplGenerationStep(this.annotationHelper, this.moreTypes, targetName, targetName.nestedClass(BUILDER_NAME + IMPL_SUFFIX), element, parameters)).generate(target);
-        (new GeneratedAnnotationGenerationStep(parameters)).generate(target);
+        var targetName = ClassName.get(
+                getPackageElement(element).getQualifiedName().toString(),
+                element.getSimpleName() + IMPL_SUFFIX
+        );
+
+        var target = recordBuilder(targetName)
+                .addSuperinterface(element.asType());
+
+        var parameters = parameterSpecLookup.listRecordParametersForInterface(element);
+
+        new ConstructorGenerationStep(parameters).generate(target);
+        new BuilderImplGenerationStep(annotationHelper, moreTypes, targetName, targetName.nestedClass(BUILDER_NAME + IMPL_SUFFIX), element, parameters).generate(target);
+        new GeneratedAnnotationGenerationStep(parameters).generate(target);
         return target.build();
     }
 

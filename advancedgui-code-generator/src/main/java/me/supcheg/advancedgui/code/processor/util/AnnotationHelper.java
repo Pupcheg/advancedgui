@@ -16,11 +16,11 @@ public class AnnotationHelper {
     private final Set<TypeName> nullabilityAnnotations = Set.of(TypeName.get(Nullable.class), TypeName.get(NotNull.class));
 
     public List<AnnotationSpec> putNullabilityAnnotation(List<AnnotationSpec> annotations, Class<? extends Annotation> type) {
-        if (!this.isNullabilityAnnotation(TypeName.get(type))) {
+        if (!isNullabilityAnnotation(TypeName.get(type))) {
             throw new IllegalArgumentException("Unsupported nullability annotation: " + type);
         } else {
             List<AnnotationSpec> copy = new ArrayList<>(annotations);
-            int i = this.indexOfNullabilityAnnotation(annotations);
+            int i = indexOfNullabilityAnnotation(annotations);
             if (i != -1) {
                 copy.set(i, annotationSpec(type));
             } else {
@@ -64,7 +64,7 @@ public class AnnotationHelper {
 
     private int indexOfNullabilityAnnotation(List<AnnotationSpec> annotations) {
         for (int i = 0; i < annotations.size(); ++i) {
-            if (this.isNullabilityAnnotation(annotations.get(i))) {
+            if (isNullabilityAnnotation(annotations.get(i))) {
                 return i;
             }
         }
@@ -73,10 +73,10 @@ public class AnnotationHelper {
     }
 
     public boolean isNullabilityAnnotation(AnnotationSpec spec) {
-        return this.isNullabilityAnnotation(spec.type());
+        return isNullabilityAnnotation(spec.type());
     }
 
     public boolean isNullabilityAnnotation(TypeName type) {
-        return this.nullabilityAnnotations.contains(type);
+        return nullabilityAnnotations.contains(type);
     }
 }

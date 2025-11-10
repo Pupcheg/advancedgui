@@ -14,11 +14,11 @@ public class BuilderImplPrimitiveParameterGenerationStep extends BuilderImplPara
     }
 
     protected CodeBlock setterCode() {
-        var name = this.parameter.name();
+        var name = parameter.name();
         return CodeBlock.builder().add("this.$L = $L;\n", name, name).add("return this;").build();
     }
 
     protected List<AnnotationSpec> setterParameterAnnotations() {
-        return this.annotationHelper.removeNullabilityAnnotations(this.parameter.annotations());
+        return annotationHelper.removeNullabilityAnnotations(parameter.annotations());
     }
 }

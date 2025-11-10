@@ -2,13 +2,13 @@ package me.supcheg.advancedgui.code.processor.step.builder.constructor;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
-import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeSpec.Builder;
 import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.code.processor.step.GenerationStep;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import static com.palantir.javapoet.MethodSpec.constructorBuilder;
 
 @RequiredArgsConstructor
 public class BuilderImplTargetConstructorGenerationStep implements GenerationStep {
@@ -17,13 +17,18 @@ public class BuilderImplTargetConstructorGenerationStep implements GenerationSte
     private final List<BuilderImplParameterInitializer> initializers;
 
     public void generate(Builder target) {
-        target.addMethod(MethodSpec.constructorBuilder().addParameter(this.implClassName, PARAMETER_NAME).addCode(this.code()).build());
+        target.addMethod(
+                constructorBuilder()
+                        .addParameter(implClassName, PARAMETER_NAME)
+                        .addCode(code())
+                        .build()
+        );
     }
 
     private CodeBlock code() {
-        com.palantir.javapoet.CodeBlock.Builder builder = CodeBlock.builder();
+        var builder = CodeBlock.builder();
 
-        for (BuilderImplParameterInitializer initializer : this.initializers) {
+        for (var initializer : initializers) {
             builder.add(initializer.copyingInitializer(PARAMETER_NAME));
         }
 

@@ -16,7 +16,6 @@ import me.supcheg.advancedgui.code.processor.step.builder.param.BuilderImplParam
 import me.supcheg.advancedgui.code.processor.step.builder.param.BuilderImplPrimitiveParameterGenerationStep;
 import me.supcheg.advancedgui.code.processor.util.AnnotationHelper;
 import me.supcheg.advancedgui.code.processor.util.MoreTypes;
-import org.jetbrains.annotations.NotNull;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -36,18 +35,25 @@ public class BuilderImplGenerationStep implements GenerationStep {
     private final List<ParameterSpec> parameters;
 
     public void generate(Builder target) {
-        var targetBuilder = TypeSpec.classBuilder(this.builderImplClassName).addSuperinterface(this.findBuilderElement(this.element).asType()).addModifiers(Modifier.STATIC);
-        var parameterInitializers = this.parameters.stream().map(this::parameterInitializer).toList();
-        new BuilderImplNoArgsConstructorGenerationStep(parameterInitializers).generate(targetBuilder);
-        new BuilderImplTargetConstructorGenerationStep(this.buildableImplClassName, parameterInitializers).generate(targetBuilder);
+        var targetBuilder = TypeSpec.classBuilder(builderImplClassName)
+                .addSuperinterface(findBuilderElement(element).asType())
+                .addModifiers(Modifier.STATIC);
 
-        for (ParameterSpec parameter : this.parameters) {
-            this.parameterGenerationStep(parameter).generate(targetBuilder);
+        var parameterInitializers = parameters.stream()
+                .map(this::parameterInitializer)
+                .toList();
+
+        new BuilderImplNoArgsConstructorGenerationStep(parameterInitializers).generate(targetBuilder);
+        new BuilderImplTargetConstructorGenerationStep(buildableImplClassName, parameterInitializers).generate(targetBuilder);
+
+        for (ParameterSpec parameter : parameters) {
+            parameterGenerationStep(parameter).generate(targetBuilder);
         }
 
-        new BuilderImplBuildMethodGenerationStep(this.buildableImplClassName, parameterInitializers).generate(targetBuilder);
+        new BuilderImplBuildMethodGenerationStep(buildableImplClassName, parameterInitializers).generate(targetBuilder);
         target.addType(targetBuilder.build());
-        new ToBuilderImplGenerationStep(this.builderImplClassName).generate(target);
+
+        new ToBuilderImplGenerationStep(builderImplClassName).generate(target);
     }
 
     private TypeElement findBuilderElement(Element element) {
@@ -61,14 +67,18 @@ public class BuilderImplGenerationStep implements GenerationStep {
     }
 
     private BuilderImplParameterInitializer parameterInitializer(ParameterSpec parameter) {
-        return this.moreTypes.isAccessible(Collection.class, parameter.type()) ? new BuilderImplCollectionParameterInitializer(this.moreTypes, parameter) : new BuilderImplParameterInitializer(parameter);
+        return moreTypes.isAccessible(Collection.class, parameter.type()) ?
+                new BuilderImplCollectionParameterInitializer(moreTypes, parameter) :
+                new BuilderImplParameterInitializer(parameter);
     }
 
     private BuilderImplParameterGenerationStep parameterGenerationStep(ParameterSpec parameter) {
         if (parameter.type().isPrimitive()) {
-            return new BuilderImplPrimitiveParameterGenerationStep(parameter, this.annotationHelper, this.builderImplClassName);
+            return new BuilderImplPrimitiveParameterGenerationStep(parameter, annotationHelper, builderImplClassName);
         } else {
-            return this.moreTypes.isAccessible(Collection.class, parameter.type()) ? new BuilderImplCollectionParameterGenerationStep(parameter, this.annotationHelper, this.builderImplClassName) : new BuilderImplParameterGenerationStep(parameter, this.annotationHelper, this.builderImplClassName);
+            return moreTypes.isAccessible(Collection.class, parameter.type()) ?
+                    new BuilderImplCollectionParameterGenerationStep(parameter, annotationHelper, builderImplClassName) :
+                    new BuilderImplParameterGenerationStep(parameter, annotationHelper, builderImplClassName);
         }
     }
 }

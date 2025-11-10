@@ -15,10 +15,10 @@ public class BuilderImplParameterInitializer {
     }
 
     public CodeBlock copyingInitializer(String from) {
-        return CodeBlock.of("this.$L = $L.$L;\n", this.parameter.name(), from, this.parameter.name());
+        return CodeBlock.of("this.$L = $L.$L;\n", parameter.name(), from, parameter.name());
     }
 
     public CodeBlock finalizer() {
-        return CodeBlock.of("$T.requireNonNull($L, $S)", Objects.class, this.parameter.name(), this.parameter.name());
+        return CodeBlock.of("$T.requireNonNull($L, $S)", Objects.class, parameter.name(), parameter.name());
     }
 }

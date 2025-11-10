@@ -23,15 +23,22 @@ public class BuilderImplCollectionParameterGenerationStep extends BuilderImplPar
     }
 
     protected List<AnnotationSpec> fieldAnnotations() {
-        return this.annotationHelper.removeIfPresent(super.fieldAnnotations(), Unmodifiable.class);
+        return annotationHelper.removeIfPresent(super.fieldAnnotations(), Unmodifiable.class);
     }
 
     protected CodeBlock setterCode() {
-        String name = this.parameter.name();
-        return CodeBlock.builder().add("$T.requireNonNull($L, $S);\n", new Object[]{Objects.class, name, name}).add("this.$L.clear();\n", new Object[]{name}).add("this.$L.addAll($L);\n", new Object[]{name, name}).add("return this;\n", new Object[0]).build();
+        var name = parameter.name();
+        return CodeBlock.builder()
+                .add("$T.requireNonNull($L, $S);\n", Objects.class, name, name)
+                .add("this.$L.clear();\n", name).add("this.$L.addAll($L);\n", name, name)
+                .add("return this;\n")
+                .build();
     }
 
     protected List<AnnotationSpec> getterAnnotations() {
-        return this.annotationHelper.addIfNotPresent(this.annotationHelper.putNullabilityAnnotation(this.parameter.annotations(), NotNull.class), Override.class);
+        return annotationHelper.addIfNotPresent(
+                annotationHelper.putNullabilityAnnotation(this.parameter.annotations(), NotNull.class),
+                Override.class
+        );
     }
 }
