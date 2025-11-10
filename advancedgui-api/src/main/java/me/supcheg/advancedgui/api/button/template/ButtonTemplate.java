@@ -4,20 +4,19 @@ import com.google.common.collect.Lists;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.Button;
-import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
-import me.supcheg.advancedgui.api.button.description.Description;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplayProvider;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 import java.util.function.Consumer;
 
+import static me.supcheg.advancedgui.api.button.display.SingleButtonDisplayProvider.singleButtonDisplayProvider;
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 
 public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
@@ -33,21 +32,10 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
     @Unmodifiable
     Set<Coordinate> coordinates();
 
+    ButtonDisplayProvider displayProvider();
+
     @Unmodifiable
     SequencedSortedSet<ButtonInteraction> interactions();
-
-    Key texture();
-
-    Component name();
-
-    Description description();
-
-    @Unmodifiable
-    Set<ButtonAttribute> attributes();
-
-    default boolean hasAttribute(ButtonAttribute attribute) {
-        return attributes().contains(attribute);
-    }
 
     interface Builder extends AbstractBuilder<ButtonTemplate>, Lifecycled.Builder<Button, Builder> {
 
@@ -77,45 +65,13 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
 
         SequencedSortedSet<ButtonInteraction> interactions();
 
-        Builder texture(Key location);
+        Builder displayProvider(ButtonDisplayProvider displayProvider);
 
-        @Nullable
-        Key texture();
-
-        Builder name(Component name);
-
-        @Nullable
-        Component name();
-
-        Builder description(Description description);
-
-        default Builder description(Consumer<Description.Builder> consumer) {
-            return description(Description.description(consumer));
+        default Builder display(ButtonDisplay display) {
+            return displayProvider(singleButtonDisplayProvider(display));
         }
 
         @Nullable
-        Description description();
-
-        Set<ButtonAttribute> attributes();
-
-        Builder attributes(Set<ButtonAttribute> attributes);
-
-        default Builder attributes(ButtonAttribute attribute) {
-            return attributes(Set.of(attribute));
-        }
-
-        default Builder attributes(ButtonAttribute first, ButtonAttribute second, ButtonAttribute... other) {
-            return attributes(Set.copyOf(Lists.asList(first, second, other)));
-        }
-
-        Builder addAttributes(Set<ButtonAttribute> attributes);
-
-        default Builder addAttributes(ButtonAttribute attribute) {
-            return addAttributes(Set.of(attribute));
-        }
-
-        default Builder addAttributes(ButtonAttribute first, ButtonAttribute second, ButtonAttribute... other) {
-            return addAttributes(Set.copyOf(Lists.asList(first, second, other)));
-        }
+        ButtonDisplayProvider displayProvider();
     }
 }

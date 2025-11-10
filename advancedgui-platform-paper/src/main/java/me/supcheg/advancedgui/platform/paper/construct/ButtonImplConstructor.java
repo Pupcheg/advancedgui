@@ -14,10 +14,7 @@ public class ButtonImplConstructor implements TemplateConstructor<ButtonTemplate
                         new ButtonImpl(
                                 coordinate,
                                 template.interactions(),
-                                template.texture(),
-                                template.name(),
-                                template.description(),
-                                template.attributes(),
+                                template.displayProvider(),
                                 template.lifecycleListenerRegistry()
                         )
                 )

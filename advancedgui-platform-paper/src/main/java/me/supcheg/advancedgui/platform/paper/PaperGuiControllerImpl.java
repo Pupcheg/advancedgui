@@ -3,6 +3,7 @@ package me.supcheg.advancedgui.platform.paper;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import lombok.extern.slf4j.Slf4j;
 import me.supcheg.advancedgui.api.button.Button;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import me.supcheg.advancedgui.api.component.ComponentRenderContext;
 import me.supcheg.advancedgui.api.component.ComponentRenderers;
 import me.supcheg.advancedgui.api.gui.Gui;
@@ -21,7 +22,7 @@ import me.supcheg.advancedgui.platform.paper.network.NetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.NmsNetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
 import me.supcheg.advancedgui.platform.paper.render.DefaultBackgroundComponentRenderer;
-import me.supcheg.advancedgui.platform.paper.render.DefaultButtonItemStackRenderer;
+import me.supcheg.advancedgui.platform.paper.render.DefaultButtonDisplayItemStackRenderer;
 import me.supcheg.advancedgui.platform.paper.render.DefaultLayoutNonNullListItemStackRenderer;
 import me.supcheg.advancedgui.platform.paper.render.Renderer;
 import me.supcheg.advancedgui.platform.paper.resourcepack.DefaultBackgroundImageMetaLookup;
@@ -92,7 +93,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         this.registry = new ConcurrentHashMap<>();
         this.unmodifiableRegistryView = Collections.unmodifiableMap(registry);
 
-        Renderer<Button, ItemStack> buttonItemStackRenderer = new DefaultButtonItemStackRenderer();
+        Renderer<ButtonDisplay, ItemStack> buttonItemStackRenderer = new DefaultButtonDisplayItemStackRenderer();
 
         this.channel = new AdvancedguiPluginChannel(plugin);
         channel.register();

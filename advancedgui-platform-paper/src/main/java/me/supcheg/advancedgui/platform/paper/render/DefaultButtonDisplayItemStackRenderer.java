@@ -1,8 +1,8 @@
 package me.supcheg.advancedgui.platform.paper.render;
 
 import io.papermc.paper.adventure.PaperAdventure;
-import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.description.Description;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -15,9 +15,9 @@ import static io.papermc.paper.adventure.PaperAdventure.asVanilla;
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
 
-public class DefaultButtonItemStackRenderer implements Renderer<Button, ItemStack> {
+public class DefaultButtonDisplayItemStackRenderer implements Renderer<ButtonDisplay, ItemStack> {
     @Override
-    public ItemStack render(Button input) {
+    public ItemStack render(ButtonDisplay input) {
 
         if (input.hasAttribute(hidden())) {
             return ItemStack.EMPTY;

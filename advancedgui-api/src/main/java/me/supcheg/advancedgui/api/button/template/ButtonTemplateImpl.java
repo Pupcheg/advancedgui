@@ -1,15 +1,12 @@
 package me.supcheg.advancedgui.api.button.template;
 
 import me.supcheg.advancedgui.api.button.Button;
-import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
-import me.supcheg.advancedgui.api.button.description.Description;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplayProvider;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
 import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSets;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
@@ -19,10 +16,7 @@ import java.util.Set;
 record ButtonTemplateImpl(
         Set<Coordinate> coordinates,
         SequencedSortedSet<ButtonInteraction> interactions,
-        Key texture,
-        Component name,
-        Description description,
-        Set<ButtonAttribute> attributes,
+        ButtonDisplayProvider displayProvider,
         LifecycleListenerRegistry<Button> lifecycleListenerRegistry
 ) implements ButtonTemplate {
     @Override
@@ -33,25 +27,18 @@ record ButtonTemplateImpl(
     static final class BuilderImpl implements ButtonTemplate.Builder {
         private final Set<Coordinate> coordinates;
         private final SequencedSortedSet<ButtonInteraction> interactions;
-        private final Set<ButtonAttribute> attributes;
-        private @Nullable Key texture;
-        private @Nullable Component name;
-        private @Nullable Description description;
+        private @Nullable ButtonDisplayProvider displayProvider;
         private @Nullable LifecycleListenerRegistry<Button> lifecycleListenerRegistry;
 
         BuilderImpl() {
             this.coordinates = new HashSet<>();
             this.interactions = SequencedSortedSets.create();
-            this.attributes = new HashSet<>();
         }
 
         BuilderImpl(ButtonTemplateImpl impl) {
             this.coordinates = new HashSet<>(impl.coordinates);
             this.interactions = SequencedSortedSets.createCopy(impl.interactions);
-            this.attributes = new HashSet<>(impl.attributes);
-            this.texture = impl.texture;
-            this.name = impl.name;
-            this.description = impl.description;
+            this.displayProvider = impl.displayProvider;
             this.lifecycleListenerRegistry = impl.lifecycleListenerRegistry;
         }
 
@@ -102,60 +89,16 @@ record ButtonTemplateImpl(
         }
 
         @Override
-        public Builder texture(Key location) {
-            Objects.requireNonNull(location, "location");
-            this.texture = location;
+        public Builder displayProvider(ButtonDisplayProvider displayProvider) {
+            Objects.requireNonNull(displayProvider, "displayProvider");
+            this.displayProvider = displayProvider;
             return this;
         }
 
-        @Override
         @Nullable
-        public Key texture() {
-            return texture;
-        }
-
         @Override
-        public Builder name(Component name) {
-            this.name = name;
-            return this;
-        }
-
-        @Override
-        @Nullable
-        public Component name() {
-            return name;
-        }
-
-        @Override
-        public Builder description(Description description) {
-            Objects.requireNonNull(description, "description");
-            this.description = description;
-            return this;
-        }
-
-        @Override
-        @Nullable
-        public Description description() {
-            return description;
-        }
-
-        @Override
-        public Set<ButtonAttribute> attributes() {
-            return attributes;
-        }
-
-        @Override
-        public Builder attributes(Set<ButtonAttribute> attributes) {
-            Objects.requireNonNull(attributes, "attributes");
-            this.attributes.clear();
-            this.attributes.addAll(attributes);
-            return this;
-        }
-
-        @Override
-        public Builder addAttributes(Set<ButtonAttribute> attributes) {
-            this.attributes.addAll(attributes);
-            return this;
+        public ButtonDisplayProvider displayProvider() {
+            return displayProvider;
         }
 
         @Override
@@ -176,10 +119,7 @@ record ButtonTemplateImpl(
             return new ButtonTemplateImpl(
                     Set.copyOf(coordinates),
                     SequencedSortedSets.copyOf(interactions),
-                    Objects.requireNonNull(texture, "texture"),
-                    Objects.requireNonNull(name, "name"),
-                    Objects.requireNonNull(description, "description"),
-                    Set.copyOf(attributes),
+                    Objects.requireNonNull(displayProvider, "displayProvider"),
                     Objects.requireNonNull(lifecycleListenerRegistry, "lifecycleListenerRegistry")
             );
         }

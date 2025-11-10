@@ -2,6 +2,7 @@ package me.supcheg.advancedgui.platform.paper.render;
 
 import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.api.button.Button;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
 import net.minecraft.core.NonNullList;
@@ -11,7 +12,7 @@ import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class DefaultLayoutNonNullListItemStackRenderer implements Renderer<LayoutImpl<?>, NonNullList<ItemStack>> {
-    private final Renderer<Button, ItemStack> buttonItemStackRenderer;
+    private final Renderer<ButtonDisplay, ItemStack> buttonItemStackRenderer;
 
     @Override
     public NonNullList<ItemStack> render(LayoutImpl<?> input) {
@@ -20,9 +21,9 @@ public class DefaultLayoutNonNullListItemStackRenderer implements Renderer<Layou
         ItemStack[] itemStacks = new ItemStack[coordinateTranslator.slotsCount()];
         Arrays.fill(itemStacks, ItemStack.EMPTY);
 
-        for (Button button : input.buttons()) {
-            int index = coordinateTranslator.toIndex(button.coordinate());
-            itemStacks[index] = buttonItemStackRenderer.render(button);
+        for (ButtonDisplay display : input.buttons()) {
+            int index = coordinateTranslator.toIndex(display.coordinate());
+            itemStacks[index] = buttonItemStackRenderer.render(display);
         }
 
         return NonNullList.of(ItemStack.EMPTY, itemStacks);

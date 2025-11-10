@@ -5,18 +5,15 @@ import net.kyori.adventure.key.Keyed;
 
 import java.util.Objects;
 
-public interface ButtonAttribute extends Keyed {
+public interface ButtonAttribute<T> extends Keyed {
 
-    static ButtonAttribute glowing() {
+    static ButtonAttribute<Boolean> glowing() {
         return BuiltinButtonAttributes.GLOWING;
     }
 
-    static ButtonAttribute hidden() {
-        return BuiltinButtonAttributes.HIDDEN;
-    }
-
-    static ButtonAttribute buttonAttribute(Key key) {
+    static<T>  ButtonAttribute<T> buttonAttribute(Key key, T value) {
         Objects.requireNonNull(key, "key");
-        return new ButtonAttributeImpl(key);
+        Objects.requireNonNull(value, "value");
+        return new ButtonAttributeImpl<>(key, value);
     }
 }

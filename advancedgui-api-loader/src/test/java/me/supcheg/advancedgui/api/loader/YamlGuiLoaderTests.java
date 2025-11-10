@@ -1,5 +1,6 @@
 package me.supcheg.advancedgui.api.loader;
 
+import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader;
 import me.supcheg.advancedgui.api.sequence.NamedPriority;
@@ -86,6 +87,9 @@ class YamlGuiLoaderTests {
                                         .priority(NamedPriority.NORMAL)
                                         .action(dummyAction())
                                 )
+                                .display(
+                                        ButtonDisplay
+                                )
                                 .texture(key("advancedgui:test/interaction"))
                                 .name(text("Hi!", style(TextDecoration.BOLD)))
                                 .description(description -> description
@@ -94,7 +98,6 @@ class YamlGuiLoaderTests {
                                                 text("eEe")
                                         )
                                 )
-                                .attributes(glowing(), hidden())
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
                                         .add(lifecycleListener -> lifecycleListener
                                                 .pointcut(beforeTickPointcut())
