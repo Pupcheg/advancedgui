@@ -6,7 +6,6 @@ import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.FieldSpec.Builder;
 import com.palantir.javapoet.ParameterSpec;
 import me.supcheg.advancedgui.code.processor.util.AnnotationHelper;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.lang.model.element.Modifier;
@@ -35,10 +34,4 @@ public class BuilderImplCollectionParameterGenerationStep extends BuilderImplPar
                 .build();
     }
 
-    protected List<AnnotationSpec> getterAnnotations() {
-        return annotationHelper.addIfNotPresent(
-                annotationHelper.putNullabilityAnnotation(this.parameter.annotations(), NotNull.class),
-                Override.class
-        );
-    }
 }

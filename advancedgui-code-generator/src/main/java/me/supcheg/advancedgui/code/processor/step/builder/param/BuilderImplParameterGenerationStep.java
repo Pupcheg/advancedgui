@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.code.processor.step.GenerationStep;
 import me.supcheg.advancedgui.code.processor.util.AnnotationHelper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.lang.model.element.Modifier;
 import java.util.List;
@@ -37,7 +36,7 @@ public class BuilderImplParameterGenerationStep implements GenerationStep {
     }
 
     protected List<AnnotationSpec> fieldAnnotations() {
-        return annotationHelper.putNullabilityAnnotation(parameter.annotations(), NotNull.class);
+        return parameter.annotations();
     }
 
     protected com.palantir.javapoet.MethodSpec.Builder setter() {
@@ -55,7 +54,7 @@ public class BuilderImplParameterGenerationStep implements GenerationStep {
     }
 
     protected List<AnnotationSpec> setterParameterAnnotations() {
-        return annotationHelper.putNullabilityAnnotation(parameter.annotations(), NotNull.class);
+        return parameter.annotations();
     }
 
     protected CodeBlock setterCode() {
@@ -76,10 +75,7 @@ public class BuilderImplParameterGenerationStep implements GenerationStep {
     }
 
     protected List<AnnotationSpec> getterAnnotations() {
-        return annotationHelper.addIfNotPresent(
-                annotationHelper.putNullabilityAnnotation(parameter.annotations(), Nullable.class),
-                Override.class
-        );
+        return annotationHelper.addIfNotPresent(parameter.annotations(), Override.class);
     }
 
     protected CodeBlock getterCode() {

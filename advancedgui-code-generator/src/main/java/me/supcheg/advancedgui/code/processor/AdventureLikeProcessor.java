@@ -7,6 +7,7 @@ import me.supcheg.advancedgui.code.processor.strategy.BuildableAdventureLikeGene
 import me.supcheg.advancedgui.code.processor.strategy.SimpleAdventureLikeGenerationStrategy;
 import me.supcheg.advancedgui.code.processor.util.AnnotationHelper;
 import me.supcheg.advancedgui.code.processor.util.MoreTypes;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -24,8 +25,11 @@ import java.util.Set;
 @SupportedAnnotationTypes({"me.supcheg.advancedgui.code.AdventureLike"})
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class AdventureLikeProcessor extends AbstractProcessor {
+    @MonotonicNonNull
     private AdventureLikeGenerationStrategy defaultStrategy;
+    @MonotonicNonNull
     private AdventureLikeGenerationStrategy buildableStrategy;
+    @MonotonicNonNull
     private MoreTypes moreTypes;
 
     public synchronized void init(ProcessingEnvironment processingEnv) {
