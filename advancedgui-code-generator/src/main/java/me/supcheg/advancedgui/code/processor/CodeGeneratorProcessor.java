@@ -51,13 +51,11 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
         var builderImplTypeGenerator = new BuilderImplTypeGenerator(collectionResolver, annotations);
 
         builderInterfaceGenerator = new BuilderInterfaceGenerator(
-                elements,
                 propertyResolver,
                 builderTypeGenerator
         );
 
         recordInterfaceGenerator = new RecordInterfaceGenerator(
-                elements,
                 propertyResolver,
                 objectImplTypeGenerator,
                 builderTypeGenerator,
@@ -111,6 +109,7 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
 
         for (var type : annotationGenerator.generate(typeElement)) {
             JavaFile.builder(typePackage, type)
+                    .skipJavaLangImports(true)
                     .build()
                     .writeTo(filer);
         }

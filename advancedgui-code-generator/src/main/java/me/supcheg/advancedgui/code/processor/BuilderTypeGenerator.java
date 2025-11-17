@@ -1,6 +1,5 @@
 package me.supcheg.advancedgui.code.processor;
 
-import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.ParameterSpec;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
@@ -15,6 +14,8 @@ import java.util.function.UnaryOperator;
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
 import static com.palantir.javapoet.TypeSpec.interfaceBuilder;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
+import static me.supcheg.advancedgui.code.processor.TypeNames.genericTypes;
+import static me.supcheg.advancedgui.code.processor.TypeNames.rename;
 
 @RequiredArgsConstructor
 class BuilderTypeGenerator {
@@ -26,10 +27,12 @@ class BuilderTypeGenerator {
     private final CollectionMethodsResolver collectionResolver;
     private final List<UnaryOperator<TypeMirror>> superInterfaces;
 
-    TypeSpec builderTypeSpec(PackageName packageName, TypeElement subjectType, List<? extends Property> properties) {
-        var builderType = ClassName.get(packageName.toString(), subjectType.getSimpleName() + BUILDER_SUFFIX);
+    GenerationResult builderTypeSpec(TypeElement subjectType, List<? extends Property> properties) {
+        var builderType = rename(subjectType.asType(), name -> name + BUILDER_SUFFIX);
 
-        var builder = interfaceBuilder(builderType)
+        var genericTypes = genericTypes(builderType);
+        var builder = interfaceBuilder(genericTypes.raw())
+                .addTypeVariables(genericTypes.generics())
                 .addModifiers(Modifier.PUBLIC);
 
         for (var superInterface : superInterfaces) {
@@ -48,7 +51,7 @@ class BuilderTypeGenerator {
                         .build()
         );
 
-        return builder.build();
+        return new GenerationResult(builder.build(), builderType);
     }
 
     @RequiredArgsConstructor

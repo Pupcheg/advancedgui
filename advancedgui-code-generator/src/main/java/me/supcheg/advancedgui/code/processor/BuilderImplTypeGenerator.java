@@ -1,6 +1,5 @@
 package me.supcheg.advancedgui.code.processor;
 
-import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.FieldSpec;
 import com.palantir.javapoet.MethodSpec;
@@ -19,17 +18,20 @@ import java.util.Objects;
 import static com.palantir.javapoet.CodeBlock.joining;
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
+import static me.supcheg.advancedgui.code.processor.TypeNames.rename;
 
 @RequiredArgsConstructor
 class BuilderImplTypeGenerator {
     private final CollectionMethodsResolver collectionResolver;
     private final Annotations annotations;
 
-    TypeSpec builderImplType(PackageName packageName, TypeSpec builderType, TypeName subjectImplType, List<? extends Property> properties) {
-        var builderImplTypename = ClassName.get(packageName.toString(), builderType.name() + "Impl");
+    GenerationResult builderImplType(TypeName builderType, TypeName subjectImplType, List<? extends Property> properties) {
+        var builderImplTypename = rename(builderType,  name -> name + "Impl");
 
-        var builder = TypeSpec.classBuilder(builderImplTypename)
-                .addSuperinterface(ClassName.get(packageName.toString(), builderType.name()));
+        var genericTypes = TypeNames.genericTypes(builderImplTypename);
+        var builder = TypeSpec.classBuilder(genericTypes.raw())
+                .addTypeVariables(genericTypes.generics())
+                .addSuperinterface(builderType);
 
         new FieldGenerator(builder).scan(properties);
 
@@ -67,7 +69,7 @@ class BuilderImplTypeGenerator {
 
         builder.addMethod(buildMethodBuilder.build());
 
-        return builder.build();
+        return new GenerationResult(builder.build(), builderImplTypename);
     }
 
     @RequiredArgsConstructor
