@@ -5,11 +5,6 @@ import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.ParameterSpec;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
-import me.supcheg.advancedgui.code.PackageName;
-import me.supcheg.advancedgui.code.processor.property.ObjectCollectionProperty;
-import me.supcheg.advancedgui.code.processor.property.ObjectProperty;
-import me.supcheg.advancedgui.code.processor.property.PrimitiveProperty;
-import me.supcheg.advancedgui.code.processor.property.Property;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -18,10 +13,10 @@ import java.util.List;
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
 
 @RequiredArgsConstructor
-public class ObjectImplTypeGenerator {
+class ObjectImplTypeGenerator {
     private final Annotations annotations;
 
-    public TypeSpec objectImplType(PackageName packageName, TypeElement subjectType, List<? extends Property> properties) {
+    TypeSpec objectImplType(PackageName packageName, TypeElement subjectType, List<? extends Property> properties) {
         TypeSpec.Builder builder = TypeSpec.recordBuilder(subjectType.getSimpleName() + "Impl")
                 .addSuperinterface(subjectType.asType());
 
@@ -45,11 +40,11 @@ public class ObjectImplTypeGenerator {
     }
 
     @RequiredArgsConstructor
-    private final class PropertyAppender implements GenerationPropertyVisitor {
+    private class PropertyAppender extends GenerationPropertyVisitor {
         private final MethodSpec.Builder constructor;
 
         @Override
-        public void visitObject(ObjectProperty property) {
+        public void visitObject(Property.Object property) {
             constructor.addParameter(
                     ParameterSpec.builder(property.typename(), property.name())
                             .addAnnotations(annotations.nonNull())
@@ -58,12 +53,12 @@ public class ObjectImplTypeGenerator {
         }
 
         @Override
-        public void visitPrimitive(PrimitiveProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
             constructor.addParameter(property.typename(), property.name());
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitObjectCollection(Property.ObjectCollection property) {
             constructor.addParameter(
                     ParameterSpec.builder(property.typename(), property.name())
                             .addAnnotations(annotations.unmodifiable())

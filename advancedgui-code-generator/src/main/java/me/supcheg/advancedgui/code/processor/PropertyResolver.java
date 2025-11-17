@@ -1,4 +1,4 @@
-package me.supcheg.advancedgui.code.processor.property;
+package me.supcheg.advancedgui.code.processor;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import java.util.List;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
 @RequiredArgsConstructor
-public class PropertyResolver {
+class PropertyResolver {
     private final Types types;
     private final ReferenceType collectionTypeMirror;
 
@@ -38,15 +38,15 @@ public class PropertyResolver {
 
     private Property asProperty(TypeMirror type, String name) {
         return switch (propertyKind(type)) {
-            case OBJECT -> new ObjectPropertyImpl(
+            case OBJECT -> new Property.Object(
                     (ReferenceType) type,
                     name
             );
-            case PRIMITIVE -> new PrimitivePropertyImpl(
+            case PRIMITIVE -> new Property.Primitive(
                     (PrimitiveType) type,
                     name
             );
-            case OBJECT_COLLECTION -> new ObjectCollectionPropertyImpl(
+            case OBJECT_COLLECTION -> new Property.ObjectCollection(
                     (ReferenceType) type,
                     name,
                     asProperty(collectionElementType(type), collectionElementName(name))
@@ -84,5 +84,11 @@ public class PropertyResolver {
         }
 
         return PropertyKind.OBJECT;
+    }
+
+    private enum PropertyKind {
+        PRIMITIVE,
+        OBJECT,
+        OBJECT_COLLECTION,
     }
 }

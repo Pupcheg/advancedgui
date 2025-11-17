@@ -1,10 +1,10 @@
-package me.supcheg.advancedgui.code;
+package me.supcheg.advancedgui.code.processor;
 
 import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 
-public record PackageName(String value) implements Name {
-    public PackageName(PackageElement element) {
+record PackageName(String value) implements Name {
+    PackageName(PackageElement element) {
         this(element.getQualifiedName().toString());
     }
 

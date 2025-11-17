@@ -2,8 +2,6 @@ package me.supcheg.advancedgui.code.processor;
 
 import com.palantir.javapoet.JavaFile;
 import me.supcheg.advancedgui.code.RecordInterface;
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethodsResolver;
-import me.supcheg.advancedgui.code.processor.property.PropertyResolver;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -21,7 +19,7 @@ import java.util.function.UnaryOperator;
 
 public class RecordInterfaceProcessor extends AbstractProcessor {
     @MonotonicNonNull
-    private GenerationStrategy strategy;
+    private RecordSubclassesGenerator recordSubclassesGenerator;
 
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -42,7 +40,7 @@ public class RecordInterfaceProcessor extends AbstractProcessor {
         var abstractBuilder = elements.getTypeElement("me.supcheg.advancedgui.api.builder.AbstractBuilder");
         UnaryOperator<TypeMirror> abstractBuilderAppender = type -> types.getDeclaredType(abstractBuilder, type);
 
-        strategy = new DefaultGenerationStrategy(
+        recordSubclassesGenerator = new RecordSubclassesGenerator(
                 elements,
                 propertyResolver,
                 new ObjectImplTypeGenerator(annotations),
@@ -85,7 +83,7 @@ public class RecordInterfaceProcessor extends AbstractProcessor {
         var typePackage = processingEnv.getElementUtils().getPackageOf(typeElement).getQualifiedName().toString();
         var filer = processingEnv.getFiler();
 
-        for (var type : strategy.generate(typeElement)) {
+        for (var type : recordSubclassesGenerator.generate(typeElement)) {
             JavaFile.builder(typePackage, type)
                     .build()
                     .writeTo(filer);

@@ -6,12 +6,12 @@ import com.palantir.javapoet.ClassName;
 import javax.lang.model.element.TypeElement;
 import java.util.List;
 
-public class Annotations {
+class Annotations {
     private final Iterable<AnnotationSpec> nullable;
     private final Iterable<AnnotationSpec> nonNull;
     private final Iterable<AnnotationSpec> unmodifiable;
 
-    public Annotations(TypeElement nullable, TypeElement nonNull, TypeElement unmodifiable) {
+    Annotations(TypeElement nullable, TypeElement nonNull, TypeElement unmodifiable) {
         this.nullable = iterable(nullable);
         this.nonNull = iterable(nonNull);
         this.unmodifiable = iterable(unmodifiable);
@@ -24,15 +24,15 @@ public class Annotations {
         );
     }
 
-    public Iterable<AnnotationSpec> nullable() {
+    Iterable<AnnotationSpec> nullable() {
         return nullable;
     }
 
-    public Iterable<AnnotationSpec> nonNull() {
+    Iterable<AnnotationSpec> nonNull() {
         return nonNull;
     }
 
-    public Iterable<AnnotationSpec> unmodifiable() {
+    Iterable<AnnotationSpec> unmodifiable() {
         return unmodifiable;
     }
 }

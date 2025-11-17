@@ -8,16 +8,6 @@ import com.palantir.javapoet.ParameterSpec;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
-import me.supcheg.advancedgui.code.PackageName;
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethods.ConstructorCopyFactory;
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethods.ConstructorEmptyFactory;
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethods.MethodCopyFactory;
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethods.MethodEmptyFactory;
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethodsResolver;
-import me.supcheg.advancedgui.code.processor.property.ObjectCollectionProperty;
-import me.supcheg.advancedgui.code.processor.property.ObjectProperty;
-import me.supcheg.advancedgui.code.processor.property.PrimitiveProperty;
-import me.supcheg.advancedgui.code.processor.property.Property;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
@@ -31,11 +21,11 @@ import static com.palantir.javapoet.MethodSpec.methodBuilder;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
 
 @RequiredArgsConstructor
-public class BuilderImplTypeGenerator {
+class BuilderImplTypeGenerator {
     private final CollectionMethodsResolver collectionResolver;
     private final Annotations annotations;
 
-    public TypeSpec builderImplType(PackageName packageName, TypeSpec builderType, TypeName subjectImplType, List<? extends Property> properties) {
+    TypeSpec builderImplType(PackageName packageName, TypeSpec builderType, TypeName subjectImplType, List<? extends Property> properties) {
         var builderImplTypename = ClassName.get(packageName.toString(), builderType.name() + "Impl");
 
         var builder = TypeSpec.classBuilder(builderImplTypename)
@@ -81,11 +71,11 @@ public class BuilderImplTypeGenerator {
     }
 
     @RequiredArgsConstructor
-    private final class FieldGenerator implements GenerationPropertyVisitor {
+    private class FieldGenerator extends GenerationPropertyVisitor {
         private final TypeSpec.Builder builder;
 
         @Override
-        public void visitObject(ObjectProperty property) {
+        public void visitObject(Property.Object property) {
             builder.addField(
                     FieldSpec.builder(property.typename(), property.name())
                             .addModifiers(Modifier.PRIVATE)
@@ -95,7 +85,7 @@ public class BuilderImplTypeGenerator {
         }
 
         @Override
-        public void visitPrimitive(PrimitiveProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
             builder.addField(
                     FieldSpec.builder(property.typename().box(), property.name())
                             .addModifiers(Modifier.PRIVATE)
@@ -105,7 +95,7 @@ public class BuilderImplTypeGenerator {
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitObjectCollection(Property.ObjectCollection property) {
             builder.addField(
                     FieldSpec.builder(property.typename(), property.name())
                             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
@@ -116,56 +106,66 @@ public class BuilderImplTypeGenerator {
     }
 
     @RequiredArgsConstructor
-    private final class NoArgsConstructorGenerator implements GenerationPropertyVisitor {
+    private class NoArgsConstructorGenerator extends GenerationPropertyVisitor {
         private final MethodSpec.Builder builder;
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
+            // nothing
+        }
+
+        @Override
+        public void visitObjectCollection(Property.ObjectCollection property) {
             var collection = collectionResolver.methodsFor(property.type());
 
             switch (collection.emptyMutableFactory()) {
-                case ConstructorEmptyFactory(ReferenceType implementationErasedType) ->
+                case CollectionMethods.ConstructorEmptyFactory(ReferenceType implementationErasedType) ->
                         builder.addCode("this.$L = new $T<>();", property.name(), implementationErasedType);
-                case MethodEmptyFactory(ReferenceType containingErasedType, Name methodname) ->
+                case CollectionMethods.MethodEmptyFactory(ReferenceType containingErasedType, Name methodname) ->
                         builder.addCode("this.$L = $T.$L();", property.name(), containingErasedType, methodname);
             }
+        }
+
+        @Override
+        public void visitObject(Property.Object property) {
+            // nothing
         }
     }
 
     @RequiredArgsConstructor
-    private final class ObjectCopyConstructorGenerator implements GenerationPropertyVisitor {
+    private class ObjectCopyConstructorGenerator extends GenerationPropertyVisitor {
         private final MethodSpec.Builder builder;
 
         @Override
-        public void visitObject(ObjectProperty property) {
+        public void visitObject(Property.Object property) {
             builder.addCode("this.$L = impl.$L();\n", property.name(), property.name());
         }
 
         @Override
-        public void visitPrimitive(PrimitiveProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
             builder.addCode("this.$L = impl.$L();\n", property.name(), property.name());
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitObjectCollection(Property.ObjectCollection property) {
             var collection = collectionResolver.methodsFor(property.type());
 
             switch (collection.copyMutableFactory()) {
-                case ConstructorCopyFactory(ReferenceType implementationErasedType) ->
+                case CollectionMethods.ConstructorCopyFactory(ReferenceType implementationErasedType) ->
                         builder.addCode("this.$L = new $T<>(impl.$L());\n", property.name(), implementationErasedType, property.name());
-                case MethodCopyFactory(ReferenceType containingErasedType, Name methodname) ->
+                case CollectionMethods.MethodCopyFactory(ReferenceType containingErasedType, Name methodname) ->
                         builder.addCode("this.$L = $T.$L(impl.$L);\n", property.name(), containingErasedType, methodname, property.name());
             }
         }
     }
 
     @RequiredArgsConstructor
-    private final class SetterMethodGenerator implements GenerationPropertyVisitor {
+    private class SetterMethodGenerator extends GenerationPropertyVisitor {
         private final TypeSpec.Builder builder;
         private final TypeName builderType;
 
         @Override
-        public void visitObject(ObjectProperty property) {
+        public void visitObject(Property.Object property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())
@@ -185,7 +185,7 @@ public class BuilderImplTypeGenerator {
         }
 
         @Override
-        public void visitPrimitive(PrimitiveProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())
@@ -200,7 +200,7 @@ public class BuilderImplTypeGenerator {
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitObjectCollection(Property.ObjectCollection property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())
@@ -239,11 +239,11 @@ public class BuilderImplTypeGenerator {
     }
 
     @RequiredArgsConstructor
-    private class GetterMethodGenerator implements GenerationPropertyVisitor {
+    private class GetterMethodGenerator extends GenerationPropertyVisitor {
         private final TypeSpec.Builder builder;
 
         @Override
-        public void visitObject(ObjectProperty property) {
+        public void visitObject(Property.Object property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nullable())
@@ -256,7 +256,7 @@ public class BuilderImplTypeGenerator {
         }
 
         @Override
-        public void visitPrimitive(PrimitiveProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nullable())
@@ -269,7 +269,7 @@ public class BuilderImplTypeGenerator {
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitObjectCollection(Property.ObjectCollection property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())
@@ -283,27 +283,27 @@ public class BuilderImplTypeGenerator {
     }
 
     @RequiredArgsConstructor
-    private final class BuildMethodCodeGeneratorGenerator implements GenerationPropertyVisitor {
+    private class BuildMethodCodeGeneratorGenerator extends GenerationPropertyVisitor {
         private final List<CodeBlock> blocks;
 
         @Override
-        public void visitObject(ObjectProperty property) {
+        public void visitObject(Property.Object property) {
             blocks.add(CodeBlock.of("$T.requireNonNull(this.$N, $S)", Objects.class, property.name(), property.name()));
         }
 
         @Override
-        public void visitPrimitive(PrimitiveProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
             blocks.add(CodeBlock.of("this.$N", property.name()));
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitObjectCollection(Property.ObjectCollection property) {
             var collection = collectionResolver.methodsFor(property.type());
 
             switch (collection.copyImmutableFactory()) {
-                case ConstructorCopyFactory(ReferenceType implementationErasedType) ->
+                case CollectionMethods.ConstructorCopyFactory(ReferenceType implementationErasedType) ->
                         blocks.add(CodeBlock.of("new $T<>(this.$L)", implementationErasedType, property.name()));
-                case MethodCopyFactory(ReferenceType containingErasedType, Name methodname) ->
+                case CollectionMethods.MethodCopyFactory(ReferenceType containingErasedType, Name methodname) ->
                         blocks.add(CodeBlock.of("$T.$L(this.$L)", containingErasedType, methodname, property.name()));
             }
         }

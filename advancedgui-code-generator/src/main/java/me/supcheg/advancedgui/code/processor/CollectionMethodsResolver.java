@@ -1,7 +1,7 @@
-package me.supcheg.advancedgui.code.processor.collection;
+package me.supcheg.advancedgui.code.processor;
 
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethods.ConstructorCopyFactory;
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethods.ConstructorEmptyFactory;
+import me.supcheg.advancedgui.code.processor.CollectionMethods.ConstructorCopyFactory;
+import me.supcheg.advancedgui.code.processor.CollectionMethods.ConstructorEmptyFactory;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
@@ -16,12 +16,12 @@ import java.util.Map;
 
 import static java.util.function.Predicate.not;
 
-public class CollectionMethodsResolver {
+class CollectionMethodsResolver {
     private final Types types;
 
     private final Map<ReferenceType, CollectionMethods> methodsByType;
 
-    public CollectionMethodsResolver(Types types, Elements elements) {
+    CollectionMethodsResolver(Types types, Elements elements) {
         this.types = types;
 
         var listType = elements.getTypeElement(List.class.getName());

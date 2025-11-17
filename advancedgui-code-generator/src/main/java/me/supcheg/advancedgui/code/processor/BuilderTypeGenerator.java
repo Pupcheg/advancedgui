@@ -5,12 +5,6 @@ import com.palantir.javapoet.ParameterSpec;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
-import me.supcheg.advancedgui.code.PackageName;
-import me.supcheg.advancedgui.code.processor.collection.CollectionMethodsResolver;
-import me.supcheg.advancedgui.code.processor.property.ObjectCollectionProperty;
-import me.supcheg.advancedgui.code.processor.property.ObjectProperty;
-import me.supcheg.advancedgui.code.processor.property.PrimitiveProperty;
-import me.supcheg.advancedgui.code.processor.property.Property;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -23,7 +17,7 @@ import static com.palantir.javapoet.TypeSpec.interfaceBuilder;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
 
 @RequiredArgsConstructor
-public class BuilderTypeGenerator {
+class BuilderTypeGenerator {
     private static final String BUILDER_SUFFIX = "Builder";
     private static final String BUILD_METHOD_NAME = "build";
     private static final String ADD_PREFIX = "add";
@@ -32,7 +26,7 @@ public class BuilderTypeGenerator {
     private final CollectionMethodsResolver collectionResolver;
     private final List<UnaryOperator<TypeMirror>> superInterfaces;
 
-    public TypeSpec builderTypeSpec(PackageName packageName, TypeElement subjectType, List<? extends Property> properties) {
+    TypeSpec builderTypeSpec(PackageName packageName, TypeElement subjectType, List<? extends Property> properties) {
         var builderType = ClassName.get(packageName.toString(), subjectType.getSimpleName() + BUILDER_SUFFIX);
 
         var builder = interfaceBuilder(builderType)
@@ -58,12 +52,12 @@ public class BuilderTypeGenerator {
     }
 
     @RequiredArgsConstructor
-    private class SetterMethodGenerator implements GenerationPropertyVisitor {
+    private class SetterMethodGenerator extends GenerationPropertyVisitor {
         private final TypeSpec.Builder builder;
         private final TypeName builderType;
 
         @Override
-        public void visitObject(ObjectProperty property) {
+        public void visitObject(Property.Object property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())
@@ -79,7 +73,7 @@ public class BuilderTypeGenerator {
         }
 
         @Override
-        public void visitPrimitive(PrimitiveProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())
@@ -91,7 +85,7 @@ public class BuilderTypeGenerator {
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitObjectCollection(Property.ObjectCollection property) {
 
             var collection = collectionResolver.methodsFor(property.type());
             var element = property.element();
@@ -157,11 +151,11 @@ public class BuilderTypeGenerator {
     }
 
     @RequiredArgsConstructor
-    private class GetterMethodGenerator implements GenerationPropertyVisitor {
+    private class GetterMethodGenerator extends GenerationPropertyVisitor {
         private final TypeSpec.Builder builder;
 
         @Override
-        public void visitObject(ObjectProperty property) {
+        public void visitObject(Property.Object property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nullable())
@@ -172,7 +166,7 @@ public class BuilderTypeGenerator {
         }
 
         @Override
-        public void visitPrimitive(PrimitiveProperty property) {
+        public void visitPrimitive(Property.Primitive property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nullable())
@@ -183,7 +177,7 @@ public class BuilderTypeGenerator {
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
+        public void visitObjectCollection(Property.ObjectCollection property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())

@@ -3,15 +3,13 @@ package me.supcheg.advancedgui.code.processor;
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
-import me.supcheg.advancedgui.code.PackageName;
-import me.supcheg.advancedgui.code.processor.property.PropertyResolver;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class DefaultGenerationStrategy implements GenerationStrategy {
+class RecordSubclassesGenerator {
     private final Elements elements;
     private final PropertyResolver propertyResolver;
 
@@ -19,8 +17,7 @@ public class DefaultGenerationStrategy implements GenerationStrategy {
     private final BuilderTypeGenerator builderTypeGenerator;
     private final BuilderImplTypeGenerator builderImplTypeGenerator;
 
-    @Override
-    public List<TypeSpec> generate(TypeElement typeElement) {
+    List<TypeSpec> generate(TypeElement typeElement) {
         var packageName = new PackageName(elements.getPackageOf(typeElement));
 
         var properties = propertyResolver.listProperties(typeElement);
