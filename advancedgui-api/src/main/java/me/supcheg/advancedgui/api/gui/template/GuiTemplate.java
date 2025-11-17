@@ -6,26 +6,35 @@ import me.supcheg.advancedgui.api.gui.Gui;
 import me.supcheg.advancedgui.api.gui.background.Background;
 import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.api.layout.template.LayoutTemplate;
+import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
+import me.supcheg.advancedgui.code.RecordInterface;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.function.Consumer;
 
+@RecordInterface
 public interface GuiTemplate extends Keyed, Buildable<GuiTemplate, GuiTemplate.Builder>, Lifecycled<Gui> {
 
     static Builder gui() {
-        return new GuiTemplateImpl.BuilderImpl();
+        throw new UnsupportedOperationException();
     }
 
     static GuiTemplate gui(Consumer<GuiTemplate.Builder> consumer) {
         return Buildable.configureAndBuild(gui(), consumer);
     }
 
+    @Override
+    Key key();
+
     Background background();
 
     LayoutTemplate<?, ?, ?> layout();
+
+    @Override
+    LifecycleListenerRegistry<Gui> lifecycleListenerRegistry();
 
     interface Builder extends AbstractBuilder<GuiTemplate>, Lifecycled.Builder<Gui, Builder> {
 
