@@ -1,35 +1,25 @@
 package me.supcheg.advancedgui.api.layout.template.anvil;
 
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import me.supcheg.advancedgui.api.sequence.Sequenced;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import me.supcheg.advancedgui.code.RecordInterface;
 
 import java.util.function.Consumer;
 
-public interface InputUpdateListener extends Sequenced<InputUpdateListener>, Buildable<InputUpdateListener, InputUpdateListener.Builder> {
+@RecordInterface
+public interface InputUpdateListener extends Sequenced<InputUpdateListener>, Buildable<InputUpdateListener, InputUpdateListenerBuilder> {
 
-    static  Builder inputUpdateListener() {
-        return new InputUpdateListenerImpl.BuilderImpl();
+    static InputUpdateListenerBuilder inputUpdateListener() {
+        return new InputUpdateListenerBuilderImpl();
     }
 
-    static  InputUpdateListener inputUpdateListener(Consumer<Builder> consumer) {
+    static InputUpdateListener inputUpdateListener(Consumer<InputUpdateListenerBuilder> consumer) {
         return Buildable.configureAndBuild(inputUpdateListener(), consumer);
     }
 
+    @Override
+    Priority priority();
+
     InputUpdateAction action();
-
-    interface Builder extends AbstractBuilder<InputUpdateListener> {
-
-        Builder priority(Priority priority);
-
-        @Nullable
-        Priority priority();
-
-        Builder action(InputUpdateAction action);
-
-        @Nullable
-        InputUpdateAction action();
-    }
 }

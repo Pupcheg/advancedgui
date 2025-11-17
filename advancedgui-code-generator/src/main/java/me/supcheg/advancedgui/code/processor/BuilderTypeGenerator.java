@@ -87,7 +87,7 @@ class BuilderTypeGenerator {
         @Override
         public void visitObjectCollection(Property.ObjectCollection property) {
 
-            var collection = collectionResolver.methodsFor(property.type());
+            var singletonFactory = collectionResolver.methodsFor(property.type()).singletonImmutableFactory();
             var element = property.element();
 
             var setCollectionMethodName = property.name();
@@ -115,7 +115,7 @@ class BuilderTypeGenerator {
                             )
                             .returns(builderType)
                             .addCode(requireNonNull(element))
-                            .addCode("return $L($T.$L($L));", setCollectionMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
+                            .addCode("return $L($T.$L($L));", setCollectionMethodName, singletonFactory.containingErasedType(), singletonFactory.methodname(), element.name())
                             .build()
             );
 
@@ -144,7 +144,7 @@ class BuilderTypeGenerator {
                             )
                             .returns(builderType)
                             .addCode(requireNonNull(element))
-                            .addCode("return $L($T.$L($L));", addMultiMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
+                            .addCode("return $L($T.$L($L));", addMultiMethodName, singletonFactory.containingErasedType(), singletonFactory.methodname(), element.name())
                             .build()
             );
         }

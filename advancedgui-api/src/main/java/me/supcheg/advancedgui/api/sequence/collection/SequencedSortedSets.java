@@ -19,6 +19,12 @@ public final class SequencedSortedSets {
         return new GuavaBackedSequencedSortedSet<>(Multimaps.newSetMultimap(new TreeMap<Priority, Collection<E>>(), HashSet::new));
     }
 
+    public static <E extends Sequenced<E>> SequencedSortedSet<E> create(E element) {
+        SequencedSortedSet<E> set = create();
+        set.add(element);
+        return set;
+    }
+
     @SafeVarargs
     public static <E extends Sequenced<E>> SequencedSortedSet<E> create(E first, E... rest) {
         SequencedSortedSet<E> set = create();
@@ -40,6 +46,11 @@ public final class SequencedSortedSets {
     }
 
     @Unmodifiable
+    public static <E extends Sequenced<E>> SequencedSortedSet<E> of(E element) {
+        return SequencedSortedSets.unmodifiableSequencedSortedSet(create(element));
+    }
+
+    @Unmodifiable
     @SafeVarargs
     public static <E extends Sequenced<E>> SequencedSortedSet<E> of(E first, E... rest) {
         return SequencedSortedSets.unmodifiableSequencedSortedSet(create(first, rest));
@@ -51,12 +62,20 @@ public final class SequencedSortedSets {
             return (UnmodifiableSequencedSortedSet<E>) collection;
         }
 
+        if (collection.isEmpty()) {
+            return of();
+        }
+
         return unmodifiableSequencedSortedSet(createCopy(collection));
     }
 
     public static <E extends Sequenced<E>> SequencedSortedSet<E> unmodifiableSequencedSortedSet(SequencedSortedSet<E> set) {
         if (set instanceof UnmodifiableSequencedSortedSet<E>) {
             return set;
+        }
+
+        if (set.isEmpty()) {
+            return of();
         }
 
         return new UnmodifiableSequencedSortedSet<>(set);

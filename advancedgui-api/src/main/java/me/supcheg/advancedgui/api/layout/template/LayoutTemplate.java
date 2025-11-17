@@ -3,6 +3,7 @@ package me.supcheg.advancedgui.api.layout.template;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
+import me.supcheg.advancedgui.api.button.template.ButtonTemplateBuilder;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
@@ -24,11 +25,11 @@ public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemp
 
         B addButton(ButtonTemplate button);
 
-        default B addButton(Consumer<ButtonTemplate.Builder> consumer) {
+        default B addButton(Consumer<ButtonTemplateBuilder> consumer) {
             return addButton(ButtonTemplate.button(consumer));
         }
 
-        default B addButton(ButtonTemplate.Builder button) {
+        default B addButton(ButtonTemplateBuilder button) {
             return addButton(button.build());
         }
 

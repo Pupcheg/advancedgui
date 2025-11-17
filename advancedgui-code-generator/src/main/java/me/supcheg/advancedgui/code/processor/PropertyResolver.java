@@ -3,6 +3,7 @@ package me.supcheg.advancedgui.code.processor;
 import lombok.RequiredArgsConstructor;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
@@ -29,7 +30,8 @@ class PropertyResolver {
 
     private boolean isPropertyGetter(ExecutableElement method) {
         return method.getReturnType().getKind() != TypeKind.VOID
-               && method.getParameters().isEmpty();
+               && method.getParameters().isEmpty()
+                && method.getModifiers().contains(Modifier.ABSTRACT);
     }
 
     private Property asProperty(ExecutableElement method) {

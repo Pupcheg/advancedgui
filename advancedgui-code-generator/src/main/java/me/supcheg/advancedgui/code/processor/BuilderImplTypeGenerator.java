@@ -120,9 +120,9 @@ class BuilderImplTypeGenerator {
 
             switch (collection.emptyMutableFactory()) {
                 case CollectionMethods.ConstructorEmptyFactory(ReferenceType implementationErasedType) ->
-                        builder.addCode("this.$L = new $T<>();", property.name(), implementationErasedType);
+                        builder.addCode("this.$L = new $T<>();\n", property.name(), implementationErasedType);
                 case CollectionMethods.MethodEmptyFactory(ReferenceType containingErasedType, Name methodname) ->
-                        builder.addCode("this.$L = $T.$L();", property.name(), containingErasedType, methodname);
+                        builder.addCode("this.$L = $T.$L();\n", property.name(), containingErasedType, methodname);
             }
         }
 
@@ -154,7 +154,7 @@ class BuilderImplTypeGenerator {
                 case CollectionMethods.ConstructorCopyFactory(ReferenceType implementationErasedType) ->
                         builder.addCode("this.$L = new $T<>(impl.$L());\n", property.name(), implementationErasedType, property.name());
                 case CollectionMethods.MethodCopyFactory(ReferenceType containingErasedType, Name methodname) ->
-                        builder.addCode("this.$L = $T.$L(impl.$L);\n", property.name(), containingErasedType, methodname, property.name());
+                        builder.addCode("this.$L = $T.$L(impl.$L());\n", property.name(), containingErasedType, methodname, property.name());
             }
         }
     }

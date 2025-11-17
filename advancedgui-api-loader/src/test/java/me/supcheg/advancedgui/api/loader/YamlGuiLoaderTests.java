@@ -75,7 +75,7 @@ class YamlGuiLoaderTests {
 
         template = gui(gui -> gui
                 .key(key("advancedgui:test/test"))
-                .layout(anvilLayout(), anvilLayout -> anvilLayout
+                .layout(anvilLayout(anvilLayout -> anvilLayout
                         .addInputUpdateListener(inputUpdateListener -> inputUpdateListener
                                 .priority(NamedPriority.NORMAL)
                                 .action(dummyAction())
@@ -110,7 +110,7 @@ class YamlGuiLoaderTests {
                                         .action(dummyAction())
                                 )
                         )
-                )
+                ))
                 .background(background -> background
                         .addLocation(key("advancedgui:test/background"))
                 )

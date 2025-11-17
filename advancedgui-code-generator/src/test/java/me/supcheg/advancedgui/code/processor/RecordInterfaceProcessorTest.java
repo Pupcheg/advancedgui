@@ -17,7 +17,7 @@ class RecordInterfaceProcessorTest {
     @BeforeEach
     void setup() {
         compilation = javac()
-                .withProcessors(new RecordInterfaceProcessor())
+                .withProcessors(new CodeGeneratorProcessor())
                 .compile(
                         JavaFileObjects.forSourceString(
                                 "TestTemplate",

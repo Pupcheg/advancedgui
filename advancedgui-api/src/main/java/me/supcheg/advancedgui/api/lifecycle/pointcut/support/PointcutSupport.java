@@ -1,9 +1,8 @@
 package me.supcheg.advancedgui.api.lifecycle.pointcut.support;
 
-import com.google.common.collect.Lists;
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
+import me.supcheg.advancedgui.code.RecordInterface;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -12,17 +11,18 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public interface PointcutSupport extends Buildable<PointcutSupport, PointcutSupport.Builder> {
+@RecordInterface
+public interface PointcutSupport extends Buildable<PointcutSupport, PointcutSupportBuilder> {
 
     static PointcutSupport simplePointcutSupport(Set<Pointcut> pointcuts) {
         return new PointcutSupportImpl(Set.copyOf(pointcuts));
     }
 
-    static Builder pointcutSupport() {
-        return new PointcutSupportImpl.BuilderImpl();
+    static PointcutSupportBuilder pointcutSupport() {
+        return new PointcutSupportBuilderImpl();
     }
 
-    static PointcutSupport pointcutSupport(Consumer<Builder> consumer) {
+    static PointcutSupport pointcutSupport(Consumer<PointcutSupportBuilder> consumer) {
         return Buildable.configureAndBuild(pointcutSupport(), consumer);
     }
 
@@ -37,16 +37,5 @@ public interface PointcutSupport extends Buildable<PointcutSupport, PointcutSupp
         HashSet<Pointcut> unsupported = new HashSet<>(pointcuts);
         unsupported.removeAll(supported());
         return Collections.unmodifiableSet(unsupported);
-    }
-
-    interface Builder extends AbstractBuilder<PointcutSupport> {
-
-        Builder supports(Pointcut pointcut);
-
-        Builder supports(Collection<Pointcut> pointcuts);
-
-        default Builder supports(Pointcut first, Pointcut second, Pointcut ... other) {
-            return supports(Lists.asList(first, second, other));
-        }
     }
 }

@@ -1,32 +1,30 @@
 package me.supcheg.advancedgui.api.button.template;
 
-import com.google.common.collect.Lists;
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
 import me.supcheg.advancedgui.api.button.description.Description;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
+import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
+import me.supcheg.advancedgui.code.RecordInterface;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
+@RecordInterface
+public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplateBuilder>, Lifecycled<Button> {
 
-public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate.Builder>, Lifecycled<Button> {
-
-    static Builder button() {
-        return new ButtonTemplateImpl.BuilderImpl();
+    static ButtonTemplateBuilder button() {
+        return new ButtonTemplateBuilderImpl();
     }
 
-    static ButtonTemplate button(Consumer<Builder> consumer) {
+    static ButtonTemplate button(Consumer<ButtonTemplateBuilder> consumer) {
         return Buildable.configureAndBuild(button(), consumer);
     }
 
@@ -49,73 +47,6 @@ public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplate
         return attributes().contains(attribute);
     }
 
-    interface Builder extends AbstractBuilder<ButtonTemplate>, Lifecycled.Builder<Button, Builder> {
-
-        Builder addCoordinate(Coordinate coordinate);
-
-        default Builder addCoordinate(int x, int y) {
-            return addCoordinate(coordinate(x, y));
-        }
-
-        default Builder addCoordinates(Coordinate first, Coordinate second, Coordinate... coordinates) {
-            return addCoordinates(Set.copyOf(Lists.asList(first, second, coordinates)));
-        }
-
-        Builder addCoordinates(Set<Coordinate> coordinates);
-
-        Builder coordinates(Set<Coordinate> coordinates);
-
-        Set<Coordinate> coordinates();
-
-        default Builder addInteraction(Consumer<ButtonInteraction.Builder> consumer) {
-            return addInteraction(ButtonInteraction.buttonInteraction(consumer));
-        }
-
-        Builder addInteraction(ButtonInteraction interaction);
-
-        Builder interactions(SequencedSortedSet<ButtonInteraction> interactions);
-
-        SequencedSortedSet<ButtonInteraction> interactions();
-
-        Builder texture(Key location);
-
-        @Nullable
-        Key texture();
-
-        Builder name(Component name);
-
-        @Nullable
-        Component name();
-
-        Builder description(Description description);
-
-        default Builder description(Consumer<Description.Builder> consumer) {
-            return description(Description.description(consumer));
-        }
-
-        @Nullable
-        Description description();
-
-        Set<ButtonAttribute> attributes();
-
-        Builder attributes(Set<ButtonAttribute> attributes);
-
-        default Builder attributes(ButtonAttribute attribute) {
-            return attributes(Set.of(attribute));
-        }
-
-        default Builder attributes(ButtonAttribute first, ButtonAttribute second, ButtonAttribute... other) {
-            return attributes(Set.copyOf(Lists.asList(first, second, other)));
-        }
-
-        Builder addAttributes(Set<ButtonAttribute> attributes);
-
-        default Builder addAttributes(ButtonAttribute attribute) {
-            return addAttributes(Set.of(attribute));
-        }
-
-        default Builder addAttributes(ButtonAttribute first, ButtonAttribute second, ButtonAttribute... other) {
-            return addAttributes(Set.copyOf(Lists.asList(first, second, other)));
-        }
-    }
+    @Override
+    LifecycleListenerRegistry<Button> lifecycleListenerRegistry();
 }
