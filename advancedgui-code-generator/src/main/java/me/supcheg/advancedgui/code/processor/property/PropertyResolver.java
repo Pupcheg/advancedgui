@@ -9,10 +9,8 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.ReferenceType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor14;
 import javax.lang.model.util.Types;
-import java.util.Collection;
 import java.util.List;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
@@ -20,14 +18,7 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
 @RequiredArgsConstructor
 public class PropertyResolver {
     private final Types types;
-
-    private final TypeMirror collectionTypeMirror;
-
-    public PropertyResolver(Elements elements, Types types) {
-        this.types = types;
-
-        this.collectionTypeMirror = elements.getTypeElement(Collection.class.getName()).asType();
-    }
+    private final ReferenceType collectionTypeMirror;
 
     public List<? extends Property> listProperties(TypeElement element) {
         return methodsIn(element.getEnclosedElements()).stream()

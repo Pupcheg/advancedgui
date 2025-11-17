@@ -5,6 +5,7 @@ import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
+import me.supcheg.advancedgui.code.PackageName;
 import me.supcheg.advancedgui.code.processor.collection.CollectionMethodsResolver;
 import me.supcheg.advancedgui.code.processor.property.ObjectCollectionProperty;
 import me.supcheg.advancedgui.code.processor.property.Property;
@@ -12,7 +13,6 @@ import me.supcheg.advancedgui.code.processor.property.Property;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -26,15 +26,11 @@ public class BuilderTypeGenerator {
     private static final String BUILD_METHOD_NAME = "build";
     private static final String ADD_PREFIX = "add";
 
-    private final Elements elements;
     private final CollectionMethodsResolver collectionResolver;
     private final List<UnaryOperator<TypeMirror>> superInterfaces;
 
-    public TypeSpec builderTypeSpec(TypeElement subjectType, List<? extends Property> properties) {
-        var builderType = ClassName.get(
-                elements.getPackageOf(subjectType).getQualifiedName().toString(),
-                subjectType.getSimpleName() + BUILDER_SUFFIX
-        );
+    public TypeSpec builderTypeSpec(PackageName packageName, TypeElement subjectType, List<? extends Property> properties) {
+        var builderType = ClassName.get(packageName.toString(), subjectType.getSimpleName() + BUILDER_SUFFIX);
 
         var builder = interfaceBuilder(builderType)
                 .addModifiers(Modifier.PUBLIC);
@@ -75,7 +71,7 @@ public class BuilderTypeGenerator {
                     element.name(), element,
                     CodeBlock.builder()
                             .add(requireNonNull(element))
-                            .add("return $L($T.$L($L));", setCollectionMethodName, collection.erasedType(), collection.singletonFactory(), element.name())
+                            .add("return $L($T.$L($L));", setCollectionMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
                             .build()
             );
 
@@ -86,7 +82,7 @@ public class BuilderTypeGenerator {
                     ADD_PREFIX + capitalize(element.name()), element,
                     CodeBlock.builder()
                             .add(requireNonNull(element))
-                            .add("return $L($T.$L($L));", addMultiMethodName, collection.erasedType(), collection.singletonFactory(), element.name())
+                            .add("return $L($T.$L($L));", addMultiMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
                             .build()
             );
         }

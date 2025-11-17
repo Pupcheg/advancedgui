@@ -11,6 +11,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ReferenceType;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Collection;
@@ -28,15 +29,20 @@ public class RecordInterfaceProcessor extends AbstractProcessor {
         var elements = processingEnv.getElementUtils();
         var types = processingEnv.getTypeUtils();
 
+        var collectionType = (ReferenceType) elements.getTypeElement(Collection.class.getName()).asType();
+        var propertyResolver = new PropertyResolver(types, collectionType);
+
         var collectionResolver = new CollectionMethodsResolver(types, elements);
 
         var abstractBuilder = elements.getTypeElement("me.supcheg.advancedgui.api.builder.AbstractBuilder");
         UnaryOperator<TypeMirror> abstractBuilderAppender = type -> types.getDeclaredType(abstractBuilder, type);
 
         strategy = new DefaultGenerationStrategy(
-                new PropertyResolver(elements, types),
+                elements,
+                propertyResolver,
                 new ObjectImplTypeGenerator(),
-                new BuilderTypeGenerator(elements, collectionResolver, List.of(abstractBuilderAppender))
+                new BuilderTypeGenerator(collectionResolver, List.of(abstractBuilderAppender)),
+                new BuilderImplTypeGenerator(collectionResolver)
         );
     }
 

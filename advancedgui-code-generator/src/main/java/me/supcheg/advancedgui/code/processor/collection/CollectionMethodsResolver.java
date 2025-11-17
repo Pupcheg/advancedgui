@@ -1,5 +1,8 @@
 package me.supcheg.advancedgui.code.processor.collection;
 
+import me.supcheg.advancedgui.code.processor.collection.CollectionMethods.ConstructorCopyFactory;
+import me.supcheg.advancedgui.code.processor.collection.CollectionMethods.ConstructorEmptyFactory;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
@@ -7,6 +10,7 @@ import javax.lang.model.type.ReferenceType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,14 +24,22 @@ public class CollectionMethodsResolver {
     public CollectionMethodsResolver(Types types, Elements elements) {
         this.types = types;
 
-        var listType = (elements.getTypeElement(List.class.getName()));
+        var listType = elements.getTypeElement(List.class.getName());
         this.methodsByType = Map.of(
                 (ReferenceType) listType.asType(),
                 new CollectionMethods(
                         (ReferenceType) types.erasure(listType.asType()),
-                        findMethod(listType, "of", 0),
+                        new ConstructorEmptyFactory(
+                                (ReferenceType) types.erasure(elements.getTypeElement(ArrayList.class.getName()).asType())
+                        ),
                         findMethod(listType, "of", 1),
-                        findVarargsMethod(listType, "of")
+                        new ConstructorCopyFactory(
+                                (ReferenceType) types.erasure(elements.getTypeElement(ArrayList.class.getName()).asType())
+                        ),
+                        new CollectionMethods.MethodCopyFactory(
+                                (ReferenceType) types.erasure(listType.asType()),
+                                findMethod(listType, "copyOf", 1)
+                        )
                 )
         );
     }
@@ -38,16 +50,6 @@ public class CollectionMethodsResolver {
                 .filter(not(ExecutableElement::isVarArgs))
                 .filter(method -> method.getSimpleName().contentEquals(methodName))
                 .filter(method -> method.getParameters().size() == argsAmount)
-                .findFirst()
-                .orElseThrow()
-                .getSimpleName();
-    }
-
-    private Name findVarargsMethod(TypeElement type, String methodName) {
-        return ElementFilter.methodsIn(type.getEnclosedElements())
-                .stream()
-                .filter(ExecutableElement::isVarArgs)
-                .filter(method -> method.getSimpleName().contentEquals(methodName))
                 .findFirst()
                 .orElseThrow()
                 .getSimpleName();
