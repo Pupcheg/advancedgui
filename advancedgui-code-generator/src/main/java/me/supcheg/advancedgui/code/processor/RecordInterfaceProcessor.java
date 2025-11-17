@@ -28,6 +28,11 @@ public class RecordInterfaceProcessor extends AbstractProcessor {
 
         var elements = processingEnv.getElementUtils();
         var types = processingEnv.getTypeUtils();
+        var annotations = new Annotations(
+                elements.getTypeElement("org.checkerframework.checker.nullness.qual.Nullable"),
+                elements.getTypeElement("org.checkerframework.checker.nullness.qual.NonNull"),
+                elements.getTypeElement("org.jetbrains.annotations.Unmodifiable")
+        );
 
         var collectionType = (ReferenceType) elements.getTypeElement(Collection.class.getName()).asType();
         var propertyResolver = new PropertyResolver(types, collectionType);
@@ -40,9 +45,9 @@ public class RecordInterfaceProcessor extends AbstractProcessor {
         strategy = new DefaultGenerationStrategy(
                 elements,
                 propertyResolver,
-                new ObjectImplTypeGenerator(),
-                new BuilderTypeGenerator(collectionResolver, List.of(abstractBuilderAppender)),
-                new BuilderImplTypeGenerator(collectionResolver)
+                new ObjectImplTypeGenerator(annotations),
+                new BuilderTypeGenerator(annotations, collectionResolver, List.of(abstractBuilderAppender)),
+                new BuilderImplTypeGenerator(collectionResolver, annotations)
         );
     }
 

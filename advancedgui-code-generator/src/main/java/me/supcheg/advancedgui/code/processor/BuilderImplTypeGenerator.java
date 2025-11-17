@@ -2,7 +2,9 @@ package me.supcheg.advancedgui.code.processor;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.FieldSpec;
 import com.palantir.javapoet.MethodSpec;
+import com.palantir.javapoet.ParameterSpec;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
 @RequiredArgsConstructor
 public class BuilderImplTypeGenerator {
     private final CollectionMethodsResolver collectionResolver;
+    private final Annotations annotations;
 
     public TypeSpec builderImplType(PackageName packageName, TypeSpec builderType, TypeName subjectImplType, List<? extends Property> properties) {
         var builderImplTypename = ClassName.get(packageName.toString(), builderType.name() + "Impl");
@@ -45,13 +48,19 @@ public class BuilderImplTypeGenerator {
         builder.addMethod(noArgsConstructorBuilder.build());
 
         var objectCopyConstructorBuilder = MethodSpec.constructorBuilder()
-                .addParameter(subjectImplType, "impl");
+                .addParameter(
+                        ParameterSpec.builder(subjectImplType, "impl")
+                                .addAnnotations(annotations.nonNull())
+                                .build()
+                );
         new ObjectCopyConstructorGenerator(objectCopyConstructorBuilder).scan(properties);
         builder.addMethod(objectCopyConstructorBuilder.build());
 
         new SetterMethodGenerator(builder, builderImplTypename).scan(properties);
 
         var buildMethodBuilder = MethodSpec.methodBuilder("build")
+                .addAnnotations(annotations.nonNull())
+                .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(subjectImplType);
 
@@ -70,20 +79,38 @@ public class BuilderImplTypeGenerator {
         return builder.build();
     }
 
-    private record FieldGenerator(TypeSpec.Builder builder) implements GenerationPropertyVisitor {
+    @RequiredArgsConstructor
+    private final class FieldGenerator implements GenerationPropertyVisitor {
+        private final TypeSpec.Builder builder;
+
         @Override
         public void visitObject(ObjectProperty property) {
-            builder.addField(property.typename(), property.name(), Modifier.PRIVATE);
+            builder.addField(
+                    FieldSpec.builder(property.typename(), property.name())
+                            .addModifiers(Modifier.PRIVATE)
+                            .addAnnotations(annotations.nullable())
+                            .build()
+            );
         }
 
         @Override
         public void visitPrimitive(PrimitiveProperty property) {
-            builder.addField(property.typename().box(), property.name(), Modifier.PRIVATE);
+            builder.addField(
+                    FieldSpec.builder(property.typename().box(), property.name())
+                            .addModifiers(Modifier.PRIVATE)
+                            .addAnnotations(annotations.nullable())
+                            .build()
+            );
         }
 
         @Override
         public void visitObjectCollection(ObjectCollectionProperty property) {
-            builder.addField(property.typename(), property.name(), Modifier.PRIVATE, Modifier.FINAL);
+            builder.addField(
+                    FieldSpec.builder(property.typename(), property.name())
+                            .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                            .addAnnotations(annotations.nonNull())
+                            .build()
+            );
         }
     }
 
@@ -131,14 +158,23 @@ public class BuilderImplTypeGenerator {
         }
     }
 
-    private record SetterMethodGenerator(TypeSpec.Builder builder,
-                                         TypeName builderType) implements GenerationPropertyVisitor {
+    @RequiredArgsConstructor
+    private final class SetterMethodGenerator implements GenerationPropertyVisitor {
+        private final TypeSpec.Builder builder;
+        private final TypeName builderType;
+
         @Override
         public void visitObject(ObjectProperty property) {
             builder.addMethod(
                     methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
                             .addModifiers(Modifier.PUBLIC)
-                            .addParameter(property.typename(), property.name())
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
                             .addCode(requireNonNull(property))
                             .addCode("this.$L = $L;\n", property.name(), property.name())
                             .addCode("return this;")
@@ -151,6 +187,8 @@ public class BuilderImplTypeGenerator {
         public void visitPrimitive(PrimitiveProperty property) {
             builder.addMethod(
                     methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
                             .addModifiers(Modifier.PUBLIC)
                             .addParameter(property.typename(), property.name())
                             .addCode("this.$L = $L;\n", property.name(), property.name())
@@ -164,8 +202,14 @@ public class BuilderImplTypeGenerator {
         public void visitObjectCollection(ObjectCollectionProperty property) {
             builder.addMethod(
                     methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
                             .addModifiers(Modifier.PUBLIC)
-                            .addParameter(property.typename(), property.name())
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
                             .addCode(requireNonNull(property))
                             .addCode("this.$L.clear();\n", property.name())
                             .addCode("this.$L.addAll($L);\n", property.name(), property.name())
@@ -176,8 +220,14 @@ public class BuilderImplTypeGenerator {
 
             builder.addMethod(
                     methodBuilder("add" + capitalize(property.name()))
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
                             .addModifiers(Modifier.PUBLIC)
-                            .addParameter(property.typename(), property.name())
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
                             .addCode(requireNonNull(property))
                             .addCode("this.$L.addAll($L);\n", property.name(), property.name())
                             .addCode("return this;")

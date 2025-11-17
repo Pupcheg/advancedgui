@@ -1,13 +1,15 @@
 package me.supcheg.advancedgui.code.processor;
 
 import com.palantir.javapoet.ClassName;
-import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.ParameterSpec;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.code.PackageName;
 import me.supcheg.advancedgui.code.processor.collection.CollectionMethodsResolver;
 import me.supcheg.advancedgui.code.processor.property.ObjectCollectionProperty;
+import me.supcheg.advancedgui.code.processor.property.ObjectProperty;
+import me.supcheg.advancedgui.code.processor.property.PrimitiveProperty;
 import me.supcheg.advancedgui.code.processor.property.Property;
 
 import javax.lang.model.element.Modifier;
@@ -26,6 +28,7 @@ public class BuilderTypeGenerator {
     private static final String BUILD_METHOD_NAME = "build";
     private static final String ADD_PREFIX = "add";
 
+    private final Annotations annotations;
     private final CollectionMethodsResolver collectionResolver;
     private final List<UnaryOperator<TypeMirror>> superInterfaces;
 
@@ -43,6 +46,8 @@ public class BuilderTypeGenerator {
 
         builder.addMethod(
                 methodBuilder(BUILD_METHOD_NAME)
+                        .addAnnotations(annotations.nonNull())
+                        .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                         .returns(TypeName.get(subjectType.asType()))
                         .build()
@@ -57,39 +62,26 @@ public class BuilderTypeGenerator {
         private final TypeName builderType;
 
         @Override
-        public void visit(Property property) {
-            addAbstractMethod(property.name(), property);
+        public void visitObject(ObjectProperty property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .returns(builderType)
+                            .build()
+            );
         }
 
         @Override
-        public void visitObjectCollection(ObjectCollectionProperty property) {
-            var collection = collectionResolver.methodsFor(property.type());
-            var element = property.element();
-
-            var setCollectionMethodName = property.name();
-            addDefaultMethod(
-                    element.name(), element,
-                    CodeBlock.builder()
-                            .add(requireNonNull(element))
-                            .add("return $L($T.$L($L));", setCollectionMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
-                            .build()
-            );
-
-            var addMultiMethodName = ADD_PREFIX + capitalize(property.name());
-
-            addAbstractMethod(addMultiMethodName, property);
-            addDefaultMethod(
-                    ADD_PREFIX + capitalize(element.name()), element,
-                    CodeBlock.builder()
-                            .add(requireNonNull(element))
-                            .add("return $L($T.$L($L));", addMultiMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
-                            .build()
-            );
-        }
-
-        private void addAbstractMethod(String methodName, Property property) {
+        public void visitPrimitive(PrimitiveProperty property) {
             builder.addMethod(
-                    methodBuilder(methodName)
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
                             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                             .addParameter(property.typename(), property.name())
                             .returns(builderType)
@@ -97,13 +89,67 @@ public class BuilderTypeGenerator {
             );
         }
 
-        private void addDefaultMethod(String methodName, Property property, CodeBlock code) {
+        @Override
+        public void visitObjectCollection(ObjectCollectionProperty property) {
+
+            var collection = collectionResolver.methodsFor(property.type());
+            var element = property.element();
+
+            var setCollectionMethodName = property.name();
+
             builder.addMethod(
-                    methodBuilder(methodName)
-                            .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
-                            .addParameter(property.typename(), property.name())
+                    methodBuilder(setCollectionMethodName)
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
                             .returns(builderType)
-                            .addCode(code)
+                            .build()
+            );
+            builder.addMethod(
+                    methodBuilder(element.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                            .addParameter(
+                                    ParameterSpec.builder(element.typename(), element.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .returns(builderType)
+                            .addCode(requireNonNull(element))
+                            .addCode("return $L($T.$L($L));", setCollectionMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
+                            .build()
+            );
+
+            var addMultiMethodName = ADD_PREFIX + capitalize(property.name());
+
+            builder.addMethod(
+                    methodBuilder(addMultiMethodName)
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .returns(builderType)
+                            .build()
+            );
+            builder.addMethod(
+                    methodBuilder(ADD_PREFIX + capitalize(element.name()))
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                            .addParameter(
+                                    ParameterSpec.builder(element.typename(), element.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .returns(builderType)
+                            .addCode(requireNonNull(element))
+                            .addCode("return $L($T.$L($L));", addMultiMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
                             .build()
             );
         }

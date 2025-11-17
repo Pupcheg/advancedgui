@@ -48,30 +48,40 @@ class RecordInterfaceProcessorTest {
                 .generatedSourceFile("TestTemplateBuilder")
                 .contentsAsUtf8String()
                 .isEqualTo("""
+                        import java.lang.Override;
                         import java.util.List;
                         import java.util.Objects;
                         import me.supcheg.advancedgui.api.builder.AbstractBuilder;
                         import net.kyori.adventure.key.Key;
+                        import org.checkerframework.checker.nullness.qual.NonNull;
                         
                         public interface TestTemplateBuilder extends AbstractBuilder<TestTemplate> {
-                          TestTemplateBuilder key(Key key);
+                          @NonNull
+                          TestTemplateBuilder key(@NonNull Key key);
                         
-                          TestTemplateBuilder subkeys(List<Key> subkeys);
+                          @NonNull
+                          TestTemplateBuilder subkeys(@NonNull List<Key> subkeys);
                         
-                          default TestTemplateBuilder subkey(Key subkey) {
+                          @NonNull
+                          default TestTemplateBuilder subkey(@NonNull Key subkey) {
                             Objects.requireNonNull(subkey, "subkey");
                             return subkeys(List.of(subkey));
                           }
                         
-                          TestTemplateBuilder addSubkeys(List<Key> subkeys);
+                          @NonNull
+                          TestTemplateBuilder addSubkeys(@NonNull List<Key> subkeys);
                         
-                          default TestTemplateBuilder addSubkey(Key subkey) {
+                          @NonNull
+                          default TestTemplateBuilder addSubkey(@NonNull Key subkey) {
                             Objects.requireNonNull(subkey, "subkey");
                             return addSubkeys(List.of(subkey));
                           }
                         
+                          @NonNull
                           TestTemplateBuilder value(int value);
                         
+                          @NonNull
+                          @Override
                           TestTemplate build();
                         }
                         """);
@@ -85,8 +95,10 @@ class RecordInterfaceProcessorTest {
                 .isEqualTo("""
                         import java.util.List;
                         import net.kyori.adventure.key.Key;
+                        import org.checkerframework.checker.nullness.qual.NonNull;
                         
-                        record TestTemplateImpl(Key key, List<Key> subkeys, int value) implements TestTemplate {
+                        record TestTemplateImpl(@NonNull Key key, @NonNull List<Key> subkeys,
+                            int value) implements TestTemplate {
                         }
                         """);
     }
@@ -98,52 +110,68 @@ class RecordInterfaceProcessorTest {
                 .contentsAsUtf8String()
                 .isEqualTo("""
                         import java.lang.Integer;
+                        import java.lang.Override;
                         import java.util.ArrayList;
                         import java.util.List;
                         import java.util.Objects;
                         import net.kyori.adventure.key.Key;
+                        import org.checkerframework.checker.nullness.qual.NonNull;
+                        import org.checkerframework.checker.nullness.qual.Nullable;
                         
                         class TestTemplateBuilderImpl implements TestTemplateBuilder {
+                          @Nullable
                           private Key key;
                         
+                          @NonNull
                           private final List<Key> subkeys;
                         
+                          @Nullable
                           private Integer value;
                         
                           TestTemplateBuilderImpl() {
                             this.subkeys = new ArrayList<>();
                           }
                         
-                          TestTemplateBuilderImpl(TestTemplateImpl impl) {
+                          TestTemplateBuilderImpl(@NonNull TestTemplateImpl impl) {
                             this.key = impl.key();
                             this.subkeys = new ArrayList<>(impl.subkeys());
                             this.value = impl.value();
                           }
                         
-                          public TestTemplateBuilderImpl key(Key key) {
+                          @NonNull
+                          @Override
+                          public TestTemplateBuilderImpl key(@NonNull Key key) {
                             Objects.requireNonNull(key, "key");
                             this.key = key;
                             return this;
                           }
                         
-                          public TestTemplateBuilderImpl subkeys(List<Key> subkeys) {
+                          @NonNull
+                          @Override
+                          public TestTemplateBuilderImpl subkeys(@NonNull List<Key> subkeys) {
                             Objects.requireNonNull(subkeys, "subkeys");
                             this.subkeys.clear();
                             this.subkeys.addAll(subkeys);
                             return this;
                           }
                         
-                          public TestTemplateBuilderImpl addSubkeys(List<Key> subkeys) {
+                          @NonNull
+                          @Override
+                          public TestTemplateBuilderImpl addSubkeys(@NonNull List<Key> subkeys) {
                             Objects.requireNonNull(subkeys, "subkeys");
                             this.subkeys.addAll(subkeys);
                             return this;
                           }
                         
+                          @NonNull
+                          @Override
                           public TestTemplateBuilderImpl value(int value) {
                             this.value = value;
                             return this;
                           }
                         
+                          @NonNull
+                          @Override
                           public TestTemplateImpl build() {
                             return new TestTemplateImpl(
                                 Objects.requireNonNull(this.key, "key"),
