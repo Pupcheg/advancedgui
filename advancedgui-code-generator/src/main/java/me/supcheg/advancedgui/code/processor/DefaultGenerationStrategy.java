@@ -11,15 +11,18 @@ import java.util.List;
 public class DefaultGenerationStrategy implements GenerationStrategy {
     private final PropertyResolver propertyResolver;
 
+    private final ObjectImplTypeGenerator objectImplTypeGenerator;
     private final BuilderTypeGenerator builderTypeGenerator;
 
     @Override
     public List<TypeSpec> generate(TypeElement typeElement) {
         var properties = propertyResolver.listProperties(typeElement);
 
+        var objectImplType = objectImplTypeGenerator.objectImplType(typeElement, properties);
         var builderType = builderTypeGenerator.builderTypeSpec(typeElement, properties);
 
         return List.of(
+                objectImplType,
                 builderType
         );
     }

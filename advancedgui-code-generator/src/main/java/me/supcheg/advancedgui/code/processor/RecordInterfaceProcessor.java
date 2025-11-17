@@ -35,6 +35,7 @@ public class RecordInterfaceProcessor extends AbstractProcessor {
 
         strategy = new DefaultGenerationStrategy(
                 new PropertyResolver(elements, types),
+                new ObjectImplTypeGenerator(),
                 new BuilderTypeGenerator(elements, collectionResolver, List.of(abstractBuilderAppender))
         );
     }

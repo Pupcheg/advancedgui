@@ -62,5 +62,16 @@ class RecordInterfaceProcessorTest {
                          TestTemplate build();
                        }
                        """);
+
+        assertThat(compilation)
+                .generatedSourceFile("TestTemplateImpl")
+                .contentsAsUtf8String()
+                .isEqualTo("""
+                        import java.util.List;
+                        import net.kyori.adventure.key.Key;
+                        
+                        record TestTemplateImpl(Key key, List<Key> subkeys, int value) implements TestTemplate {
+                        }
+                        """);
     }
 }
