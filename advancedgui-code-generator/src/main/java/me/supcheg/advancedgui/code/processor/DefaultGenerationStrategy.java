@@ -25,7 +25,7 @@ public class DefaultGenerationStrategy implements GenerationStrategy {
 
         var properties = propertyResolver.listProperties(typeElement);
 
-        var objectImplType = objectImplTypeGenerator.objectImplType(typeElement, properties);
+        var objectImplType = objectImplTypeGenerator.objectImplType(packageName, typeElement, properties);
         var builderType = builderTypeGenerator.builderTypeSpec(packageName, typeElement, properties);
 
         var objectImplTypename = ClassName.get(packageName.toString(), objectImplType.name());

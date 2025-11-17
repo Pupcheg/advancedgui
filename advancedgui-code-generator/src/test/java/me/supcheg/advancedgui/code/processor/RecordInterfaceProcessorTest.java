@@ -23,11 +23,13 @@ class RecordInterfaceProcessorTest {
                                 "TestTemplate",
                                 """
                                         import me.supcheg.advancedgui.code.RecordInterface;
-                                        import net.kyori.adventure.key.Key;import org.jetbrains.annotations.Unmodifiable;
+                                        import org.jetbrains.annotations.Unmodifiable;
+                                        import net.kyori.adventure.key.Key;
+                                        import me.supcheg.advancedgui.api.builder.Buildable;
                                         import java.util.List;
                                         
                                         @RecordInterface
-                                        public interface TestTemplate {
+                                        public interface TestTemplate extends Buildable<TestTemplate, TestTemplateBuilder> {
                                             Key key();
                                             @Unmodifiable List<Key> subkeys();
                                             int value();
@@ -104,6 +106,7 @@ class RecordInterfaceProcessorTest {
                 .generatedSourceFile("TestTemplateImpl")
                 .contentsAsUtf8String()
                 .isEqualTo("""
+                        import java.lang.Override;
                         import java.util.List;
                         import net.kyori.adventure.key.Key;
                         import org.checkerframework.checker.nullness.qual.NonNull;
@@ -111,6 +114,11 @@ class RecordInterfaceProcessorTest {
                         
                         record TestTemplateImpl(@NonNull Key key, @Unmodifiable @NonNull List<Key> subkeys,
                             int value) implements TestTemplate {
+                          @NonNull
+                          @Override
+                          public TestTemplateBuilderImpl toBuilder() {
+                            return new TestTemplateBuilderImpl(this);
+                          }
                         }
                         """);
     }
