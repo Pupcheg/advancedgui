@@ -42,7 +42,8 @@ public class BuilderTypeGenerator {
             builder.addSuperinterface(superInterface.apply(subjectType.asType()));
         }
 
-        new PropertyAppender(builder, builderType).scan(properties);
+        new SetterMethodGenerator(builder, builderType).scan(properties);
+        new GetterMethodGenerator(builder).scan(properties);
 
         builder.addMethod(
                 methodBuilder(BUILD_METHOD_NAME)
@@ -57,7 +58,7 @@ public class BuilderTypeGenerator {
     }
 
     @RequiredArgsConstructor
-    private class PropertyAppender implements GenerationPropertyVisitor {
+    private class SetterMethodGenerator implements GenerationPropertyVisitor {
         private final TypeSpec.Builder builder;
         private final TypeName builderType;
 
@@ -150,6 +151,44 @@ public class BuilderTypeGenerator {
                             .returns(builderType)
                             .addCode(requireNonNull(element))
                             .addCode("return $L($T.$L($L));", addMultiMethodName, collection.erasedType(), collection.singletonImmutableFactory(), element.name())
+                            .build()
+            );
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class GetterMethodGenerator implements GenerationPropertyVisitor {
+        private final TypeSpec.Builder builder;
+
+        @Override
+        public void visitObject(ObjectProperty property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nullable())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .returns(property.typename())
+                            .build()
+            );
+        }
+
+        @Override
+        public void visitPrimitive(PrimitiveProperty property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nullable())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .returns(property.typename().box())
+                            .build()
+            );
+        }
+
+        @Override
+        public void visitObjectCollection(ObjectCollectionProperty property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .returns(property.typename())
                             .build()
             );
         }

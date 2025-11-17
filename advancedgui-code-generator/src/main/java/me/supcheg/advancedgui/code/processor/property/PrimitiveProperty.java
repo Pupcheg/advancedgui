@@ -14,7 +14,6 @@ public interface PrimitiveProperty extends Property {
 
     @Override
     default void accept(PropertyVisitor visitor) {
-        Property.super.accept(visitor);
         visitor.visitPrimitive(this);
     }
 }

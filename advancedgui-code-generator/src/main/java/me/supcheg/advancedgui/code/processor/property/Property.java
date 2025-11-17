@@ -15,7 +15,5 @@ public interface Property {
 
     PropertyKind kind();
 
-    default void accept(PropertyVisitor visitor) {
-        visitor.visit(this);
-    }
+    void accept(PropertyVisitor visitor);
 }

@@ -48,12 +48,14 @@ class RecordInterfaceProcessorTest {
                 .generatedSourceFile("TestTemplateBuilder")
                 .contentsAsUtf8String()
                 .isEqualTo("""
+                        import java.lang.Integer;
                         import java.lang.Override;
                         import java.util.List;
                         import java.util.Objects;
                         import me.supcheg.advancedgui.api.builder.AbstractBuilder;
                         import net.kyori.adventure.key.Key;
                         import org.checkerframework.checker.nullness.qual.NonNull;
+                        import org.checkerframework.checker.nullness.qual.Nullable;
                         
                         public interface TestTemplateBuilder extends AbstractBuilder<TestTemplate> {
                           @NonNull
@@ -79,6 +81,15 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           TestTemplateBuilder value(int value);
+                        
+                          @Nullable
+                          Key key();
+                        
+                          @NonNull
+                          List<Key> subkeys();
+                        
+                          @Nullable
+                          Integer value();
                         
                           @NonNull
                           @Override
@@ -169,6 +180,24 @@ class RecordInterfaceProcessorTest {
                           public TestTemplateBuilderImpl value(int value) {
                             this.value = value;
                             return this;
+                          }
+                        
+                          @Nullable
+                          @Override
+                          public Key key() {
+                            return key;
+                          }
+                        
+                          @NonNull
+                          @Override
+                          public List<Key> subkeys() {
+                            return subkeys;
+                          }
+                        
+                          @Nullable
+                          @Override
+                          public Integer value() {
+                            return value;
                           }
                         
                           @NonNull

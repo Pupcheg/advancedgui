@@ -9,9 +9,6 @@ public interface PropertyVisitor {
         property.accept(this);
     }
 
-    default void visit(Property property) {
-    }
-
     default void visitPrimitive(PrimitiveProperty property) {
     }
 

@@ -57,6 +57,7 @@ public class BuilderImplTypeGenerator {
         builder.addMethod(objectCopyConstructorBuilder.build());
 
         new SetterMethodGenerator(builder, builderImplTypename).scan(properties);
+        new GetterMethodGenerator(builder).scan(properties);
 
         var buildMethodBuilder = MethodSpec.methodBuilder("build")
                 .addAnnotations(annotations.nonNull())
@@ -232,6 +233,50 @@ public class BuilderImplTypeGenerator {
                             .addCode("this.$L.addAll($L);\n", property.name(), property.name())
                             .addCode("return this;")
                             .returns(builderType)
+                            .build()
+            );
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class GetterMethodGenerator implements GenerationPropertyVisitor {
+        private final TypeSpec.Builder builder;
+
+        @Override
+        public void visitObject(ObjectProperty property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nullable())
+                            .addAnnotation(Override.class)
+                            .addModifiers(Modifier.PUBLIC)
+                            .addCode("return $L;", property.name())
+                            .returns(property.typename())
+                            .build()
+            );
+        }
+
+        @Override
+        public void visitPrimitive(PrimitiveProperty property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nullable())
+                            .addAnnotation(Override.class)
+                            .addModifiers(Modifier.PUBLIC)
+                            .addCode("return $L;", property.name())
+                            .returns(property.typename().box())
+                            .build()
+            );
+        }
+
+        @Override
+        public void visitObjectCollection(ObjectCollectionProperty property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
+                            .addModifiers(Modifier.PUBLIC)
+                            .addCode("return $L;", property.name())
+                            .returns(property.typename())
                             .build()
             );
         }
