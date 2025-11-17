@@ -23,13 +23,13 @@ class RecordInterfaceProcessorTest {
                                 "TestTemplate",
                                 """
                                         import me.supcheg.advancedgui.code.RecordInterface;
-                                        import net.kyori.adventure.key.Key;
+                                        import net.kyori.adventure.key.Key;import org.jetbrains.annotations.Unmodifiable;
                                         import java.util.List;
                                         
                                         @RecordInterface
                                         public interface TestTemplate {
                                             Key key();
-                                            List<Key> subkeys();
+                                            @Unmodifiable List<Key> subkeys();
                                             int value();
                                         }
                                         """)
@@ -96,8 +96,9 @@ class RecordInterfaceProcessorTest {
                         import java.util.List;
                         import net.kyori.adventure.key.Key;
                         import org.checkerframework.checker.nullness.qual.NonNull;
+                        import org.jetbrains.annotations.Unmodifiable;
                         
-                        record TestTemplateImpl(@NonNull Key key, @NonNull List<Key> subkeys,
+                        record TestTemplateImpl(@NonNull Key key, @Unmodifiable @NonNull List<Key> subkeys,
                             int value) implements TestTemplate {
                         }
                         """);

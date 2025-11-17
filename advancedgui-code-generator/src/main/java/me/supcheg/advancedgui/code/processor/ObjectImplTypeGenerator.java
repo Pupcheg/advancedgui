@@ -49,6 +49,7 @@ public class ObjectImplTypeGenerator {
         public void visitObjectCollection(ObjectCollectionProperty property) {
             constructor.addParameter(
                     ParameterSpec.builder(property.typename(), property.name())
+                            .addAnnotations(annotations.unmodifiable())
                             .addAnnotations(annotations.nonNull())
                             .build()
             );
