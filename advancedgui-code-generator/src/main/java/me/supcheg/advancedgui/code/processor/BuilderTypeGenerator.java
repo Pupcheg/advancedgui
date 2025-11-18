@@ -115,15 +115,13 @@ class BuilderTypeGenerator extends TypeGenerator {
             builder.addMethod(
                     methodBuilder(element.name())
                             .addAnnotations(annotations.nonNull())
-                            .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                             .addParameter(
                                     ParameterSpec.builder(element.typename(), element.name())
                                             .addAnnotations(annotations.nonNull())
                                             .build()
                             )
                             .returns(builderType)
-                            .addCode(requireNonNull(element))
-                            .addCode("return $L($T.$L($L));", setCollectionMethodName, singletonFactory.containingErasedType(), singletonFactory.methodname(), element.name())
                             .build()
             );
 
@@ -146,15 +144,13 @@ class BuilderTypeGenerator extends TypeGenerator {
             builder.addMethod(
                     methodBuilder(addSingleMethodName)
                             .addAnnotations(annotations.nonNull())
-                            .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                             .addParameter(
                                     ParameterSpec.builder(element.typename(), element.name())
                                             .addAnnotations(annotations.nonNull())
                                             .build()
                             )
                             .returns(builderType)
-                            .addCode(requireNonNull(element))
-                            .addCode("return $L($T.$L($L));", addMultiMethodName, singletonFactory.containingErasedType(), singletonFactory.methodname(), element.name())
                             .build()
             );
 

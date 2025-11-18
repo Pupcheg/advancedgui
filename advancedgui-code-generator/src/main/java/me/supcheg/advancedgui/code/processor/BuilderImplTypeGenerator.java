@@ -225,6 +225,8 @@ class BuilderImplTypeGenerator extends TypeGenerator {
 
         @Override
         public void visitObjectCollection(Property.ObjectCollection property) {
+            var element = property.element();
+
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())
@@ -244,6 +246,24 @@ class BuilderImplTypeGenerator extends TypeGenerator {
             );
 
             builder.addMethod(
+                    methodBuilder(element.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
+                            .addModifiers(Modifier.PUBLIC)
+                            .addParameter(
+                                    ParameterSpec.builder(element.typename(), element.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .addCode(requireNonNull(element))
+                            .addCode("this.$L.clear();\n", property.name())
+                            .addCode("this.$L.add($L);\n", property.name(), element.name())
+                            .addCode("return this;")
+                            .returns(builderType)
+                            .build()
+            );
+
+            builder.addMethod(
                     methodBuilder(ADD_PREFIX + capitalize(property.name()))
                             .addAnnotations(annotations.nonNull())
                             .addAnnotation(Override.class)
@@ -255,6 +275,23 @@ class BuilderImplTypeGenerator extends TypeGenerator {
                             )
                             .addCode(requireNonNull(property))
                             .addCode("this.$L.addAll($L);\n", property.name(), property.name())
+                            .addCode("return this;")
+                            .returns(builderType)
+                            .build()
+            );
+
+            builder.addMethod(
+                    methodBuilder(ADD_PREFIX + capitalize(element.name()))
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
+                            .addModifiers(Modifier.PUBLIC)
+                            .addParameter(
+                                    ParameterSpec.builder(element.typename(), element.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .addCode(requireNonNull(element))
+                            .addCode("this.$L.add($L);\n", property.name(), element.name())
                             .addCode("return this;")
                             .returns(builderType)
                             .build()
