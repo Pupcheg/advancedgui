@@ -6,20 +6,19 @@ import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslators;
 import me.supcheg.advancedgui.api.layout.ChestLayout;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
-import me.supcheg.advancedgui.code.RecordInterface;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 import java.util.function.Consumer;
 
-@RecordInterface
-public non-sealed interface ChestLayoutTemplate extends LayoutTemplate<ChestLayout, ChestLayoutTemplate, ChestLayoutTemplateBuilder> {
+public non-sealed interface ChestLayoutTemplate extends LayoutTemplate<ChestLayout, ChestLayoutTemplate, ChestLayoutTemplate.Builder> {
 
-    static ChestLayoutTemplateBuilder chestLayout() {
-        return new ChestLayoutTemplateBuilderImpl();
+    static Builder chestLayout() {
+        throw new UnsupportedOperationException();
     }
 
-    static ChestLayoutTemplate chestLayout(Consumer<ChestLayoutTemplateBuilder> consumer) {
+    static ChestLayoutTemplate chestLayout(Consumer<Builder> consumer) {
         return Buildable.configureAndBuild(chestLayout(), consumer);
     }
 
@@ -35,5 +34,12 @@ public non-sealed interface ChestLayoutTemplate extends LayoutTemplate<ChestLayo
     @Override
     default CoordinateTranslator coordinateTranslator() {
         return CoordinateTranslators.chestCoordinateTranslator(rows());
+    }
+
+    interface Builder extends LayoutTemplate.Builder<ChestLayout, ChestLayoutTemplate, Builder> {
+        Builder rows(int rows);
+
+        @Nullable
+        Integer rows();
     }
 }

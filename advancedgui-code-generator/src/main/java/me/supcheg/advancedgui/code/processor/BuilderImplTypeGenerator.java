@@ -18,20 +18,18 @@ import java.util.Objects;
 import static com.palantir.javapoet.CodeBlock.joining;
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
-import static me.supcheg.advancedgui.code.processor.TypeNames.rename;
 
 @RequiredArgsConstructor
-class BuilderImplTypeGenerator {
+class BuilderImplTypeGenerator extends TypeGenerator {
     private final CollectionMethodsResolver collectionResolver;
     private final Annotations annotations;
 
-    GenerationResult builderImplType(TypeName builderType, TypeName subjectImplType, List<? extends Property> properties) {
-        var builderImplTypename = rename(builderType,  name -> name + "Impl");
-
-        var genericTypes = TypeNames.genericTypes(builderImplTypename);
+    @Override
+    TypeSpec generate(Names names, List<? extends Property> properties) {
+        var genericTypes = TypeNames.genericTypes(names.builderImpl());
         var builder = TypeSpec.classBuilder(genericTypes.raw())
                 .addTypeVariables(genericTypes.generics())
-                .addSuperinterface(builderType);
+                .addSuperinterface(names.builder());
 
         new FieldGenerator(builder).scan(properties);
 
@@ -41,24 +39,24 @@ class BuilderImplTypeGenerator {
 
         var objectCopyConstructorBuilder = MethodSpec.constructorBuilder()
                 .addParameter(
-                        ParameterSpec.builder(subjectImplType, "impl")
+                        ParameterSpec.builder(names.objectImpl(), "impl")
                                 .addAnnotations(annotations.nonNull())
                                 .build()
                 );
         new ObjectCopyConstructorGenerator(objectCopyConstructorBuilder).scan(properties);
         builder.addMethod(objectCopyConstructorBuilder.build());
 
-        new SetterMethodGenerator(builder, builderImplTypename).scan(properties);
+        new SetterMethodGenerator(builder, names.builderImpl()).scan(properties);
         new GetterMethodGenerator(builder).scan(properties);
 
         var buildMethodBuilder = MethodSpec.methodBuilder("build")
                 .addAnnotations(annotations.nonNull())
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .returns(subjectImplType);
+                .returns(names.objectImpl());
 
         var buildMethodCodeBuilder = CodeBlock.builder();
-        buildMethodBuilder.addCode("return new $T($[\n", subjectImplType);
+        buildMethodBuilder.addCode("return new $T($[\n", names.objectImpl());
 
         var statements = new ArrayList<CodeBlock>();
         new BuildMethodCodeGeneratorGenerator(statements).scan(properties);
@@ -69,7 +67,7 @@ class BuilderImplTypeGenerator {
 
         builder.addMethod(buildMethodBuilder.build());
 
-        return new GenerationResult(builder.build(), builderImplTypename);
+        return builder.build();
     }
 
     @RequiredArgsConstructor

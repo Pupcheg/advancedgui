@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public interface LifecycleListener<S> extends Sequenced<LifecycleListener<S>>, Buildable<LifecycleListener<S>, LifecycleListener.Builder<S>> {
 
     static <S> LifecycleListener.Builder<S> lifecycleListener() {
-        return new LifecycleListenerImpl.BuilderImpl<>();
+        throw new UnsupportedOperationException();
     }
 
     static <S> LifecycleListener<S> lifecycleListener(Consumer<Builder<S>> consumer) {

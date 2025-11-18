@@ -6,41 +6,36 @@ import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
 
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
 import java.util.List;
 
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
-import static me.supcheg.advancedgui.code.processor.TypeNames.rename;
 
 @RequiredArgsConstructor
-class ObjectImplTypeGenerator {
+class ObjectImplTypeGenerator extends TypeGenerator {
     private final Annotations annotations;
 
-    GenerationResult objectImplType(TypeElement subjectType, List<? extends Property> properties) {
-        var subjectTypename = rename(subjectType.asType(), name -> name + "Impl");
-
-        var genericTypes = TypeNames.genericTypes(subjectTypename);
+    @Override
+    TypeSpec generate(Names names, List<? extends Property> properties) {
+        var genericTypes = TypeNames.genericTypes(names.objectImpl());
         var builder = TypeSpec.recordBuilder(genericTypes.raw())
                 .addTypeVariables(genericTypes.generics())
-                .addSuperinterface(subjectType.asType());
+                .addSuperinterface(names.object());
 
         var constructorBuilder = MethodSpec.constructorBuilder();
         new PropertyAppender(constructorBuilder).scan(properties);
         builder.recordConstructor(constructorBuilder.build());
-
-        var builderTypename = rename(subjectType.asType(), name -> name + "BuilderImpl");
 
         builder.addMethod(
                 methodBuilder("toBuilder")
                         .addAnnotations(annotations.nonNull())
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC)
-                        .addCode("return new $T(this);", builderTypename)
-                        .returns(builderTypename)
+                        .addCode("return new $T(this);", names.builderImpl())
+                        .returns(names.builderImpl())
                         .build()
         );
 
-        return new GenerationResult(builder.build(), subjectTypename);
+        return builder.build();
     }
 
     @RequiredArgsConstructor

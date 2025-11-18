@@ -11,7 +11,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ReferenceType;
-import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,13 +18,12 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 
 public class CodeGeneratorProcessor extends AbstractProcessor {
     @MonotonicNonNull
-    private BuilderInterfaceGenerator builderInterfaceGenerator;
+    private AnnotationGenerator builderInterfaceGenerator;
     @MonotonicNonNull
-    private RecordInterfaceGenerator recordInterfaceGenerator;
+    private AnnotationGenerator recordInterfaceGenerator;
 
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -37,29 +35,37 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
                 elements.getTypeElement("org.checkerframework.checker.nullness.qual.NonNull"),
                 elements.getTypeElement("org.jetbrains.annotations.Unmodifiable")
         );
-
-        var collectionType = (ReferenceType) elements.getTypeElement(Collection.class.getName()).asType();
-        var propertyResolver = new PropertyResolver(types, collectionType);
-
-        var collectionResolver = new CollectionMethodsResolver(types, elements);
-
-        var abstractBuilder = elements.getTypeElement("me.supcheg.advancedgui.api.builder.AbstractBuilder");
-        UnaryOperator<TypeMirror> abstractBuilderAppender = type -> types.getDeclaredType(abstractBuilder, type);
-
-        var objectImplTypeGenerator = new ObjectImplTypeGenerator(annotations);
-        var builderTypeGenerator = new BuilderTypeGenerator(annotations, collectionResolver, List.of(abstractBuilderAppender));
-        var builderImplTypeGenerator = new BuilderImplTypeGenerator(collectionResolver, annotations);
-
-        builderInterfaceGenerator = new BuilderInterfaceGenerator(
-                propertyResolver,
-                builderTypeGenerator
+        var interfaces = new BuilderInterfaces(
+                elements.getTypeElement("me.supcheg.advancedgui.api.builder.Buildable"),
+                elements.getTypeElement("me.supcheg.advancedgui.api.builder.AbstractBuilder")
         );
 
-        recordInterfaceGenerator = new RecordInterfaceGenerator(
+        var collectionType = (ReferenceType) elements.getTypeElement(Collection.class.getName()).asType();
+
+        var propertyResolver = new PropertyResolver(types, collectionType);
+        var namesResolver = new NamesResolver();
+        var collectionResolver = new CollectionMethodsResolver(types, elements);
+
+        var objectImplTypeGenerator = new ObjectImplTypeGenerator(annotations);
+        var builderTypeGenerator = new BuilderTypeGenerator(annotations, interfaces, collectionResolver);
+        var builderImplTypeGenerator = new BuilderImplTypeGenerator(collectionResolver, annotations);
+
+        builderInterfaceGenerator = new AnnotationGenerator(
                 propertyResolver,
-                objectImplTypeGenerator,
-                builderTypeGenerator,
-                builderImplTypeGenerator
+                namesResolver,
+                List.of(
+                        builderTypeGenerator
+                )
+        );
+
+        recordInterfaceGenerator = new AnnotationGenerator(
+                propertyResolver,
+                namesResolver,
+                List.of(
+                        objectImplTypeGenerator,
+                        builderTypeGenerator,
+                        builderImplTypeGenerator
+                )
         );
     }
 

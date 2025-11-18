@@ -6,40 +6,31 @@ import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
 
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
 import static com.palantir.javapoet.TypeSpec.interfaceBuilder;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
 import static me.supcheg.advancedgui.code.processor.TypeNames.genericTypes;
-import static me.supcheg.advancedgui.code.processor.TypeNames.rename;
 
 @RequiredArgsConstructor
-class BuilderTypeGenerator {
-    private static final String BUILDER_SUFFIX = "Builder";
+class BuilderTypeGenerator extends TypeGenerator {
     private static final String BUILD_METHOD_NAME = "build";
     private static final String ADD_PREFIX = "add";
 
     private final Annotations annotations;
+    private final BuilderInterfaces builderInterfaces;
     private final CollectionMethodsResolver collectionResolver;
-    private final List<UnaryOperator<TypeMirror>> superInterfaces;
 
-    GenerationResult builderTypeSpec(TypeElement subjectType, List<? extends Property> properties) {
-        var builderType = rename(subjectType.asType(), name -> name + BUILDER_SUFFIX);
-
-        var genericTypes = genericTypes(builderType);
+    @Override
+    TypeSpec generate(Names names, List<? extends Property> properties) {
+        var genericTypes = genericTypes(names.builder());
         var builder = interfaceBuilder(genericTypes.raw())
                 .addTypeVariables(genericTypes.generics())
-                .addModifiers(Modifier.PUBLIC);
+                .addModifiers(Modifier.PUBLIC)
+                .addSuperinterface(builderInterfaces.builderTypename(names.object()));
 
-        for (var superInterface : superInterfaces) {
-            builder.addSuperinterface(superInterface.apply(subjectType.asType()));
-        }
-
-        new SetterMethodGenerator(builder, builderType).scan(properties);
+        new SetterMethodGenerator(builder, names.builder()).scan(properties);
         new GetterMethodGenerator(builder).scan(properties);
 
         builder.addMethod(
@@ -47,11 +38,11 @@ class BuilderTypeGenerator {
                         .addAnnotations(annotations.nonNull())
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                        .returns(TypeName.get(subjectType.asType()))
+                        .returns(names.object())
                         .build()
         );
 
-        return new GenerationResult(builder.build(), builderType);
+        return builder.build();
     }
 
     @RequiredArgsConstructor

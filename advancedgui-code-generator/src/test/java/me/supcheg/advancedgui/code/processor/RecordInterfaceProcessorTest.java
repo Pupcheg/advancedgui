@@ -50,8 +50,6 @@ class RecordInterfaceProcessorTest {
                 .generatedSourceFile("TestTemplateBuilder")
                 .contentsAsUtf8String()
                 .isEqualTo("""
-                        import java.lang.Integer;
-                        import java.lang.Override;
                         import java.util.List;
                         import java.util.Objects;
                         import me.supcheg.advancedgui.api.builder.AbstractBuilder;
@@ -106,7 +104,6 @@ class RecordInterfaceProcessorTest {
                 .generatedSourceFile("TestTemplateImpl")
                 .contentsAsUtf8String()
                 .isEqualTo("""
-                        import java.lang.Override;
                         import java.util.List;
                         import net.kyori.adventure.key.Key;
                         import org.checkerframework.checker.nullness.qual.NonNull;
@@ -129,8 +126,6 @@ class RecordInterfaceProcessorTest {
                 .generatedSourceFile("TestTemplateBuilderImpl")
                 .contentsAsUtf8String()
                 .isEqualTo("""
-                        import java.lang.Integer;
-                        import java.lang.Override;
                         import java.util.ArrayList;
                         import java.util.List;
                         import java.util.Objects;
