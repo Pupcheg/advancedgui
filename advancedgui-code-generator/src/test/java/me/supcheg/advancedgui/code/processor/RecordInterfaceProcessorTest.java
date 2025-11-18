@@ -127,7 +127,6 @@ class RecordInterfaceProcessorTest {
                 .isEqualTo("""
                         import java.util.List;
                         import java.util.Map;
-                        import java.util.Objects;
                         import java.util.function.Consumer;
                         import me.supcheg.advancedgui.api.builder.AbstractBuilder;
                         import net.kyori.adventure.key.Key;
@@ -142,19 +141,13 @@ class RecordInterfaceProcessorTest {
                           TemplateBuilder subkeys(@NonNull List<Key> subkeys);
                         
                           @NonNull
-                          default TemplateBuilder subkey(@NonNull Key subkey) {
-                            Objects.requireNonNull(subkey, "subkey");
-                            return subkeys(List.of(subkey));
-                          }
+                          TemplateBuilder subkey(@NonNull Key subkey);
                         
                           @NonNull
                           TemplateBuilder addSubkeys(@NonNull List<Key> subkeys);
                         
                           @NonNull
-                          default TemplateBuilder addSubkey(@NonNull Key subkey) {
-                            Objects.requireNonNull(subkey, "subkey");
-                            return addSubkeys(List.of(subkey));
-                          }
+                          TemplateBuilder addSubkey(@NonNull Key subkey);
                         
                           @NonNull
                           TemplateBuilder value(int value);
@@ -285,9 +278,26 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           @Override
+                          public TemplateBuilderImpl subkey(@NonNull Key subkey) {
+                            Objects.requireNonNull(subkey, "subkey");
+                            this.subkeys.clear();
+                            this.subkeys.add(subkey);
+                            return this;
+                          }
+                        
+                          @NonNull
+                          @Override
                           public TemplateBuilderImpl addSubkeys(@NonNull List<Key> subkeys) {
                             Objects.requireNonNull(subkeys, "subkeys");
                             this.subkeys.addAll(subkeys);
+                            return this;
+                          }
+                        
+                          @NonNull
+                          @Override
+                          public TemplateBuilderImpl addSubkey(@NonNull Key subkey) {
+                            Objects.requireNonNull(subkey, "subkey");
+                            this.subkeys.add(subkey);
                             return this;
                           }
                         
