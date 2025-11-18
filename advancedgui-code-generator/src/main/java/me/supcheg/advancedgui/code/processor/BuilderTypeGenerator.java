@@ -16,6 +16,8 @@ import java.util.function.Consumer;
 
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
 import static com.palantir.javapoet.TypeSpec.interfaceBuilder;
+import static me.supcheg.advancedgui.code.processor.SharedNames.ADD_PREFIX;
+import static me.supcheg.advancedgui.code.processor.SharedNames.PUT_PREFIX;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
 import static me.supcheg.advancedgui.code.processor.StringUtil.decapitalize;
 import static me.supcheg.advancedgui.code.processor.TypeNames.genericTypes;
@@ -23,10 +25,6 @@ import static me.supcheg.advancedgui.code.processor.TypeNames.simpleName;
 
 @RequiredArgsConstructor
 class BuilderTypeGenerator extends TypeGenerator {
-    private static final String BUILD_METHOD_NAME = "build";
-    private static final String ADD_PREFIX = "add";
-    private static final String PUT_PREFIX = "put";
-
     private final Types types;
     private final Annotations annotations;
     private final NamesResolver namesResolver;
@@ -45,7 +43,7 @@ class BuilderTypeGenerator extends TypeGenerator {
         new GetterMethodGenerator(builder).scan(properties);
 
         builder.addMethod(
-                methodBuilder(BUILD_METHOD_NAME)
+                methodBuilder("build")
                         .addAnnotations(annotations.nonNull())
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
@@ -172,6 +170,19 @@ class BuilderTypeGenerator extends TypeGenerator {
 
             builder.addMethod(
                     methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .returns(builderType)
+                            .build()
+            );
+
+            builder.addMethod(
+                    methodBuilder(PUT_PREFIX + capitalize(property.name()))
                             .addAnnotations(annotations.nonNull())
                             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                             .addParameter(

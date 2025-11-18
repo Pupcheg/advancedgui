@@ -19,6 +19,8 @@ import java.util.Objects;
 
 import static com.palantir.javapoet.CodeBlock.joining;
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
+import static me.supcheg.advancedgui.code.processor.SharedNames.ADD_PREFIX;
+import static me.supcheg.advancedgui.code.processor.SharedNames.PUT_PREFIX;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
 
 @RequiredArgsConstructor
@@ -242,7 +244,7 @@ class BuilderImplTypeGenerator extends TypeGenerator {
             );
 
             builder.addMethod(
-                    methodBuilder("add" + capitalize(property.name()))
+                    methodBuilder(ADD_PREFIX + capitalize(property.name()))
                             .addAnnotations(annotations.nonNull())
                             .addAnnotation(Override.class)
                             .addModifiers(Modifier.PUBLIC)
@@ -267,6 +269,7 @@ class BuilderImplTypeGenerator extends TypeGenerator {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
                             .addModifiers(Modifier.PUBLIC)
                             .addParameter(
                                     ParameterSpec.builder(property.typename(), property.name())
@@ -282,8 +285,26 @@ class BuilderImplTypeGenerator extends TypeGenerator {
             );
 
             builder.addMethod(
-                    methodBuilder("put" + capitalize(value.name()))
+                    methodBuilder(PUT_PREFIX + capitalize(property.name()))
                             .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
+                            .addModifiers(Modifier.PUBLIC)
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .addCode(requireNonNull(property))
+                            .addCode("this.$L.putAll($L);\n", property.name(), property.name())
+                            .addCode("return this;")
+                            .returns(builderType)
+                            .build()
+            );
+
+            builder.addMethod(
+                    methodBuilder(PUT_PREFIX + capitalize(value.name()))
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
                             .addModifiers(Modifier.PUBLIC)
                             .addParameter(
                                     ParameterSpec.builder(key.typename(), key.name())
