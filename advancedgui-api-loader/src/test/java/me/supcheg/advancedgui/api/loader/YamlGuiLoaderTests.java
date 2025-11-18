@@ -93,10 +93,8 @@ class YamlGuiLoaderTests {
                                 .texture(key("advancedgui:test/interaction"))
                                 .name(text("Hi!", style(TextDecoration.BOLD)))
                                 .description(description -> description
-                                        .lines(List.of(
-                                                text("eee", NamedTextColor.RED),
-                                                text("eEe")
-                                        ))
+                                        .addLine(text("eee", NamedTextColor.RED))
+                                        .addLine(text("eEe"))
                                 )
                                 .attributes(Set.of(glowing(), hidden()))
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static me.supcheg.advancedgui.api.lifecycle.LifecycleListener.lifecycleListener;
-import static me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry.emptyLifecycleListenerRegistry;
 import static me.supcheg.advancedgui.api.loader.configurate.ConfigurateUtil.findTypeSerializer;
 import static org.spongepowered.configurate.BasicConfigurationNode.root;
 
@@ -50,7 +49,7 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
 
     @Override
     public LifecycleListenerRegistry<?> emptyValue(Type specificType, ConfigurationOptions options) {
-        return emptyLifecycleListenerRegistry();
+        return LifecycleListenerRegistry.lifecycleListenerRegistry().build();
     }
 
     private static LifecycleListener<Object> rawLifecycleListenerToLifecycleListener(Pointcut pointcut,
@@ -71,7 +70,7 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
 
     @Override
     public void serialize(Type type, @Nullable LifecycleListenerRegistry<?> obj, ConfigurationNode node) throws SerializationException {
-        if (obj == null || obj == emptyLifecycleListenerRegistry()) {
+        if (obj == null || obj.listeners().isEmpty()) {
             node.set(null);
             return;
         }

@@ -9,7 +9,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SequencedSortedSetTests {
 
@@ -97,7 +96,7 @@ class SequencedSortedSetTests {
 
         assertThat(set).isEmpty();
 
-        assertThrows(UnsupportedOperationException.class, () -> set.add(new TheSequenced(0, NamedPriority.NORMAL)));
+        assertThat(set).isUnmodifiable();
     }
 
     @Test
@@ -112,7 +111,7 @@ class SequencedSortedSetTests {
                 new TheSequenced(1, NamedPriority.NORMAL)
         );
 
-        assertThrows(UnsupportedOperationException.class, () -> set.add(new TheSequenced(2, NamedPriority.NORMAL)));
+        assertThat(set).isUnmodifiable();
     }
 
     @Test
@@ -128,7 +127,7 @@ class SequencedSortedSetTests {
                         new TheSequenced(1, NamedPriority.NORMAL)
                 );
 
-        assertThrows(UnsupportedOperationException.class, () -> set.add(new TheSequenced(2, NamedPriority.NORMAL)));
+        assertThat(set).isUnmodifiable();
     }
 
 }

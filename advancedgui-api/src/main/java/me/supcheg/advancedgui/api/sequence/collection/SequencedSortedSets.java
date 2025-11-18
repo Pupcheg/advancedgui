@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import me.supcheg.advancedgui.api.sequence.Sequenced;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,19 +48,19 @@ public final class SequencedSortedSets {
 
     @Unmodifiable
     public static <E extends Sequenced<E>> SequencedSortedSet<E> of(E element) {
-        return SequencedSortedSets.unmodifiableSequencedSortedSet(create(element));
+        return unmodifiableSequencedSortedSet(create(element));
     }
 
     @Unmodifiable
     @SafeVarargs
     public static <E extends Sequenced<E>> SequencedSortedSet<E> of(E first, E... rest) {
-        return SequencedSortedSets.unmodifiableSequencedSortedSet(create(first, rest));
+        return unmodifiableSequencedSortedSet(create(first, rest));
     }
 
     @Unmodifiable
     public static <E extends Sequenced<E>> SequencedSortedSet<E> copyOf(Collection<E> collection) {
-        if (collection instanceof UnmodifiableSequencedSortedSet) {
-            return (UnmodifiableSequencedSortedSet<E>) collection;
+        if (collection instanceof UnmodifiableSequencedSortedSet<E> unmodifiable) {
+            return unmodifiable;
         }
 
         if (collection.isEmpty()) {
@@ -69,13 +70,10 @@ public final class SequencedSortedSets {
         return unmodifiableSequencedSortedSet(createCopy(collection));
     }
 
+    @UnmodifiableView
     public static <E extends Sequenced<E>> SequencedSortedSet<E> unmodifiableSequencedSortedSet(SequencedSortedSet<E> set) {
         if (set instanceof UnmodifiableSequencedSortedSet<E>) {
             return set;
-        }
-
-        if (set.isEmpty()) {
-            return of();
         }
 
         return new UnmodifiableSequencedSortedSet<>(set);

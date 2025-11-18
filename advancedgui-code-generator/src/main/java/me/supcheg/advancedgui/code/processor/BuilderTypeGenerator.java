@@ -6,8 +6,10 @@ import com.palantir.javapoet.ParameterizedTypeName;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
+import me.supcheg.advancedgui.code.RecordInterface;
 
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Types;
 import java.util.List;
 import java.util.function.Consumer;
@@ -74,7 +76,7 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .build()
             );
 
-            if (isBuildable(property)) {
+            if (isRecordInterface(property)) {
                 addConsumerMethod(property, setterMethodName);
             }
         }
@@ -157,7 +159,7 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .build()
             );
 
-            if (isBuildable(element)) {
+            if (isRecordInterface(element)) {
                 addConsumerMethod(element, addSingleMethodName);
             }
         }
@@ -180,8 +182,9 @@ class BuilderTypeGenerator extends TypeGenerator {
             );
         }
 
-        private boolean isBuildable(Property property) {
-            return types.isSubtype(property.type(), types.erasure(builderInterfaces.buildableType().asType()));
+        private boolean isRecordInterface(Property property) {
+            return property.type() instanceof DeclaredType declaredType
+                    && declaredType.asElement().getAnnotationsByType(RecordInterface.class).length > 0;
         }
     }
 

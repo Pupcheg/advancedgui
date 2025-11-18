@@ -3,16 +3,14 @@ package me.supcheg.advancedgui.api.layout.template;
 import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.button.template.ButtonTemplate;
-import me.supcheg.advancedgui.api.button.template.ButtonTemplateBuilder;
 import me.supcheg.advancedgui.api.coordinate.CoordinateTranslator;
 import me.supcheg.advancedgui.api.layout.Layout;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
-import java.util.function.Consumer;
 
-public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>>
+public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends AbstractBuilder<T>>
         extends Buildable<T, B>, Lifecycled<L>
         permits AnvilLayoutTemplate, ChestLayoutTemplate {
 
@@ -20,21 +18,4 @@ public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemp
     Set<ButtonTemplate> buttons();
 
     CoordinateTranslator coordinateTranslator();
-
-    interface Builder<L, T, B extends Builder<L, T, B>> extends AbstractBuilder<T>, Lifecycled.Builder<L, B> {
-
-        B addButton(ButtonTemplate button);
-
-        default B addButton(Consumer<ButtonTemplateBuilder> consumer) {
-            return addButton(ButtonTemplate.button(consumer));
-        }
-
-        default B addButton(ButtonTemplateBuilder button) {
-            return addButton(button.build());
-        }
-
-        B buttons(Set<ButtonTemplate> buttons);
-
-        Set<ButtonTemplate> buttons();
-    }
 }

@@ -20,12 +20,12 @@ import java.util.function.Consumer;
 @RecordInterface
 public interface ButtonTemplate extends Buildable<ButtonTemplate, ButtonTemplateBuilder>, Lifecycled<Button> {
 
-    static ButtonTemplateBuilder button() {
+    static ButtonTemplateBuilder buttonTemplate() {
         return new ButtonTemplateBuilderImpl();
     }
 
-    static ButtonTemplate button(Consumer<ButtonTemplateBuilder> consumer) {
-        return Buildable.configureAndBuild(button(), consumer);
+    static ButtonTemplate buttonTemplate(Consumer<ButtonTemplateBuilder> consumer) {
+        return Buildable.configureAndBuild(buttonTemplate(), consumer);
     }
 
     @Unmodifiable
