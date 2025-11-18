@@ -74,22 +74,8 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .build()
             );
 
-            if (types.isSubtype(property.type(), types.erasure(builderInterfaces.buildableType().asType()))) {
-                var propertyNames = namesResolver.namesForObject(property.type());
-                var consumerParameterName = property.name();
-
-                builder.addMethod(
-                        methodBuilder(property.name())
-                                .addAnnotations(annotations.nonNull())
-                                .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
-                                .addParameter(
-                                        ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyNames.builder()),
-                                        consumerParameterName
-                                )
-                                .addCode("return $L($T.$L($L));", setterMethodName, types.erasure(property.type()), decapitalize(simpleName(property.typename())), consumerParameterName)
-                                .returns(builderType)
-                                .build()
-                );
+            if (isBuildable(property)) {
+                addConsumerMethod(property, setterMethodName);
             }
         }
 
@@ -154,8 +140,10 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .returns(builderType)
                             .build()
             );
+
+            var addSingleMethodName = ADD_PREFIX + capitalize(element.name());
             builder.addMethod(
-                    methodBuilder(ADD_PREFIX + capitalize(element.name()))
+                    methodBuilder(addSingleMethodName)
                             .addAnnotations(annotations.nonNull())
                             .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
                             .addParameter(
@@ -168,6 +156,32 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .addCode("return $L($T.$L($L));", addMultiMethodName, singletonFactory.containingErasedType(), singletonFactory.methodname(), element.name())
                             .build()
             );
+
+            if (isBuildable(element)) {
+                addConsumerMethod(element, addSingleMethodName);
+            }
+        }
+
+        private void addConsumerMethod(Property property, String originalMethodName) {
+            var propertyNames = namesResolver.namesForObject(property.type());
+            var consumerParameterName = property.name();
+
+            builder.addMethod(
+                    methodBuilder(originalMethodName)
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                            .addParameter(
+                                    ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyNames.builder()),
+                                    consumerParameterName
+                            )
+                            .addCode("return $L($T.$L($L));", originalMethodName, types.erasure(property.type()), decapitalize(simpleName(property.typename())), consumerParameterName)
+                            .returns(builderType)
+                            .build()
+            );
+        }
+
+        private boolean isBuildable(Property property) {
+            return types.isSubtype(property.type(), types.erasure(builderInterfaces.buildableType().asType()));
         }
     }
 
