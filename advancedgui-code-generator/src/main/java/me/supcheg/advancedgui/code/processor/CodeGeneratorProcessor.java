@@ -1,7 +1,6 @@
 package me.supcheg.advancedgui.code.processor;
 
 import com.palantir.javapoet.JavaFile;
-import me.supcheg.advancedgui.code.BuilderInterface;
 import me.supcheg.advancedgui.code.RecordInterface;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
@@ -21,9 +20,9 @@ import java.util.Set;
 
 public class CodeGeneratorProcessor extends AbstractProcessor {
     @MonotonicNonNull
-    private AnnotationGenerator builderInterfaceGenerator;
-    @MonotonicNonNull
     private AnnotationGenerator recordInterfaceGenerator;
+    @MonotonicNonNull
+    private AnnotationValidator recordInterfaceValidator;
 
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -50,14 +49,6 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
         var builderTypeGenerator = new BuilderTypeGenerator(types, annotations, namesResolver, interfaces, collectionResolver);
         var builderImplTypeGenerator = new BuilderImplTypeGenerator(collectionResolver, annotations);
 
-        builderInterfaceGenerator = new AnnotationGenerator(
-                propertyResolver,
-                namesResolver,
-                List.of(
-                        builderTypeGenerator
-                )
-        );
-
         recordInterfaceGenerator = new AnnotationGenerator(
                 propertyResolver,
                 namesResolver,
@@ -67,13 +58,17 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
                         builderImplTypeGenerator
                 )
         );
+
+        recordInterfaceValidator = new AnnotationValidator(
+                processingEnv.getMessager(),
+                namesResolver
+        );
     }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         return Set.of(
-                RecordInterface.class.getName(),
-                BuilderInterface.class.getName()
+                RecordInterface.class.getName()
         );
     }
 
@@ -83,21 +78,20 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
     }
 
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        processEach(RecordInterface.class, recordInterfaceGenerator, roundEnv);
-        processEach(BuilderInterface.class, builderInterfaceGenerator, roundEnv);
+        processEach(RecordInterface.class, recordInterfaceGenerator, recordInterfaceValidator, roundEnv);
         return true;
     }
 
-    private void processEach(Class<? extends Annotation> annotation, AnnotationGenerator annotationGenerator, RoundEnvironment roundEnv) {
+    private void processEach(Class<? extends Annotation> annotation, AnnotationGenerator generator, AnnotationValidator validator, RoundEnvironment roundEnv) {
         roundEnv.getElementsAnnotatedWith(annotation).stream()
                 .filter(TypeElement.class::isInstance)
                 .map(TypeElement.class::cast)
-                .forEach(typeElement -> processTypeSafely(typeElement, annotationGenerator));
+                .forEach(typeElement -> processTypeSafely(typeElement, generator, validator));
     }
 
-    private void processTypeSafely(TypeElement typeElement, AnnotationGenerator annotationGenerator) {
+    private void processTypeSafely(TypeElement typeElement, AnnotationGenerator generator, AnnotationValidator validator) {
         try {
-            processType(typeElement, annotationGenerator);
+            processType(typeElement, generator, validator);
         } catch (Exception exception) {
             processingEnv.getMessager().printError(printToString(exception), typeElement);
         }
@@ -109,15 +103,18 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
         return sw.toString();
     }
 
-    private void processType(TypeElement typeElement, AnnotationGenerator annotationGenerator) throws IOException {
+    private void processType(TypeElement typeElement, AnnotationGenerator generator, AnnotationValidator validator) throws IOException {
+
         var typePackage = processingEnv.getElementUtils().getPackageOf(typeElement).getQualifiedName().toString();
         var filer = processingEnv.getFiler();
 
-        for (var type : annotationGenerator.generate(typeElement)) {
+        for (var type : generator.generate(typeElement)) {
             JavaFile.builder(typePackage, type)
                     .skipJavaLangImports(true)
                     .build()
                     .writeTo(filer);
         }
+
+        validator.validate(typeElement);
     }
 }

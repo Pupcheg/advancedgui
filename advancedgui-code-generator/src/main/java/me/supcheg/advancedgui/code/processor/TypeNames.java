@@ -9,7 +9,10 @@ import com.palantir.javapoet.WildcardTypeName;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ErrorType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleTypeVisitor14;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -80,5 +83,61 @@ final class TypeNames {
             case ParameterizedTypeName parameterizedTypeName -> parameterizedTypeName.rawType().simpleName();
             default -> throw new IllegalStateException("Unexpected value: " + typename);
         };
+    }
+
+    static boolean isSameType(TypeMirror typeMirror, TypeName typename) {
+        return IsSameType.INSTANCE.visit(typeMirror, typename);
+    }
+
+    private static class IsSameType extends SimpleTypeVisitor14<Boolean, TypeName> {
+        private static final IsSameType INSTANCE = new IsSameType();
+
+        private IsSameType() {
+            super(true);
+        }
+
+        @Override
+        public Boolean visitDeclared(DeclaredType type, TypeName typename) {
+            return areSimpleNamesEqual(type, erasure(typename))
+                   && (
+                           !(typename instanceof ParameterizedTypeName parameterizedTypename)
+                           || areEqual(type.getTypeArguments(), parameterizedTypename.typeArguments())
+                   );
+        }
+
+        private boolean areEqual(List<? extends TypeMirror> types, List<? extends TypeName> typenames) {
+            if (types.size() != typenames.size()) {
+                return false;
+            }
+
+            for (int i = 0; i < types.size(); i++) {
+                var type = types.get(i);
+                var typename = typenames.get(i);
+                if (!visit(type, typename)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public Boolean visitError(ErrorType type, TypeName typename) {
+            return areSimpleNamesEqual(type, erasure(typename));
+        }
+
+        private static boolean areSimpleNamesEqual(DeclaredType type, ClassName classname) {
+            var typeSimplename = type.asElement().getSimpleName();
+            return typeSimplename.contentEquals("<any>")
+                   || typeSimplename.contentEquals(classname.simpleName());
+        }
+
+        private static ClassName erasure(TypeName typename) {
+            return switch (typename) {
+                case ClassName classname -> classname;
+                case ParameterizedTypeName parameterizedTypename -> parameterizedTypename.rawType();
+                default -> throw new IllegalStateException("Unexpected value: " + typename);
+            };
+        }
     }
 }
