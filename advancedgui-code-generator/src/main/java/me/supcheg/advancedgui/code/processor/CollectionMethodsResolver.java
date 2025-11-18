@@ -12,7 +12,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,48 +25,50 @@ import static me.supcheg.advancedgui.code.processor.CollectionMethods.SingletonF
 
 class CollectionMethodsResolver {
     private final Types types;
+    private final Elements elements;
 
-    private final Map<ReferenceType, CollectionMethods> methodsByType;
+    private final Map<ReferenceType, CollectionMethods> methodsByType = new LinkedHashMap<>();
 
     CollectionMethodsResolver(Types types, Elements elements) {
         this.types = types;
+        this.elements = elements;
 
-        var sequencedSortedSetElement = elements.getTypeElement("me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet");
-        var sequencedSortedSetsElement = elements.getTypeElement("me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSets");
-        var sequencedSortedSetType = (ReferenceType) types.erasure(sequencedSortedSetElement.asType());
-        var sequencedSortedSetsType = (ReferenceType) types.erasure(sequencedSortedSetsElement.asType());
-        var sequencedSortedSetMethods = new CollectionMethods(
-                new MethodEmptyFactory(sequencedSortedSetsType, findMethod(sequencedSortedSetsElement, "create", 0)),
-                new SingletonFactory(sequencedSortedSetsType, findMethod(sequencedSortedSetsElement, "of", 1)),
-                new MethodCopyFactory(sequencedSortedSetsType, findMethod(sequencedSortedSetsElement, "createCopy", 1)),
-                new MethodCopyFactory(sequencedSortedSetsType, findMethod(sequencedSortedSetsElement, "copyOf", 1))
+        add(sequencedSortedSet());
+        add(builtinCollection(List.class, ArrayList.class));
+        add(builtinCollection(Set.class, HashSet.class));
+    }
+
+    private void add(CollectionMethods collectionMethods) {
+        methodsByType.put(collectionMethods.interfaceType(), collectionMethods);
+    }
+
+    private CollectionMethods sequencedSortedSet() {
+        var collectionTypeElement = elements.getTypeElement("me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet");
+        var collectionType = (ReferenceType) types.erasure(collectionTypeElement.asType());
+
+        var utilsTypeElement = elements.getTypeElement("me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSets");
+        var utilsType = (ReferenceType) types.erasure(utilsTypeElement.asType());
+
+        return new CollectionMethods(
+                collectionType,
+                new MethodEmptyFactory(utilsType, findMethod(utilsTypeElement, "create", 0)),
+                new SingletonFactory(utilsType, findMethod(utilsTypeElement, "of", 1)),
+                new MethodCopyFactory(utilsType, findMethod(utilsTypeElement, "createCopy", 1)),
+                new MethodCopyFactory(utilsType, findMethod(utilsTypeElement, "copyOf", 1))
         );
+    }
 
-        var listTypeElement = elements.getTypeElement(List.class.getName());
-        var listType = (ReferenceType) types.erasure(listTypeElement.asType());
-        var arrayListType = (ReferenceType) types.erasure(elements.getTypeElement(ArrayList.class.getName()).asType());
-        var listMethods = new CollectionMethods(
-                new ConstructorEmptyFactory(arrayListType),
-                new SingletonFactory(listType, findMethod(listTypeElement, "of", 1)),
-                new ConstructorCopyFactory(arrayListType),
-                new MethodCopyFactory(listType, findMethod(listTypeElement, "copyOf", 1))
+    private <T extends Collection<?>> CollectionMethods builtinCollection(Class<T> interfaceClazz, Class<? extends T> implementationClazz) {
+        var interfaceTypeElement = elements.getTypeElement(interfaceClazz.getName());
+        var interfaceType = (ReferenceType) types.erasure(interfaceTypeElement.asType());
+        var implementationType = (ReferenceType) types.erasure(elements.getTypeElement(implementationClazz.getName()).asType());
+        return new CollectionMethods(
+                interfaceType,
+                new ConstructorEmptyFactory(implementationType),
+                new SingletonFactory(interfaceType, findMethod(interfaceTypeElement, "of", 1)),
+                new ConstructorCopyFactory(implementationType),
+                new MethodCopyFactory(interfaceType, findMethod(interfaceTypeElement, "copyOf", 1))
         );
-
-        var setTypeElement = elements.getTypeElement(Set.class.getName());
-        var setType = (ReferenceType) types.erasure(setTypeElement.asType());
-        var hashSetType = (ReferenceType) types.erasure(elements.getTypeElement(HashSet.class.getName()).asType());
-        var setMethods = new CollectionMethods(
-                new ConstructorEmptyFactory(hashSetType),
-                new SingletonFactory(setType, findMethod(setTypeElement, "of", 1)),
-                new ConstructorCopyFactory(hashSetType),
-                new MethodCopyFactory(setType, findMethod(setTypeElement, "copyOf", 1))
-        );
-
-        var methodsByType = new LinkedHashMap<ReferenceType, CollectionMethods>();
-        methodsByType.put(sequencedSortedSetType, sequencedSortedSetMethods);
-        methodsByType.put(listType, listMethods);
-        methodsByType.put(setType, setMethods);
-        this.methodsByType = Collections.unmodifiableMap(methodsByType);
     }
 
     private Name findMethod(TypeElement type, String methodName, int argsAmount) {
@@ -85,6 +87,6 @@ class CollectionMethodsResolver {
                 .filter(entry -> types.isAssignable(types.erasure(collectionType), entry.getKey()))
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .orElseThrow(() -> new IllegalStateException("Collection methods not found for " + collectionType));
+                .orElseThrow(() -> new IllegalStateException("Collection methods not found for " + collectionType + " in " + methodsByType.keySet()));
     }
 }

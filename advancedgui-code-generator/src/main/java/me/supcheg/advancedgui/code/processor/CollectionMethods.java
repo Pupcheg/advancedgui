@@ -4,6 +4,7 @@ import javax.lang.model.element.Name;
 import javax.lang.model.type.ReferenceType;
 
 record CollectionMethods(
+        ReferenceType interfaceType,
         EmptyFactory emptyMutableFactory,
         SingletonFactory singletonImmutableFactory,
         CopyFactory copyMutableFactory,
