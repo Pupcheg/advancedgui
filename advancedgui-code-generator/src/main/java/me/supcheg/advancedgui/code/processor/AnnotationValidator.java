@@ -28,7 +28,7 @@ class AnnotationValidator {
         var builderConsumerTypename = ParameterizedTypeName.get(ClassName.get(Consumer.class), builderTypename);
 
         assertHasPublicStaticWithArgument(typeElement, decapitalize(simpleName(names.object())), objectTypename, builderConsumerTypename);
-        assertHasPublicStaticWithArgument(typeElement, decapitalize(simpleName(names.object())), builderTypename);
+        assertHasPublicStatic(typeElement, decapitalize(simpleName(names.object())), builderTypename);
     }
 
     private void assertHasPublicStaticWithArgument(TypeElement typeElement, String name, TypeName returnType, TypeName argumentType) {
@@ -46,11 +46,12 @@ class AnnotationValidator {
         }
     }
 
-    private void assertHasPublicStaticWithArgument(TypeElement typeElement, String name, TypeName returnType) {
+    private void assertHasPublicStatic(TypeElement typeElement, String name, TypeName returnType) {
         if (
                 methodsIn(typeElement.getEnclosedElements()).stream()
                         .filter(method -> method.getModifiers().contains(Modifier.PUBLIC))
                         .filter(method -> method.getModifiers().contains(Modifier.STATIC))
+                        .filter(method -> method.getParameters().isEmpty())
                         .filter(method -> isSameType(method.getReturnType(), returnType))
                         .findAny()
                         .isEmpty()
