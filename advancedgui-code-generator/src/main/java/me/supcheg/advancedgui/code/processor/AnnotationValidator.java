@@ -27,8 +27,10 @@ class AnnotationValidator {
         var builderTypename = names.builder();
         var builderConsumerTypename = ParameterizedTypeName.get(ClassName.get(Consumer.class), builderTypename);
 
-        assertHasPublicStaticWithArgument(typeElement, decapitalize(simpleName(names.object())), objectTypename, builderConsumerTypename);
-        assertHasPublicStatic(typeElement, decapitalize(simpleName(names.object())), builderTypename);
+        var methodname = decapitalize(simpleName(names.object()));
+
+        assertHasPublicStaticWithArgument(typeElement, methodname, objectTypename, builderConsumerTypename);
+        assertHasPublicStatic(typeElement, methodname, builderTypename);
     }
 
     private void assertHasPublicStaticWithArgument(TypeElement typeElement, String name, TypeName returnType, TypeName argumentType) {
