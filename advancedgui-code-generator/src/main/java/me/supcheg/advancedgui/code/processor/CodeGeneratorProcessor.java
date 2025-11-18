@@ -113,6 +113,7 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
         for (var type : generator.generate(typeElement)) {
             JavaFile.builder(typePackage, type)
                     .skipJavaLangImports(true)
+                    .indent("    ")
                     .build()
                     .writeTo(filer);
         }

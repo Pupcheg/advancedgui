@@ -134,59 +134,59 @@ class RecordInterfaceProcessorTest {
                         import org.checkerframework.checker.nullness.qual.Nullable;
                         
                         public interface TemplateBuilder extends AbstractBuilder<Template> {
-                          @NonNull
-                          TemplateBuilder key(@NonNull Key key);
+                            @NonNull
+                            TemplateBuilder key(@NonNull Key key);
                         
-                          @NonNull
-                          TemplateBuilder subkeys(@NonNull List<Key> subkeys);
+                            @NonNull
+                            TemplateBuilder subkeys(@NonNull List<Key> subkeys);
                         
-                          @NonNull
-                          TemplateBuilder subkey(@NonNull Key subkey);
+                            @NonNull
+                            TemplateBuilder subkey(@NonNull Key subkey);
                         
-                          @NonNull
-                          TemplateBuilder addSubkeys(@NonNull List<Key> subkeys);
+                            @NonNull
+                            TemplateBuilder addSubkeys(@NonNull List<Key> subkeys);
                         
-                          @NonNull
-                          TemplateBuilder addSubkey(@NonNull Key subkey);
+                            @NonNull
+                            TemplateBuilder addSubkey(@NonNull Key subkey);
                         
-                          @NonNull
-                          TemplateBuilder value(int value);
+                            @NonNull
+                            TemplateBuilder value(int value);
                         
-                          @NonNull
-                          TemplateBuilder subtemplate(@NonNull SubTemplate subtemplate);
+                            @NonNull
+                            TemplateBuilder subtemplate(@NonNull SubTemplate subtemplate);
                         
-                          @NonNull
-                          default TemplateBuilder subtemplate(@NonNull Consumer<SubTemplateBuilder> subtemplate) {
-                            return subtemplate(SubTemplate.subTemplate(subtemplate));
-                          }
+                            @NonNull
+                            default TemplateBuilder subtemplate(@NonNull Consumer<SubTemplateBuilder> subtemplate) {
+                                return subtemplate(SubTemplate.subTemplate(subtemplate));
+                            }
                         
-                          @NonNull
-                          TemplateBuilder keyedStrings(@NonNull Map<Key, String> keyedStrings);
+                            @NonNull
+                            TemplateBuilder keyedStrings(@NonNull Map<Key, String> keyedStrings);
                         
-                          @NonNull
-                          TemplateBuilder putKeyedStrings(@NonNull Map<Key, String> keyedStrings);
+                            @NonNull
+                            TemplateBuilder putKeyedStrings(@NonNull Map<Key, String> keyedStrings);
                         
-                          @NonNull
-                          TemplateBuilder putKeyedString(@NonNull Key key, @NonNull String keyedString);
+                            @NonNull
+                            TemplateBuilder putKeyedString(@NonNull Key key, @NonNull String keyedString);
                         
-                          @Nullable
-                          Key key();
+                            @Nullable
+                            Key key();
                         
-                          @NonNull
-                          List<Key> subkeys();
+                            @NonNull
+                            List<Key> subkeys();
                         
-                          @Nullable
-                          Integer value();
+                            @Nullable
+                            Integer value();
                         
-                          @Nullable
-                          SubTemplate subtemplate();
+                            @Nullable
+                            SubTemplate subtemplate();
                         
-                          @NonNull
-                          Map<Key, String> keyedStrings();
+                            @NonNull
+                            Map<Key, String> keyedStrings();
                         
-                          @NonNull
-                          @Override
-                          Template build();
+                            @NonNull
+                            @Override
+                            Template build();
                         }
                         """);
     }
@@ -204,13 +204,13 @@ class RecordInterfaceProcessorTest {
                         import org.jetbrains.annotations.Unmodifiable;
                         
                         record TemplateImpl(@NonNull Key key, @Unmodifiable @NonNull List<Key> subkeys, int value,
-                            @NonNull SubTemplate subtemplate,
-                            @Unmodifiable @NonNull Map<Key, String> keyedStrings) implements Template {
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl toBuilder() {
-                            return new TemplateBuilderImpl(this);
-                          }
+                                @NonNull SubTemplate subtemplate,
+                                @Unmodifiable @NonNull Map<Key, String> keyedStrings) implements Template {
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl toBuilder() {
+                                return new TemplateBuilderImpl(this);
+                            }
                         }
                         """);
     }
@@ -231,158 +231,158 @@ class RecordInterfaceProcessorTest {
                         import org.checkerframework.checker.nullness.qual.Nullable;
                         
                         class TemplateBuilderImpl implements TemplateBuilder {
-                          @Nullable
-                          private Key key;
+                            @Nullable
+                            private Key key;
                         
-                          @NonNull
-                          private final List<Key> subkeys;
+                            @NonNull
+                            private final List<Key> subkeys;
                         
-                          @Nullable
-                          private Integer value;
+                            @Nullable
+                            private Integer value;
                         
-                          @Nullable
-                          private SubTemplate subtemplate;
+                            @Nullable
+                            private SubTemplate subtemplate;
                         
-                          @NonNull
-                          private final Map<Key, String> keyedStrings;
+                            @NonNull
+                            private final Map<Key, String> keyedStrings;
                         
-                          TemplateBuilderImpl() {
-                            this.subkeys = new ArrayList<>();
-                            this.keyedStrings = new HashMap<>();
-                          }
+                            TemplateBuilderImpl() {
+                                this.subkeys = new ArrayList<>();
+                                this.keyedStrings = new HashMap<>();
+                            }
                         
-                          TemplateBuilderImpl(@NonNull TemplateImpl impl) {
-                            this.key = impl.key();
-                            this.subkeys = new ArrayList<>(impl.subkeys());
-                            this.value = impl.value();
-                            this.subtemplate = impl.subtemplate();
-                            this.keyedStrings = new HashMap<>(impl.keyedStrings());
-                          }
+                            TemplateBuilderImpl(@NonNull TemplateImpl impl) {
+                                this.key = impl.key();
+                                this.subkeys = new ArrayList<>(impl.subkeys());
+                                this.value = impl.value();
+                                this.subtemplate = impl.subtemplate();
+                                this.keyedStrings = new HashMap<>(impl.keyedStrings());
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl key(@NonNull Key key) {
-                            Objects.requireNonNull(key, "key");
-                            this.key = key;
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl key(@NonNull Key key) {
+                                Objects.requireNonNull(key, "key");
+                                this.key = key;
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl subkeys(@NonNull List<Key> subkeys) {
-                            Objects.requireNonNull(subkeys, "subkeys");
-                            this.subkeys.clear();
-                            this.subkeys.addAll(subkeys);
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl subkeys(@NonNull List<Key> subkeys) {
+                                Objects.requireNonNull(subkeys, "subkeys");
+                                this.subkeys.clear();
+                                this.subkeys.addAll(subkeys);
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl subkey(@NonNull Key subkey) {
-                            Objects.requireNonNull(subkey, "subkey");
-                            this.subkeys.clear();
-                            this.subkeys.add(subkey);
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl subkey(@NonNull Key subkey) {
+                                Objects.requireNonNull(subkey, "subkey");
+                                this.subkeys.clear();
+                                this.subkeys.add(subkey);
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl addSubkeys(@NonNull List<Key> subkeys) {
-                            Objects.requireNonNull(subkeys, "subkeys");
-                            this.subkeys.addAll(subkeys);
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl addSubkeys(@NonNull List<Key> subkeys) {
+                                Objects.requireNonNull(subkeys, "subkeys");
+                                this.subkeys.addAll(subkeys);
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl addSubkey(@NonNull Key subkey) {
-                            Objects.requireNonNull(subkey, "subkey");
-                            this.subkeys.add(subkey);
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl addSubkey(@NonNull Key subkey) {
+                                Objects.requireNonNull(subkey, "subkey");
+                                this.subkeys.add(subkey);
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl value(int value) {
-                            this.value = value;
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl value(int value) {
+                                this.value = value;
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl subtemplate(@NonNull SubTemplate subtemplate) {
-                            Objects.requireNonNull(subtemplate, "subtemplate");
-                            this.subtemplate = subtemplate;
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl subtemplate(@NonNull SubTemplate subtemplate) {
+                                Objects.requireNonNull(subtemplate, "subtemplate");
+                                this.subtemplate = subtemplate;
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl keyedStrings(@NonNull Map<Key, String> keyedStrings) {
-                            Objects.requireNonNull(keyedStrings, "keyedStrings");
-                            this.keyedStrings.clear();
-                            this.keyedStrings.putAll(keyedStrings);
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl keyedStrings(@NonNull Map<Key, String> keyedStrings) {
+                                Objects.requireNonNull(keyedStrings, "keyedStrings");
+                                this.keyedStrings.clear();
+                                this.keyedStrings.putAll(keyedStrings);
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl putKeyedStrings(@NonNull Map<Key, String> keyedStrings) {
-                            Objects.requireNonNull(keyedStrings, "keyedStrings");
-                            this.keyedStrings.putAll(keyedStrings);
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl putKeyedStrings(@NonNull Map<Key, String> keyedStrings) {
+                                Objects.requireNonNull(keyedStrings, "keyedStrings");
+                                this.keyedStrings.putAll(keyedStrings);
+                                return this;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateBuilderImpl putKeyedString(@NonNull Key key, @NonNull String keyedString) {
-                            Objects.requireNonNull(key, "key");
-                            Objects.requireNonNull(keyedString, "keyedString");
-                            this.keyedStrings.put(key, keyedString);
-                            return this;
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateBuilderImpl putKeyedString(@NonNull Key key, @NonNull String keyedString) {
+                                Objects.requireNonNull(key, "key");
+                                Objects.requireNonNull(keyedString, "keyedString");
+                                this.keyedStrings.put(key, keyedString);
+                                return this;
+                            }
                         
-                          @Nullable
-                          @Override
-                          public Key key() {
-                            return key;
-                          }
+                            @Nullable
+                            @Override
+                            public Key key() {
+                                return key;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public List<Key> subkeys() {
-                            return subkeys;
-                          }
+                            @NonNull
+                            @Override
+                            public List<Key> subkeys() {
+                                return subkeys;
+                            }
                         
-                          @Nullable
-                          @Override
-                          public Integer value() {
-                            return value;
-                          }
+                            @Nullable
+                            @Override
+                            public Integer value() {
+                                return value;
+                            }
                         
-                          @Nullable
-                          @Override
-                          public SubTemplate subtemplate() {
-                            return subtemplate;
-                          }
+                            @Nullable
+                            @Override
+                            public SubTemplate subtemplate() {
+                                return subtemplate;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public Map<Key, String> keyedStrings() {
-                            return keyedStrings;
-                          }
+                            @NonNull
+                            @Override
+                            public Map<Key, String> keyedStrings() {
+                                return keyedStrings;
+                            }
                         
-                          @NonNull
-                          @Override
-                          public TemplateImpl build() {
-                            return new TemplateImpl(
-                                Objects.requireNonNull(this.key, "key"),
-                                List.copyOf(this.subkeys),
-                                this.value,
-                                Objects.requireNonNull(this.subtemplate, "subtemplate"),
-                                Map.copyOf(this.keyedStrings)
-                            );
-                          }
+                            @NonNull
+                            @Override
+                            public TemplateImpl build() {
+                                return new TemplateImpl(
+                                        Objects.requireNonNull(this.key, "key"),
+                                        List.copyOf(this.subkeys),
+                                        this.value,
+                                        Objects.requireNonNull(this.subtemplate, "subtemplate"),
+                                        Map.copyOf(this.keyedStrings)
+                                );
+                            }
                         }
                         """);
     }
