@@ -42,11 +42,13 @@ final class TypeNames {
         return TypeVariableName.get(nameModifier.apply(source.name()), source.bounds().toArray(TypeName[]::new));
     }
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     static WildcardTypeName rename(WildcardTypeName source, UnaryOperator<String> nameModifier) {
         return source;
     }
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     static ArrayTypeName rename(ArrayTypeName source, UnaryOperator<String> nameModifier) {
         return source;
