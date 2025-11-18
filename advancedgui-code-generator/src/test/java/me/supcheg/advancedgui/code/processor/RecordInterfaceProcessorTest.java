@@ -3,7 +3,7 @@ package me.supcheg.advancedgui.code.processor;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
@@ -12,26 +12,39 @@ import static com.google.testing.compile.Compiler.javac;
 class RecordInterfaceProcessorTest {
 
     @MonotonicNonNull
-    Compilation compilation;
+    static Compilation compilation;
 
-    @BeforeEach
-    void setup() {
+    @BeforeAll
+    static void setup() {
         compilation = javac()
                 .withProcessors(new CodeGeneratorProcessor())
                 .compile(
                         JavaFileObjects.forSourceString(
-                                "TestTemplate",
+                                "Template",
                                 """
                                         import me.supcheg.advancedgui.code.RecordInterface;
                                         import org.jetbrains.annotations.Unmodifiable;
                                         import net.kyori.adventure.key.Key;
                                         import me.supcheg.advancedgui.api.builder.Buildable;
                                         import java.util.List;
+                                        import java.util.function.Consumer;
                                         
                                         @RecordInterface
-                                        public interface TestTemplate extends Buildable<TestTemplate, TestTemplateBuilder> {
+                                        public interface Template extends Buildable<Template, TemplateBuilder> {
+                                        
+                                            static TemplateBuilder template() {
+                                                return new TemplateBuilderImpl();
+                                            }
+                                        
+                                            static Template template(Consumer<TemplateBuilder> consumer) {
+                                                return Buildable.configureAndBuild(template(), consumer);
+                                            }
+                                        
                                             Key key();
-                                            @Unmodifiable List<Key> subkeys();
+                                        
+                                            @Unmodifiable
+                                            List<Key> subkeys();
+                                        
                                             int value();
                                         }
                                         """)
@@ -47,7 +60,7 @@ class RecordInterfaceProcessorTest {
     @Test
     void whenGettingBuilderInterface_thenExpectedContentPresent() {
         assertThat(compilation)
-                .generatedSourceFile("TestTemplateBuilder")
+                .generatedSourceFile("TemplateBuilder")
                 .contentsAsUtf8String()
                 .isEqualTo("""
                         import java.util.List;
@@ -57,30 +70,30 @@ class RecordInterfaceProcessorTest {
                         import org.checkerframework.checker.nullness.qual.NonNull;
                         import org.checkerframework.checker.nullness.qual.Nullable;
                         
-                        public interface TestTemplateBuilder extends AbstractBuilder<TestTemplate> {
+                        public interface TemplateBuilder extends AbstractBuilder<Template> {
                           @NonNull
-                          TestTemplateBuilder key(@NonNull Key key);
+                          TemplateBuilder key(@NonNull Key key);
                         
                           @NonNull
-                          TestTemplateBuilder subkeys(@NonNull List<Key> subkeys);
+                          TemplateBuilder subkeys(@NonNull List<Key> subkeys);
                         
                           @NonNull
-                          default TestTemplateBuilder subkey(@NonNull Key subkey) {
+                          default TemplateBuilder subkey(@NonNull Key subkey) {
                             Objects.requireNonNull(subkey, "subkey");
                             return subkeys(List.of(subkey));
                           }
                         
                           @NonNull
-                          TestTemplateBuilder addSubkeys(@NonNull List<Key> subkeys);
+                          TemplateBuilder addSubkeys(@NonNull List<Key> subkeys);
                         
                           @NonNull
-                          default TestTemplateBuilder addSubkey(@NonNull Key subkey) {
+                          default TemplateBuilder addSubkey(@NonNull Key subkey) {
                             Objects.requireNonNull(subkey, "subkey");
                             return addSubkeys(List.of(subkey));
                           }
                         
                           @NonNull
-                          TestTemplateBuilder value(int value);
+                          TemplateBuilder value(int value);
                         
                           @Nullable
                           Key key();
@@ -93,7 +106,7 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           @Override
-                          TestTemplate build();
+                          Template build();
                         }
                         """);
     }
@@ -101,7 +114,7 @@ class RecordInterfaceProcessorTest {
     @Test
     void whenGettingObjectImpl_thenExpectedContentPresent() {
         assertThat(compilation)
-                .generatedSourceFile("TestTemplateImpl")
+                .generatedSourceFile("TemplateImpl")
                 .contentsAsUtf8String()
                 .isEqualTo("""
                         import java.util.List;
@@ -109,12 +122,12 @@ class RecordInterfaceProcessorTest {
                         import org.checkerframework.checker.nullness.qual.NonNull;
                         import org.jetbrains.annotations.Unmodifiable;
                         
-                        record TestTemplateImpl(@NonNull Key key, @Unmodifiable @NonNull List<Key> subkeys,
-                            int value) implements TestTemplate {
+                        record TemplateImpl(@NonNull Key key, @Unmodifiable @NonNull List<Key> subkeys,
+                            int value) implements Template {
                           @NonNull
                           @Override
-                          public TestTemplateBuilderImpl toBuilder() {
-                            return new TestTemplateBuilderImpl(this);
+                          public TemplateBuilderImpl toBuilder() {
+                            return new TemplateBuilderImpl(this);
                           }
                         }
                         """);
@@ -123,7 +136,7 @@ class RecordInterfaceProcessorTest {
     @Test
     void whenGettingBuilderImpl_thenExpectedContentPresent() {
         assertThat(compilation)
-                .generatedSourceFile("TestTemplateBuilderImpl")
+                .generatedSourceFile("TemplateBuilderImpl")
                 .contentsAsUtf8String()
                 .isEqualTo("""
                         import java.util.ArrayList;
@@ -133,7 +146,7 @@ class RecordInterfaceProcessorTest {
                         import org.checkerframework.checker.nullness.qual.NonNull;
                         import org.checkerframework.checker.nullness.qual.Nullable;
                         
-                        class TestTemplateBuilderImpl implements TestTemplateBuilder {
+                        class TemplateBuilderImpl implements TemplateBuilder {
                           @Nullable
                           private Key key;
                         
@@ -143,11 +156,11 @@ class RecordInterfaceProcessorTest {
                           @Nullable
                           private Integer value;
                         
-                          TestTemplateBuilderImpl() {
+                          TemplateBuilderImpl() {
                             this.subkeys = new ArrayList<>();
                           }
                         
-                          TestTemplateBuilderImpl(@NonNull TestTemplateImpl impl) {
+                          TemplateBuilderImpl(@NonNull TemplateImpl impl) {
                             this.key = impl.key();
                             this.subkeys = new ArrayList<>(impl.subkeys());
                             this.value = impl.value();
@@ -155,7 +168,7 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           @Override
-                          public TestTemplateBuilderImpl key(@NonNull Key key) {
+                          public TemplateBuilderImpl key(@NonNull Key key) {
                             Objects.requireNonNull(key, "key");
                             this.key = key;
                             return this;
@@ -163,7 +176,7 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           @Override
-                          public TestTemplateBuilderImpl subkeys(@NonNull List<Key> subkeys) {
+                          public TemplateBuilderImpl subkeys(@NonNull List<Key> subkeys) {
                             Objects.requireNonNull(subkeys, "subkeys");
                             this.subkeys.clear();
                             this.subkeys.addAll(subkeys);
@@ -172,7 +185,7 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           @Override
-                          public TestTemplateBuilderImpl addSubkeys(@NonNull List<Key> subkeys) {
+                          public TemplateBuilderImpl addSubkeys(@NonNull List<Key> subkeys) {
                             Objects.requireNonNull(subkeys, "subkeys");
                             this.subkeys.addAll(subkeys);
                             return this;
@@ -180,7 +193,7 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           @Override
-                          public TestTemplateBuilderImpl value(int value) {
+                          public TemplateBuilderImpl value(int value) {
                             this.value = value;
                             return this;
                           }
@@ -205,8 +218,8 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           @Override
-                          public TestTemplateImpl build() {
-                            return new TestTemplateImpl(
+                          public TemplateImpl build() {
+                            return new TemplateImpl(
                                 Objects.requireNonNull(this.key, "key"),
                                 List.copyOf(this.subkeys),
                                 this.value
