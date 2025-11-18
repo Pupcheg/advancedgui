@@ -173,8 +173,9 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .addAnnotations(annotations.nonNull())
                             .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
                             .addParameter(
-                                    ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyNames.builder()),
-                                    consumerParameterName
+                                    ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyNames.builder()), consumerParameterName)
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
                             )
                             .addCode("return $L($T.$L($L));", originalMethodName, types.erasure(property.type()), decapitalize(simpleName(property.typename())), consumerParameterName)
                             .returns(builderType)
