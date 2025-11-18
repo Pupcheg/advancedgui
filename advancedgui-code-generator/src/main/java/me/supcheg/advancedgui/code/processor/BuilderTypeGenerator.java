@@ -1,24 +1,32 @@
 package me.supcheg.advancedgui.code.processor;
 
+import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.ParameterSpec;
+import com.palantir.javapoet.ParameterizedTypeName;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import lombok.RequiredArgsConstructor;
 
 import javax.lang.model.element.Modifier;
+import javax.lang.model.util.Types;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.palantir.javapoet.MethodSpec.methodBuilder;
 import static com.palantir.javapoet.TypeSpec.interfaceBuilder;
 import static me.supcheg.advancedgui.code.processor.StringUtil.capitalize;
+import static me.supcheg.advancedgui.code.processor.StringUtil.decapitalize;
 import static me.supcheg.advancedgui.code.processor.TypeNames.genericTypes;
+import static me.supcheg.advancedgui.code.processor.TypeNames.simpleName;
 
 @RequiredArgsConstructor
 class BuilderTypeGenerator extends TypeGenerator {
     private static final String BUILD_METHOD_NAME = "build";
     private static final String ADD_PREFIX = "add";
 
+    private final Types types;
     private final Annotations annotations;
+    private final NamesResolver namesResolver;
     private final BuilderInterfaces builderInterfaces;
     private final CollectionMethodsResolver collectionResolver;
 
@@ -52,8 +60,9 @@ class BuilderTypeGenerator extends TypeGenerator {
 
         @Override
         public void visitObject(Property.Object property) {
+            var setterMethodName = property.name();
             builder.addMethod(
-                    methodBuilder(property.name())
+                    methodBuilder(setterMethodName)
                             .addAnnotations(annotations.nonNull())
                             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                             .addParameter(
@@ -64,6 +73,24 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .returns(builderType)
                             .build()
             );
+
+            if (types.isSubtype(property.type(), types.erasure(builderInterfaces.buildableType().asType()))) {
+                var propertyNames = namesResolver.namesForObject(property.type());
+                var consumerParameterName = property.name();
+
+                builder.addMethod(
+                        methodBuilder(property.name())
+                                .addAnnotations(annotations.nonNull())
+                                .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                                .addParameter(
+                                        ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyNames.builder()),
+                                        consumerParameterName
+                                )
+                                .addCode("return $L($T.$L($L));", setterMethodName, types.erasure(property.type()), decapitalize(simpleName(property.typename())), consumerParameterName)
+                                .returns(builderType)
+                                .build()
+                );
+            }
         }
 
         @Override

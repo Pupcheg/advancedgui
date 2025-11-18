@@ -10,4 +10,10 @@ final class StringUtil {
                 Character.toUpperCase(str.charAt(0)) + str.substring(1) :
                 str;
     }
+
+    static String decapitalize(String str) {
+        return !str.isEmpty() ?
+                Character.toLowerCase(str.charAt(0)) + str.substring(1) :
+                str;
+    }
 }

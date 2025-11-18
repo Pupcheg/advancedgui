@@ -47,7 +47,7 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
         var collectionResolver = new CollectionMethodsResolver(types, elements);
 
         var objectImplTypeGenerator = new ObjectImplTypeGenerator(annotations);
-        var builderTypeGenerator = new BuilderTypeGenerator(annotations, interfaces, collectionResolver);
+        var builderTypeGenerator = new BuilderTypeGenerator(types, annotations, namesResolver, interfaces, collectionResolver);
         var builderImplTypeGenerator = new BuilderImplTypeGenerator(collectionResolver, annotations);
 
         builderInterfaceGenerator = new AnnotationGenerator(

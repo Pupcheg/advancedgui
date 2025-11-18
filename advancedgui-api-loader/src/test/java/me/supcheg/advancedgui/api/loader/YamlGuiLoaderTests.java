@@ -9,8 +9,12 @@ import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Set;
+
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
+import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
 import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anvilLayout;
 import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTickPointcut;
@@ -81,7 +85,7 @@ class YamlGuiLoaderTests {
                                 .action(dummyAction())
                         )
                         .addButton(button -> button
-                                .addCoordinate(0, 0)
+                                .addCoordinate(coordinate(0, 0))
                                 .addInteraction(interaction -> interaction
                                         .priority(NamedPriority.NORMAL)
                                         .action(dummyAction())
@@ -89,12 +93,12 @@ class YamlGuiLoaderTests {
                                 .texture(key("advancedgui:test/interaction"))
                                 .name(text("Hi!", style(TextDecoration.BOLD)))
                                 .description(description -> description
-                                        .lines(
+                                        .lines(List.of(
                                                 text("eee", NamedTextColor.RED),
                                                 text("eEe")
-                                        )
+                                        ))
                                 )
-                                .attributes(glowing(), hidden())
+                                .attributes(Set.of(glowing(), hidden()))
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
                                         .add(lifecycleListener -> lifecycleListener
                                                 .pointcut(beforeTickPointcut())

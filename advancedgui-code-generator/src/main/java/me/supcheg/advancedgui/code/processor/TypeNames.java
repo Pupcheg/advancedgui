@@ -73,4 +73,12 @@ final class TypeNames {
             List<TypeVariableName> generics
     ) {
     }
+
+    static String simpleName(TypeName typename) {
+        return switch (typename) {
+            case ClassName className -> className.simpleName();
+            case ParameterizedTypeName parameterizedTypeName -> parameterizedTypeName.rawType().simpleName();
+            default -> throw new IllegalStateException("Unexpected value: " + typename);
+        };
+    }
 }

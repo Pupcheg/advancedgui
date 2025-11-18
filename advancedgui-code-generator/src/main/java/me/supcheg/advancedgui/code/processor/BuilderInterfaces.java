@@ -7,24 +7,15 @@ import com.palantir.javapoet.TypeName;
 import javax.lang.model.element.TypeElement;
 
 record BuilderInterfaces(
-        ClassName buildableTypename,
-        ClassName builderTypename
+        TypeElement buildableType,
+        TypeElement builderType
 ) {
-    BuilderInterfaces(
-            TypeElement buildableType,
-            TypeElement builderType
-    ) {
-        this(
-                ClassName.get(buildableType),
-                ClassName.get(builderType)
-        );
-    }
 
     ParameterizedTypeName buildableTypename(TypeName selfTypename) {
-        return ParameterizedTypeName.get(buildableTypename, selfTypename);
+        return ParameterizedTypeName.get(ClassName.get(buildableType), selfTypename);
     }
 
     ParameterizedTypeName builderTypename(TypeName buildableTypename) {
-        return ParameterizedTypeName.get(builderTypename, buildableTypename);
+        return ParameterizedTypeName.get(ClassName.get(builderType), buildableTypename);
     }
 }
