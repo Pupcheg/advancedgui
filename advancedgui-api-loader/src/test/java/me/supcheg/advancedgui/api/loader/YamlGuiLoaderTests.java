@@ -9,7 +9,6 @@ import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Set;
 
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
@@ -98,7 +97,7 @@ class YamlGuiLoaderTests {
                                 )
                                 .attributes(Set.of(glowing(), hidden()))
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                                        .add(lifecycleListener -> lifecycleListener
+                                        .addListener(lifecycleListener -> lifecycleListener
                                                 .pointcut(beforeTickPointcut())
                                                 .priority(NamedPriority.NORMAL)
                                                 .action(dummyAction())
@@ -106,7 +105,7 @@ class YamlGuiLoaderTests {
                                 )
                         )
                         .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                                .add(lifecycleListener -> lifecycleListener
+                                .addListener(lifecycleListener -> lifecycleListener
                                         .pointcut(afterTickPointcut())
                                         .priority(NamedPriority.HIGHEST)
                                         .action(dummyAction())
@@ -117,12 +116,12 @@ class YamlGuiLoaderTests {
                         .addLocation(key("advancedgui:test/background"))
                 )
                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                        .add(lifecycleListener -> lifecycleListener
+                        .addListener(lifecycleListener -> lifecycleListener
                                 .pointcut(beforeTickPointcut())
                                 .priority(NamedPriority.NORMAL)
                                 .action(dummyAction())
                         )
-                        .add(lifecycleListener -> lifecycleListener
+                        .addListener(lifecycleListener -> lifecycleListener
                                 .pointcut(afterTickPointcut())
                                 .priority(NamedPriority.LOW)
                                 .action(dummyAction())

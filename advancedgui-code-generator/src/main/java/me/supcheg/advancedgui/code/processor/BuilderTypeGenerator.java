@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.code.RecordInterface;
 
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Types;
 import java.util.List;
@@ -30,6 +31,7 @@ class BuilderTypeGenerator extends TypeGenerator {
     private final NamesResolver namesResolver;
     private final BuilderInterfaces builderInterfaces;
     private final CollectionMethodsResolver collectionResolver;
+    private final PropertyResolver propertyResolver;
 
     @Override
     TypeSpec generate(Names names, List<? extends Property> properties) {
@@ -190,8 +192,9 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .build()
             );
 
+            var putSingleMethodname = PUT_PREFIX + capitalize(value.name());
             builder.addMethod(
-                    methodBuilder(PUT_PREFIX + capitalize(value.name()))
+                    methodBuilder(putSingleMethodname)
                             .addAnnotations(annotations.nonNull())
                             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                             .addParameter(
@@ -207,6 +210,56 @@ class BuilderTypeGenerator extends TypeGenerator {
                             .returns(builderType)
                             .build()
             );
+
+            if (value instanceof Property.ObjectCollection collection && hasSubProperty(collection.element(), key)) {
+                var element = collection.element();
+                var collectionFactory = collectionResolver.methodsFor(collection.type()).singletonImmutableFactory();
+
+                var addSingleMethodname = ADD_PREFIX + capitalize(element.name());
+                builder.addMethod(
+                        methodBuilder(addSingleMethodname)
+                                .addAnnotations(annotations.nonNull())
+                                .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                                .addParameter(
+                                        ParameterSpec.builder(element.typename(), element.name())
+                                                .addAnnotations(annotations.nonNull())
+                                                .build()
+                                )
+                                .addCode("return $L($L.$L(), $T.$L($L));", putSingleMethodname, element.name(), key.name(), collectionFactory.containingErasedType(), collectionFactory.methodname(), element.name())
+                                .returns(builderType)
+                                .build()
+                );
+
+                if (isRecordInterface(element)) {
+                    addConsumerMethod(element, addSingleMethodname);
+                }
+            } else if (hasSubProperty(value, key)) {
+                var addSingleMethodname = ADD_PREFIX + capitalize(value.name());
+                builder.addMethod(
+                        methodBuilder(ADD_PREFIX + capitalize(value.name()))
+                                .addAnnotations(annotations.nonNull())
+                                .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                                .addParameter(
+                                        ParameterSpec.builder(value.typename(), value.name())
+                                                .addAnnotations(annotations.nonNull())
+                                                .build()
+                                )
+                                .addCode("return $L($L.$L(), $L);", putSingleMethodname, value.name(), key.name(), value.name())
+                                .returns(builderType)
+                                .build()
+                );
+
+                if (isRecordInterface(value)) {
+                    addConsumerMethod(value, addSingleMethodname);
+                }
+            }
+
+        }
+
+        private boolean hasSubProperty(Property property, Property subproperty) {
+            return property.type() instanceof DeclaredType declared
+                   && declared.asElement() instanceof TypeElement typeElement
+                   && propertyResolver.listProperties(typeElement).contains(subproperty);
         }
 
         private void addConsumerMethod(Property property, String originalMethodName) {

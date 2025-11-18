@@ -82,7 +82,7 @@ class RecordInterfaceProcessorTest {
                                             SubTemplate subtemplate();
                                         
                                             @Unmodifiable
-                                            Map<Key, String> keyedStrings();
+                                            Map<Key, KeyedString> keyedStrings();
                                         }
                                         """),
                         JavaFileObjects.forSourceString(
@@ -107,6 +107,31 @@ class RecordInterfaceProcessorTest {
                                         
                                             @Unmodifiable
                                             Set<String> contents();
+                                        }
+                                        """
+                        ),
+                        JavaFileObjects.forSourceString(
+                                "KeyedString",
+                                """
+                                        import me.supcheg.advancedgui.code.RecordInterface;
+                                        import me.supcheg.advancedgui.api.builder.Buildable;
+                                        import net.kyori.adventure.key.Key;
+                                        import java.util.function.Consumer;
+                                        
+                                        @RecordInterface
+                                        public interface KeyedString extends Buildable<KeyedString, KeyedStringBuilder> {
+                                        
+                                            static KeyedStringBuilder keyedString() {
+                                                return new KeyedStringBuilderImpl();
+                                            }
+                                        
+                                            static KeyedString keyedString(Consumer<KeyedStringBuilder> consumer) {
+                                                return Buildable.configureAndBuild(keyedString(), consumer);
+                                            }
+                                        
+                                            Key key();
+                                        
+                                            String string();
                                         }
                                         """
                         )
@@ -161,13 +186,23 @@ class RecordInterfaceProcessorTest {
                             }
                         
                             @NonNull
-                            TemplateBuilder keyedStrings(@NonNull Map<Key, String> keyedStrings);
+                            TemplateBuilder keyedStrings(@NonNull Map<Key, KeyedString> keyedStrings);
                         
                             @NonNull
-                            TemplateBuilder putKeyedStrings(@NonNull Map<Key, String> keyedStrings);
+                            TemplateBuilder putKeyedStrings(@NonNull Map<Key, KeyedString> keyedStrings);
                         
                             @NonNull
-                            TemplateBuilder putKeyedString(@NonNull Key key, @NonNull String keyedString);
+                            TemplateBuilder putKeyedString(@NonNull Key key, @NonNull KeyedString keyedString);
+                        
+                            @NonNull
+                            default TemplateBuilder addKeyedString(@NonNull KeyedString keyedString) {
+                                return putKeyedString(keyedString.key(), keyedString);
+                            }
+                        
+                            @NonNull
+                            default TemplateBuilder addKeyedString(@NonNull Consumer<KeyedStringBuilder> keyedString) {
+                                return addKeyedString(KeyedString.keyedString(keyedString));
+                            }
                         
                             @Nullable
                             Key key();
@@ -182,7 +217,7 @@ class RecordInterfaceProcessorTest {
                             SubTemplate subtemplate();
                         
                             @NonNull
-                            Map<Key, String> keyedStrings();
+                            Map<Key, KeyedString> keyedStrings();
                         
                             @NonNull
                             @Override
@@ -205,7 +240,7 @@ class RecordInterfaceProcessorTest {
                         
                         record TemplateImpl(@NonNull Key key, @Unmodifiable @NonNull List<Key> subkeys, int value,
                                 @NonNull SubTemplate subtemplate,
-                                @Unmodifiable @NonNull Map<Key, String> keyedStrings) implements Template {
+                                @Unmodifiable @NonNull Map<Key, KeyedString> keyedStrings) implements Template {
                             @NonNull
                             @Override
                             public TemplateBuilderImpl toBuilder() {
@@ -244,7 +279,7 @@ class RecordInterfaceProcessorTest {
                             private SubTemplate subtemplate;
                         
                             @NonNull
-                            private final Map<Key, String> keyedStrings;
+                            private final Map<Key, KeyedString> keyedStrings;
                         
                             TemplateBuilderImpl() {
                                 this.subkeys = new ArrayList<>();
@@ -318,7 +353,7 @@ class RecordInterfaceProcessorTest {
                         
                             @NonNull
                             @Override
-                            public TemplateBuilderImpl keyedStrings(@NonNull Map<Key, String> keyedStrings) {
+                            public TemplateBuilderImpl keyedStrings(@NonNull Map<Key, KeyedString> keyedStrings) {
                                 Objects.requireNonNull(keyedStrings, "keyedStrings");
                                 this.keyedStrings.clear();
                                 this.keyedStrings.putAll(keyedStrings);
@@ -327,7 +362,7 @@ class RecordInterfaceProcessorTest {
                         
                             @NonNull
                             @Override
-                            public TemplateBuilderImpl putKeyedStrings(@NonNull Map<Key, String> keyedStrings) {
+                            public TemplateBuilderImpl putKeyedStrings(@NonNull Map<Key, KeyedString> keyedStrings) {
                                 Objects.requireNonNull(keyedStrings, "keyedStrings");
                                 this.keyedStrings.putAll(keyedStrings);
                                 return this;
@@ -335,7 +370,7 @@ class RecordInterfaceProcessorTest {
                         
                             @NonNull
                             @Override
-                            public TemplateBuilderImpl putKeyedString(@NonNull Key key, @NonNull String keyedString) {
+                            public TemplateBuilderImpl putKeyedString(@NonNull Key key, @NonNull KeyedString keyedString) {
                                 Objects.requireNonNull(key, "key");
                                 Objects.requireNonNull(keyedString, "keyedString");
                                 this.keyedStrings.put(key, keyedString);
@@ -368,7 +403,7 @@ class RecordInterfaceProcessorTest {
                         
                             @NonNull
                             @Override
-                            public Map<Key, String> keyedStrings() {
+                            public Map<Key, KeyedString> keyedStrings() {
                                 return keyedStrings;
                             }
                         
