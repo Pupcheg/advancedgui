@@ -25,6 +25,7 @@ import static me.supcheg.advancedgui.code.processor.TypeNames.simpleName;
 class BuilderTypeGenerator extends TypeGenerator {
     private static final String BUILD_METHOD_NAME = "build";
     private static final String ADD_PREFIX = "add";
+    private static final String PUT_PREFIX = "put";
 
     private final Types types;
     private final Annotations annotations;
@@ -164,6 +165,43 @@ class BuilderTypeGenerator extends TypeGenerator {
             }
         }
 
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
+            var key = property.key();
+            var value = property.value();
+
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .returns(builderType)
+                            .build()
+            );
+
+            builder.addMethod(
+                    methodBuilder(PUT_PREFIX + capitalize(value.name()))
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addParameter(
+                                    ParameterSpec.builder(key.typename(), key.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .addParameter(
+                                    ParameterSpec.builder(value.typename(), value.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .returns(builderType)
+                            .build()
+            );
+        }
+
         private void addConsumerMethod(Property property, String originalMethodName) {
             var propertyNames = namesResolver.namesForObject(property.type());
             var consumerParameterName = property.name();
@@ -185,7 +223,7 @@ class BuilderTypeGenerator extends TypeGenerator {
 
         private boolean isRecordInterface(Property property) {
             return property.type() instanceof DeclaredType declaredType
-                    && declaredType.asElement().getAnnotationsByType(RecordInterface.class).length > 0;
+                   && declaredType.asElement().getAnnotationsByType(RecordInterface.class).length > 0;
         }
     }
 
@@ -217,6 +255,17 @@ class BuilderTypeGenerator extends TypeGenerator {
 
         @Override
         public void visitObjectCollection(Property.ObjectCollection property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .returns(property.typename())
+                            .build()
+            );
+        }
+
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
             builder.addMethod(
                     methodBuilder(property.name())
                             .addAnnotations(annotations.nonNull())

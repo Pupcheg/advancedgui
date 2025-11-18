@@ -65,5 +65,15 @@ class ObjectImplTypeGenerator extends TypeGenerator {
                             .build()
             );
         }
+
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
+            constructor.addParameter(
+                    ParameterSpec.builder(property.typename(), property.name())
+                            .addAnnotations(annotations.unmodifiable())
+                            .addAnnotations(annotations.nonNull())
+                            .build()
+            );
+        }
     }
 }

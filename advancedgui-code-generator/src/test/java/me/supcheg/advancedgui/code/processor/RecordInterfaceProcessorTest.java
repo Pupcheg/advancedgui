@@ -20,6 +20,37 @@ class RecordInterfaceProcessorTest {
                 .withProcessors(new CodeGeneratorProcessor())
                 .compile(
                         JavaFileObjects.forSourceString(
+                                "me.supcheg.advancedgui.api.builder.AbstractBuilder",
+                                """
+                                        package me.supcheg.advancedgui.api.builder;
+                                        
+                                        import net.kyori.adventure.util.Buildable;
+                                        
+                                        @SuppressWarnings("deprecation")
+                                        public interface AbstractBuilder<R> extends net.kyori.adventure.builder.AbstractBuilder<R>, Buildable.Builder<R> {
+                                        }
+                                        """
+                        ),
+                        JavaFileObjects.forSourceString(
+                                "me.supcheg.advancedgui.api.builder.Buildable",
+                                """
+                                        package me.supcheg.advancedgui.api.builder;
+                                        
+                                        import java.util.Objects;
+                                        import java.util.function.Consumer;
+                                        
+                                        public interface Buildable<R, B extends AbstractBuilder<R>> extends net.kyori.adventure.util.Buildable<R, B> {
+                                        
+                                            static <R, B extends AbstractBuilder<R>> R configureAndBuild(B builder, Consumer<? super B> consumer) {
+                                                Objects.requireNonNull(builder, "builder");
+                                                consumer.accept(builder);
+                                                return builder.build();
+                                            }
+                                        
+                                        }
+                                        """
+                        ),
+                        JavaFileObjects.forSourceString(
                                 "Template",
                                 """
                                         import me.supcheg.advancedgui.code.RecordInterface;
@@ -27,6 +58,7 @@ class RecordInterfaceProcessorTest {
                                         import net.kyori.adventure.key.Key;
                                         import me.supcheg.advancedgui.api.builder.Buildable;
                                         import java.util.List;
+                                        import java.util.Map;
                                         import java.util.function.Consumer;
                                         
                                         @RecordInterface
@@ -48,6 +80,9 @@ class RecordInterfaceProcessorTest {
                                             int value();
                                         
                                             SubTemplate subtemplate();
+                                        
+                                            @Unmodifiable
+                                            Map<Key, String> keyedStrings();
                                         }
                                         """),
                         JavaFileObjects.forSourceString(
@@ -91,6 +126,7 @@ class RecordInterfaceProcessorTest {
                 .contentsAsUtf8String()
                 .isEqualTo("""
                         import java.util.List;
+                        import java.util.Map;
                         import java.util.Objects;
                         import java.util.function.Consumer;
                         import me.supcheg.advancedgui.api.builder.AbstractBuilder;
@@ -131,6 +167,12 @@ class RecordInterfaceProcessorTest {
                             return subtemplate(SubTemplate.subTemplate(subtemplate));
                           }
                         
+                          @NonNull
+                          TemplateBuilder keyedStrings(@NonNull Map<Key, String> keyedStrings);
+                        
+                          @NonNull
+                          TemplateBuilder putKeyedString(@NonNull Key key, @NonNull String keyedString);
+                        
                           @Nullable
                           Key key();
                         
@@ -142,6 +184,9 @@ class RecordInterfaceProcessorTest {
                         
                           @Nullable
                           SubTemplate subtemplate();
+                        
+                          @NonNull
+                          Map<Key, String> keyedStrings();
                         
                           @NonNull
                           @Override
@@ -157,12 +202,14 @@ class RecordInterfaceProcessorTest {
                 .contentsAsUtf8String()
                 .isEqualTo("""
                         import java.util.List;
+                        import java.util.Map;
                         import net.kyori.adventure.key.Key;
                         import org.checkerframework.checker.nullness.qual.NonNull;
                         import org.jetbrains.annotations.Unmodifiable;
                         
                         record TemplateImpl(@NonNull Key key, @Unmodifiable @NonNull List<Key> subkeys, int value,
-                            @NonNull SubTemplate subtemplate) implements Template {
+                            @NonNull SubTemplate subtemplate,
+                            @Unmodifiable @NonNull Map<Key, String> keyedStrings) implements Template {
                           @NonNull
                           @Override
                           public TemplateBuilderImpl toBuilder() {
@@ -179,7 +226,9 @@ class RecordInterfaceProcessorTest {
                 .contentsAsUtf8String()
                 .isEqualTo("""
                         import java.util.ArrayList;
+                        import java.util.HashMap;
                         import java.util.List;
+                        import java.util.Map;
                         import java.util.Objects;
                         import net.kyori.adventure.key.Key;
                         import org.checkerframework.checker.nullness.qual.NonNull;
@@ -198,8 +247,12 @@ class RecordInterfaceProcessorTest {
                           @Nullable
                           private SubTemplate subtemplate;
                         
+                          @NonNull
+                          private final Map<Key, String> keyedStrings;
+                        
                           TemplateBuilderImpl() {
                             this.subkeys = new ArrayList<>();
+                            this.keyedStrings = new HashMap<>();
                           }
                         
                           TemplateBuilderImpl(@NonNull TemplateImpl impl) {
@@ -207,6 +260,7 @@ class RecordInterfaceProcessorTest {
                             this.subkeys = new ArrayList<>(impl.subkeys());
                             this.value = impl.value();
                             this.subtemplate = impl.subtemplate();
+                            this.keyedStrings = new HashMap<>(impl.keyedStrings());
                           }
                         
                           @NonNull
@@ -249,6 +303,22 @@ class RecordInterfaceProcessorTest {
                             return this;
                           }
                         
+                          @NonNull
+                          public TemplateBuilderImpl keyedStrings(@NonNull Map<Key, String> keyedStrings) {
+                            Objects.requireNonNull(keyedStrings, "keyedStrings");
+                            this.keyedStrings.clear();
+                            this.keyedStrings.putAll(keyedStrings);
+                            return this;
+                          }
+                        
+                          @NonNull
+                          public TemplateBuilderImpl putKeyedString(@NonNull Key key, @NonNull String keyedString) {
+                            Objects.requireNonNull(key, "key");
+                            Objects.requireNonNull(keyedString, "keyedString");
+                            this.keyedStrings.put(key, keyedString);
+                            return this;
+                          }
+                        
                           @Nullable
                           @Override
                           public Key key() {
@@ -275,12 +345,19 @@ class RecordInterfaceProcessorTest {
                         
                           @NonNull
                           @Override
+                          public Map<Key, String> keyedStrings() {
+                            return keyedStrings;
+                          }
+                        
+                          @NonNull
+                          @Override
                           public TemplateImpl build() {
                             return new TemplateImpl(
                                 Objects.requireNonNull(this.key, "key"),
                                 List.copyOf(this.subkeys),
                                 this.value,
-                                Objects.requireNonNull(this.subtemplate, "subtemplate")
+                                Objects.requireNonNull(this.subtemplate, "subtemplate"),
+                                Map.copyOf(this.keyedStrings)
                             );
                           }
                         }

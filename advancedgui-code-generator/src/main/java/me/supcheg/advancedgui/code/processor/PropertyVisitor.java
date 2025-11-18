@@ -14,4 +14,6 @@ abstract class PropertyVisitor {
     abstract void visitObjectCollection(Property.ObjectCollection property);
 
     abstract void visitObject(Property.Object property);
+
+    abstract void visitObjectObjectMap(Property.ObjectObjectMap property);
 }

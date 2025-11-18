@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.function.Predicate.not;
@@ -33,7 +34,7 @@ class CollectionMethodsResolver {
         this.types = types;
         this.elements = elements;
 
-        add(sequencedSortedSet());
+        sequencedSortedSet().ifPresent(this::add);
         add(builtinCollection(List.class, ArrayList.class));
         add(builtinCollection(Set.class, HashSet.class));
     }
@@ -42,20 +43,25 @@ class CollectionMethodsResolver {
         methodsByType.put(collectionMethods.interfaceType(), collectionMethods);
     }
 
-    private CollectionMethods sequencedSortedSet() {
+    private Optional<CollectionMethods> sequencedSortedSet() {
         var collectionTypeElement = elements.getTypeElement("me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet");
+
+        if (collectionTypeElement == null) {
+            return Optional.empty();
+        }
+
         var collectionType = (ReferenceType) types.erasure(collectionTypeElement.asType());
 
         var utilsTypeElement = elements.getTypeElement("me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSets");
         var utilsType = (ReferenceType) types.erasure(utilsTypeElement.asType());
 
-        return new CollectionMethods(
+        return Optional.of(new CollectionMethods(
                 collectionType,
                 new MethodEmptyFactory(utilsType, findMethod(utilsTypeElement, "create", 0)),
                 new SingletonFactory(utilsType, findMethod(utilsTypeElement, "of", 1)),
                 new MethodCopyFactory(utilsType, findMethod(utilsTypeElement, "createCopy", 1)),
                 new MethodCopyFactory(utilsType, findMethod(utilsTypeElement, "copyOf", 1))
-        );
+        ));
     }
 
     private <T extends Collection<?>> CollectionMethods builtinCollection(Class<T> interfaceClazz, Class<? extends T> implementationClazz) {

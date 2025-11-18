@@ -47,4 +47,16 @@ sealed interface Property {
             visitor.visitObjectCollection(this);
         }
     }
+
+    record ObjectObjectMap(
+            ReferenceType type,
+            String name,
+            Property key,
+            Property value
+    ) implements Property {
+        @Override
+        public void accept(PropertyVisitor visitor) {
+            visitor.visitObjectObjectMap(this);
+        }
+    }
 }

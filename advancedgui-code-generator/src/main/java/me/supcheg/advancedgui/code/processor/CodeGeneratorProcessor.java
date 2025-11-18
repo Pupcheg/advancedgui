@@ -16,6 +16,7 @@ import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class CodeGeneratorProcessor extends AbstractProcessor {
@@ -40,8 +41,9 @@ public class CodeGeneratorProcessor extends AbstractProcessor {
         );
 
         var collectionType = (ReferenceType) elements.getTypeElement(Collection.class.getName()).asType();
+        var mapType = (ReferenceType) elements.getTypeElement(Map.class.getName()).asType();
 
-        var propertyResolver = new PropertyResolver(types, collectionType);
+        var propertyResolver = new PropertyResolver(types, collectionType, mapType);
         var namesResolver = new NamesResolver();
         var collectionResolver = new CollectionMethodsResolver(types, elements);
 

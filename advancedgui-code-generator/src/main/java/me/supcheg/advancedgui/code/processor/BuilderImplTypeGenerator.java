@@ -12,7 +12,9 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.ReferenceType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.palantir.javapoet.CodeBlock.joining;
@@ -103,6 +105,16 @@ class BuilderImplTypeGenerator extends TypeGenerator {
                             .build()
             );
         }
+
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
+            builder.addField(
+                    FieldSpec.builder(property.typename(), property.name())
+                            .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                            .addAnnotations(annotations.nonNull())
+                            .build()
+            );
+        }
     }
 
     @RequiredArgsConstructor
@@ -130,6 +142,11 @@ class BuilderImplTypeGenerator extends TypeGenerator {
         public void visitObject(Property.Object property) {
             // nothing
         }
+
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
+            builder.addCode("this.$L = new $T<>();\n", property.name(), HashMap.class);
+        }
     }
 
     @RequiredArgsConstructor
@@ -156,6 +173,11 @@ class BuilderImplTypeGenerator extends TypeGenerator {
                 case CollectionMethods.MethodCopyFactory(ReferenceType containingErasedType, Name methodname) ->
                         builder.addCode("this.$L = $T.$L(impl.$L());\n", property.name(), containingErasedType, methodname, property.name());
             }
+        }
+
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
+            builder.addCode("this.$L = new $T<>(impl.$L());\n", property.name(), HashMap.class, property.name());
         }
     }
 
@@ -236,6 +258,51 @@ class BuilderImplTypeGenerator extends TypeGenerator {
                             .build()
             );
         }
+
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
+            var key = property.key();
+            var value = property.value();
+
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC)
+                            .addParameter(
+                                    ParameterSpec.builder(property.typename(), property.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .addCode(requireNonNull(property))
+                            .addCode("this.$L.clear();\n", property.name())
+                            .addCode("this.$L.putAll($L);\n", property.name(), property.name())
+                            .addCode("return this;")
+                            .returns(builderType)
+                            .build()
+            );
+
+            builder.addMethod(
+                    methodBuilder("put" + capitalize(value.name()))
+                            .addAnnotations(annotations.nonNull())
+                            .addModifiers(Modifier.PUBLIC)
+                            .addParameter(
+                                    ParameterSpec.builder(key.typename(), key.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .addParameter(
+                                    ParameterSpec.builder(value.typename(), value.name())
+                                            .addAnnotations(annotations.nonNull())
+                                            .build()
+                            )
+                            .addCode(requireNonNull(key))
+                            .addCode(requireNonNull(value))
+                            .addCode("this.$L.put($L, $L);\n", property.name(), key.name(), value.name())
+                            .addCode("return this;")
+                            .returns(builderType)
+                            .build()
+            );
+        }
     }
 
     @RequiredArgsConstructor
@@ -280,6 +347,19 @@ class BuilderImplTypeGenerator extends TypeGenerator {
                             .build()
             );
         }
+
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
+            builder.addMethod(
+                    methodBuilder(property.name())
+                            .addAnnotations(annotations.nonNull())
+                            .addAnnotation(Override.class)
+                            .addModifiers(Modifier.PUBLIC)
+                            .addCode("return $L;", property.name())
+                            .returns(property.typename())
+                            .build()
+            );
+        }
     }
 
     @RequiredArgsConstructor
@@ -306,6 +386,11 @@ class BuilderImplTypeGenerator extends TypeGenerator {
                 case CollectionMethods.MethodCopyFactory(ReferenceType containingErasedType, Name methodname) ->
                         blocks.add(CodeBlock.of("$T.$L(this.$L)", containingErasedType, methodname, property.name()));
             }
+        }
+
+        @Override
+        void visitObjectObjectMap(Property.ObjectObjectMap property) {
+            blocks.add(CodeBlock.of("$T.copyOf(this.$L)", Map.class, property.name()));
         }
     }
 }
