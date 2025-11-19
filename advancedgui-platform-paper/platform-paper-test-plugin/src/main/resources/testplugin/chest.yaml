@@ -6,14 +6,15 @@ layout:
     - coordinates:
         - '0:0'
         - '2:1'
-      texture: 'minecraft:paper'
-      name: '<bold>Hi!'
-      description:
-        lines:
-          - '<red>eee'
-          - 'eEe'
-      attributes:
-        - 'glowing'
+      display-provider:
+        texture: 'minecraft:paper'
+        name: '<bold>Hi!'
+        description:
+          lines:
+            - '<red>eee'
+            - 'eEe'
+        attributes:
+          - 'glowing'
       interactions:
         - priority: 'normal'
           action: { type: 'send', content: 'no', target: 'chat' }

@@ -1,16 +1,11 @@
 package me.supcheg.advancedgui.api.button;
 
-import me.supcheg.advancedgui.api.button.attribute.ButtonAttribute;
-import me.supcheg.advancedgui.api.button.description.Description;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplayProvider;
 import me.supcheg.advancedgui.api.button.interaction.ButtonInteraction;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import me.supcheg.advancedgui.api.sequence.collection.SequencedSortedSet;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Unmodifiable;
-
-import java.util.Set;
 
 public interface Button extends Lifecycled<Button> {
     Coordinate coordinate();
@@ -18,16 +13,5 @@ public interface Button extends Lifecycled<Button> {
     @Unmodifiable
     SequencedSortedSet<ButtonInteraction> interactions();
 
-    Key texture();
-
-    Component name();
-
-    Description description();
-
-    @Unmodifiable
-    Set<ButtonAttribute> attributes();
-
-    default boolean hasAttribute(ButtonAttribute attribute) {
-        return attributes().contains(attribute);
-    }
+    ButtonDisplayProvider displayProvider();
 }

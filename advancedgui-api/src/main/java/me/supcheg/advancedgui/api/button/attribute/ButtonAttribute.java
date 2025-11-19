@@ -11,15 +11,7 @@ public interface ButtonAttribute extends Keyed {
         return BuiltinButtonAttributes.GLOWING;
     }
 
-    static ButtonAttribute hidden() {
-        return BuiltinButtonAttributes.HIDDEN;
-    }
-
-    static ButtonAttribute disabled() {
-        return BuiltinButtonAttributes.DISABLED;
-    }
-
-    static ButtonAttribute buttonAttribute(Key key) {
+    static <T> ButtonAttribute buttonAttribute(Key key) {
         Objects.requireNonNull(key, "key");
         return new ButtonAttributeImpl(key);
     }

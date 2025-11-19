@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.api.controller.GuiController;
 import me.supcheg.advancedgui.api.gui.Gui;
 import net.kyori.adventure.key.Key;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -50,7 +51,7 @@ public final class GuiArgumentType implements CustomArgumentType<Gui, Key> {
         int cursor = reader.getCursor();
 
         Key key = keyType.parse(reader);
-        Gui gui = controller.gui(key);
+        @Nullable Gui gui = controller.gui(key);
 
         if (gui == null) {
             reader.setCursor(cursor);
@@ -60,9 +61,12 @@ public final class GuiArgumentType implements CustomArgumentType<Gui, Key> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> ctx, SuggestionsBuilder builder) {
         for (Gui gui : controller.guis()) {
-            builder.suggest(gui.key().asString());
+            var keyAsString = gui.key().asString();
+            if (keyAsString.toLowerCase().startsWith(builder.getRemainingLowerCase())) {
+                builder.suggest(keyAsString);
+            }
         }
         return builder.buildFuture();
     }

@@ -30,6 +30,7 @@ public record GuiImpl(
         handleEachLifecycleAction(beforeTickPointcut());
 
         layout.tick();
+        viewer.tick();
 
         handleEachLifecycleAction(afterTickPointcut());
     }

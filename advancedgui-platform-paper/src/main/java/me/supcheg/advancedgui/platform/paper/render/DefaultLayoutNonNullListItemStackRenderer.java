@@ -20,9 +20,9 @@ public class DefaultLayoutNonNullListItemStackRenderer implements Renderer<Layou
         ItemStack[] itemStacks = new ItemStack[coordinateTranslator.slotsCount()];
         Arrays.fill(itemStacks, ItemStack.EMPTY);
 
-        for (Button button : input.buttons()) {
-            int index = coordinateTranslator.toIndex(button.coordinate());
-            itemStacks[index] = buttonItemStackRenderer.render(button);
+        for (var display : input.buttons()) {
+            int index = coordinateTranslator.toIndex(display.coordinate());
+            itemStacks[index] = buttonItemStackRenderer.render(display);
         }
 
         return NonNullList.of(ItemStack.EMPTY, itemStacks);

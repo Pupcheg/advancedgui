@@ -5,7 +5,6 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.platform.paper.PaperGuiController;
-import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
 import me.supcheg.advancedgui.platform.paper.util.AdvancedguiCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -21,8 +20,6 @@ import static me.supcheg.advancedgui.platform.paper.PaperGuiController.paperGuiC
 public class TestPlugin extends JavaPlugin {
     @MonotonicNonNull
     private PaperGuiController controller;
-    @MonotonicNonNull
-    private AdvancedguiPluginChannel channel;
 
     @Override
     public void onEnable() {
