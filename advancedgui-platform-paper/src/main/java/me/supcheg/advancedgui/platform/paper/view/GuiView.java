@@ -87,7 +87,9 @@ public class GuiView implements Tickable {
             throw new IllegalStateException("GuiView is closed");
         }
 
-        log.info("Sending {} to {}", ToStringHelper.toStringReflectively(packet), serverPlayer.getScoreboardName());
+        if (log.isDebugEnabled()) {
+            log.debug("Sending {} to {}", ToStringHelper.toStringReflectively(packet), serverPlayer.getScoreboardName());
+        }
         serverPlayer.connection.send(packet);
     }
 
