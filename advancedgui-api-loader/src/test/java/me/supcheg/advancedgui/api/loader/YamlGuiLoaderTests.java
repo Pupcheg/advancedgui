@@ -23,7 +23,7 @@ import static me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader.yamlGuiLoader
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.Style.style;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class YamlGuiLoaderTests {
     YamlGuiLoader loader;
@@ -132,17 +132,13 @@ class YamlGuiLoaderTests {
 
     @Test
     void yamlLoad() {
-        assertEquals(
-                template,
-                loader.readString(yamlTemplate)
-        );
+        assertThat(template)
+                .isEqualTo(loader.readString(yamlTemplate));
     }
 
     @Test
     void yamlSaveAndLoad() {
-        assertEquals(
-                template,
-                loader.readString(loader.writeString(template))
-        );
+        assertThat(template)
+                .isEqualTo(loader.readString(loader.writeString(template)));
     }
 }

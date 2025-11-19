@@ -38,6 +38,11 @@ final class EmptySequencedSortedSet implements SequencedSortedSet {
     }
 
     @Override
+    public boolean containsAll(Collection c) {
+        return c.isEmpty();
+    }
+
+    @Override
     public Iterator iterator() {
         return ITERATOR;
     }
@@ -87,11 +92,6 @@ final class EmptySequencedSortedSet implements SequencedSortedSet {
     @Override
     public boolean removeIf(Predicate filter) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean containsAll(Collection c) {
-        return c.isEmpty();
     }
 
     @Override

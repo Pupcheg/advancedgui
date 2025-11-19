@@ -130,4 +130,19 @@ class SequencedSortedSetTests {
         assertThat(set).isUnmodifiable();
     }
 
+    @Test
+    void equalsTest() {
+        var left = SequencedSortedSets.of(
+                new TheSequenced(0, NamedPriority.NORMAL),
+                new TheSequenced(1, NamedPriority.NORMAL)
+        );
+        var right =  SequencedSortedSets.create(
+                new TheSequenced(0, NamedPriority.NORMAL),
+                new TheSequenced(1, NamedPriority.NORMAL)
+        );
+
+        assertThat(left).isEqualTo(right);
+        assertThat(right).isEqualTo(left);
+    }
+
 }

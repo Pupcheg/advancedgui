@@ -49,11 +49,6 @@ final class GuavaBackedSequencedSortedSet<E extends Sequenced<E>>
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {
-        return values.containsAll(c);
-    }
-
-    @Override
     public void clear() {
         map.clear();
     }
@@ -66,28 +61,5 @@ final class GuavaBackedSequencedSortedSet<E extends Sequenced<E>>
     @Override
     public boolean isEmpty() {
         return values.isEmpty();
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return values.contains(o);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof GuavaBackedSequencedSortedSet<?> that)) {
-            return false;
-        }
-
-        return this.values.equals(that.values);
-    }
-
-    @Override
-    public int hashCode() {
-        return values.hashCode();
     }
 }

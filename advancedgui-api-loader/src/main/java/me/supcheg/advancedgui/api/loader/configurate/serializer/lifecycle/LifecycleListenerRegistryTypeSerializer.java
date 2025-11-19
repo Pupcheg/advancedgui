@@ -4,6 +4,7 @@ import io.leangen.geantyref.TypeFactory;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleAction;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListener;
 import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
+import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistryBuilder;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -31,7 +32,7 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
         TypeSerializer<Pointcut> pointcutTypeSerializer = findTypeSerializer(options, Pointcut.class);
         TypeSerializer<List<RawLifecycleListener>> rawLifecycleListenerListSerializer = findTypeSerializer(options, rawLifecycleListenerListType);
 
-        LifecycleListenerRegistry.Builder<Object> builder = LifecycleListenerRegistry.lifecycleListenerRegistry();
+        LifecycleListenerRegistryBuilder<Object> builder = LifecycleListenerRegistry.lifecycleListenerRegistry();
         for (var entry : node.childrenMap().entrySet()) {
             ConfigurationNode keyNode = root(options).set(entry.getKey());
             ConfigurationNode valueNode = entry.getValue();
@@ -40,7 +41,7 @@ public final class LifecycleListenerRegistryTypeSerializer implements TypeSerial
             var rawList = rawLifecycleListenerListSerializer.deserialize(rawLifecycleListenerListType, valueNode);
 
             for (var raw : rawList) {
-                builder.add(rawLifecycleListenerToLifecycleListener(pointcut, raw));
+                builder.addListener(rawLifecycleListenerToLifecycleListener(pointcut, raw));
             }
         }
 
