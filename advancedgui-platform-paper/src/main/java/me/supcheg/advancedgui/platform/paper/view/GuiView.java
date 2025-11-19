@@ -1,10 +1,12 @@
 package me.supcheg.advancedgui.platform.paper.view;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.gui.background.Background;
+import me.supcheg.advancedgui.platform.paper.ToStringHelper;
 import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
 import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
 import me.supcheg.advancedgui.platform.paper.render.ButtonDisplayRenderController;
@@ -21,6 +23,7 @@ import net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
+@Slf4j
 @RequiredArgsConstructor
 public class GuiView implements Tickable {
     private final DefaultGuiViewer viewer;
@@ -79,11 +82,12 @@ public class GuiView implements Tickable {
         send(closePacket());
     }
 
-    public void send(Packet<?> packet) {
+    private void send(Packet<?> packet) {
         if (closed) {
             throw new IllegalStateException("GuiView is closed");
         }
 
+        log.info("Sending {} to {}", ToStringHelper.toStringReflectively(packet), serverPlayer.getScoreboardName());
         serverPlayer.connection.send(packet);
     }
 
@@ -137,7 +141,7 @@ public class GuiView implements Tickable {
 
     private Packet<?> slotPacket(Coordinate coordinate, ButtonDisplay display) {
         return new ClientboundContainerSetSlotPacket(
-                containerState.nextContainerId(),
+                containerState.containerId(),
                 containerState.nextStateId(),
                 gui.layout().coordinateTranslator().toIndex(coordinate),
                 buttonDisplayRenderer.render(display)

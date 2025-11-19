@@ -1,10 +1,9 @@
 [versions]
 lombok = "8.6"
-fabric-loom = "1.10-SNAPSHOT"
 paperweight = "2.0.0-beta.17"
 run-paper = "2.3.1"
 paper-yaml = "1.2.0"
-shadow = "8.3.6"
+shadow = "9.2.2"
 
 minecraft = "1.21.5"
 slf4j = "2.0.16"
@@ -15,13 +14,13 @@ assertj = "3.27.3"
 junit-platform-launcher = "1.13.4"
 junit = "5.11.4"
 mockito = "5.15.2"
+compile-testing = "0.23.0"
 
 adventure-api = "4.21.0"
 
 configurate = "4.2.0"
 
-fabric-loader = "0.16.14"
-fabric-api = "0.124.2+1.21.5"
+javapoet = "0.7.0"
 
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
@@ -46,13 +45,11 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
 
-minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
-fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+javapoet = { module = "com.palantir.javapoet:javapoet", version.ref = "javapoet" }
+compile-testing = { module = "com.google.testing.compile:compile-testing", version.ref = "compile-testing" }
 
 [plugins]
 lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
-fabric-loom = { id = "fabric-loom", version.ref = "fabric-loom" }
 paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
 resource-factory-paper = { id = "xyz.jpenilla.resource-factory-paper-convention", version.ref = "paper-yaml" }
@@ -67,10 +64,6 @@ configurate = [
     "configurate-core",
     "configurate-yaml",
     "configurate-jackson"
-]
-fabric = [
-    "fabric-loader",
-    "fabric-api"
 ]
 test = [
     "junit-jupiter-api",

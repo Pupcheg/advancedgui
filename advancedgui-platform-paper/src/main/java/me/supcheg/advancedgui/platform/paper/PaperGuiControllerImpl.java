@@ -2,7 +2,6 @@ package me.supcheg.advancedgui.platform.paper;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import lombok.extern.slf4j.Slf4j;
-import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import me.supcheg.advancedgui.api.component.ComponentRenderContext;
 import me.supcheg.advancedgui.api.component.ComponentRenderers;
 import me.supcheg.advancedgui.api.gui.Gui;
@@ -19,16 +18,13 @@ import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
 import me.supcheg.advancedgui.platform.paper.network.DelegatingNetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.NetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.NmsNetworkInjection;
-import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
 import me.supcheg.advancedgui.platform.paper.render.DefaultBackgroundComponentRenderer;
 import me.supcheg.advancedgui.platform.paper.render.DefaultButtonDisplayItemStackRenderer;
-import me.supcheg.advancedgui.platform.paper.render.Renderer;
 import me.supcheg.advancedgui.platform.paper.resourcepack.DefaultBackgroundImageMetaLookup;
 import me.supcheg.advancedgui.platform.paper.view.DefaultGuiViewer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.renderer.ComponentRenderer;
 import net.kyori.adventure.util.Ticks;
-import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -78,7 +74,6 @@ final class PaperGuiControllerImpl implements PaperGuiController {
     private final TemplateConstructor<GuiTemplate, GuiImpl> guiConstructor;
     private final NetworkInjection networkInjection;
     private final ScheduledTask tickTask;
-    private final AdvancedguiPluginChannel channel;
 
     PaperGuiControllerImpl(
             Plugin plugin,
@@ -92,10 +87,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         this.registry = new ConcurrentHashMap<>();
         this.unmodifiableRegistryView = Collections.unmodifiableMap(registry);
 
-        Renderer<ButtonDisplay, ItemStack> displayItemStackRenderer = new DefaultButtonDisplayItemStackRenderer();
-
-        this.channel = new AdvancedguiPluginChannel(plugin);
-        channel.register();
+        var displayItemStackRenderer = new DefaultButtonDisplayItemStackRenderer();
 
         DefaultGuiViewer guiViewer = new DefaultGuiViewer(
                 new DefaultPlatformAudienceConverter(Bukkit.getName()),
@@ -103,8 +95,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
                         new DefaultBackgroundImageMetaLookup()
                 ),
                 displayItemStackRenderer,
-                (DelegatingNetworkInjection) () -> PaperGuiControllerImpl.this.networkInjection,
-                channel
+                (DelegatingNetworkInjection) () -> PaperGuiControllerImpl.this.networkInjection
         );
 
         this.guiConstructor = new GuiImplConstructor(
@@ -191,8 +182,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         try (
                 guiTasksExecutor;
                 tickTaskCloseable;
-                networkInjection;
-                channel
+                networkInjection
         ) {
             // this try-with-resources will generate safe close for each Closeable
         }

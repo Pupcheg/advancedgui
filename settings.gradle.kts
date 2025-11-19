@@ -1,0 +1,6 @@
+rootProject.name = "advancedgui"
+include("advancedgui-api")
+include("advancedgui-api-loader")
+include("advancedgui-platform-paper")
+include("advancedgui-platform-paper:platform-paper-test-plugin")
+include("advancedgui-code-generator")
