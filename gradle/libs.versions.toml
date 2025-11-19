@@ -1,78 +1,62 @@
 [versions]
-lombok = "8.6"
-paperweight = "2.0.0-beta.17"
-run-paper = "2.3.1"
-paper-yaml = "1.2.0"
-shadow = "9.2.2"
-
-minecraft = "1.21.5"
-slf4j = "2.0.16"
-checkerframework = "3.52.0"
-jetbrains-annotations = "26.0.2"
-
-assertj = "3.27.3"
-junit-platform-launcher = "1.13.4"
-junit = "5.11.4"
-mockito = "5.15.2"
-compile-testing = "0.23.0"
-
 adventure-api = "4.21.0"
+assertj = "3.27.3"
 
+checkerframework = "3.52.0"
+compile-testing = "0.23.0"
 configurate = "4.2.0"
 
+guava = "33.4.8-jre"
+
 javapoet = "0.7.0"
+jetbrains-annotations = "26.0.2"
+junit = "5.11.4"
+junit-platform-launcher = "1.13.4"
+
+lombok = "8.6"
+
+minecraft = "1.21.5"
+mockito = "5.15.2"
+
+paper-yaml = "1.2.0"
+paperweight = "2.0.0-beta.17"
+
+run-paper = "2.3.1"
+
+shadow = "9.2.2"
+slf4j = "2.0.16"
 
 [libraries]
-adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
-adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure-api" }
+adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure-api" }
+adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure-api" }
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 
-guava = { module = "com.google.guava:guava", version = "33.4.8-jre" }
+checkerframework-qual = { group = "org.checkerframework", name = "checker-qual", version.ref = "checkerframework" }
+compile-testing = { group = "com.google.testing.compile", name = "compile-testing", version.ref = "compile-testing" }
+configurate-core = { group = "org.spongepowered", name = "configurate-core", version.ref = "configurate" }
+configurate-jackson = { group = "org.spongepowered", name = "configurate-jackson", version.ref = "configurate" }
+configurate-yaml = { group = "org.spongepowered", name = "configurate-yaml", version.ref = "configurate" }
 
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 
-configurate-core = { module = "org.spongepowered:configurate-core", version.ref = "configurate" }
-configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
-configurate-jackson = { module = "org.spongepowered:configurate-jackson", version.ref = "configurate" }
+javapoet = { group = "com.palantir.javapoet", name = "javapoet", version.ref = "javapoet" }
+jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations" }
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit-platform-launcher" }
 
-checkerframework = { module = "org.checkerframework:checker-qual", version.ref = "checkerframework" }
-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 
-assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
-
-javapoet = { module = "com.palantir.javapoet:javapoet", version.ref = "javapoet" }
-compile-testing = { module = "com.google.testing.compile:compile-testing", version.ref = "compile-testing" }
+slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 
 [plugins]
 lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
-paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
-run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
-resource-factory-paper = { id = "xyz.jpenilla.resource-factory-paper-convention", version.ref = "paper-yaml" }
-shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 
-[bundles]
-annotations = [
-    "checkerframework",
-    "jetbrains-annotations"
-]
-configurate = [
-    "configurate-core",
-    "configurate-yaml",
-    "configurate-jackson"
-]
-test = [
-    "junit-jupiter-api",
-    "junit-jupiter-params",
-    "mockito-junit-jupiter",
-    "assertj-core",
-    "slf4j-simple"
-]
-test-runtime = [
-    "junit-platform-launcher",
-    "junit-jupiter-engine",
-]
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+
+resource-factory-paper = { id = "xyz.jpenilla.resource-factory-paper-convention", version.ref = "paper-yaml" }
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
+
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

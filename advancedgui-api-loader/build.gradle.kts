@@ -3,5 +3,8 @@ dependencies {
 
     api(libs.slf4j.api)
     api(libs.adventure.text.minimessage)
-    api(libs.bundles.configurate)
+
+    api(libs.configurate.core)
+    api(libs.configurate.jackson)
+    api(libs.configurate.yaml)
 }

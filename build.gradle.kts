@@ -15,13 +15,20 @@ allprojects {
     repositories {
         mavenCentral()
         maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://api.modrinth.com/maven")
     }
 
     dependencies {
-        api(rootProject.libs.bundles.annotations)
-        testImplementation(rootProject.libs.bundles.test)
-        testRuntimeOnly(rootProject.libs.bundles.test.runtime)
+        api(rootProject.libs.checkerframework.qual)
+        api(rootProject.libs.jetbrains.annotations)
+
+        testImplementation(rootProject.libs.junit.jupiter.api)
+        testImplementation(rootProject.libs.junit.jupiter.params)
+        testImplementation(rootProject.libs.mockito.junit.jupiter)
+        testImplementation(rootProject.libs.assertj.core)
+
+        testRuntimeOnly(rootProject.libs.junit.platform.launcher)
+        testRuntimeOnly(rootProject.libs.junit.jupiter.engine)
+        testRuntimeOnly(rootProject.libs.slf4j.simple)
     }
 
     tasks.withType<Test> {
