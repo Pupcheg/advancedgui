@@ -11,7 +11,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
-import java.util.Objects;
 
 final class ProxyActionFactory implements ActionFactory {
     @Override
@@ -68,20 +67,17 @@ final class ProxyActionFactory implements ActionFactory {
          * {@link #equals(Object)}
          */
         private Object equalsImpl(@Nullable Object[] args) {
-            @Nullable Object o = Objects.requireNonNull(args[0]);
+            @Nullable Object o = args[0];
 
             if (o == null) {
                 return false;
             }
 
-            if (getClass() != o.getClass()) {
+            if (!(o instanceof ContextInterpreted other)) {
                 return false;
             }
 
-            ContextInterpreted other = (ContextInterpreted) o;
-
-            return getClass().equals(other.getClass()) &&
-                   interpretedContext.context().equals(other.context());
+            return interpretedContext.context().equals(other.context());
         }
     }
 }

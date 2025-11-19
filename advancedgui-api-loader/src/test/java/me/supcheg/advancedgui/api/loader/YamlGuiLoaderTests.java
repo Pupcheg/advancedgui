@@ -9,8 +9,11 @@ import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
+import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
 import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anvilLayout;
 import static me.supcheg.advancedgui.api.lifecycle.pointcut.TickPointcut.afterTickPointcut;
@@ -20,7 +23,7 @@ import static me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader.yamlGuiLoader
 import static net.kyori.adventure.key.Key.key;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.Style.style;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class YamlGuiLoaderTests {
     YamlGuiLoader loader;
@@ -75,13 +78,13 @@ class YamlGuiLoaderTests {
 
         template = gui(gui -> gui
                 .key(key("advancedgui:test/test"))
-                .layout(anvilLayout(), anvilLayout -> anvilLayout
+                .layout(anvilLayout(anvilLayout -> anvilLayout
                         .addInputUpdateListener(inputUpdateListener -> inputUpdateListener
                                 .priority(NamedPriority.NORMAL)
                                 .action(dummyAction())
                         )
                         .addButton(button -> button
-                                .addCoordinate(0, 0)
+                                .addCoordinate(coordinate(0, 0))
                                 .addInteraction(interaction -> interaction
                                         .priority(NamedPriority.NORMAL)
                                         .action(dummyAction())
@@ -89,14 +92,12 @@ class YamlGuiLoaderTests {
                                 .texture(key("advancedgui:test/interaction"))
                                 .name(text("Hi!", style(TextDecoration.BOLD)))
                                 .description(description -> description
-                                        .lines(
-                                                text("eee", NamedTextColor.RED),
-                                                text("eEe")
-                                        )
+                                        .addLine(text("eee", NamedTextColor.RED))
+                                        .addLine(text("eEe"))
                                 )
-                                .attributes(glowing(), hidden())
+                                .attributes(Set.of(glowing(), hidden()))
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                                        .add(lifecycleListener -> lifecycleListener
+                                        .addListener(lifecycleListener -> lifecycleListener
                                                 .pointcut(beforeTickPointcut())
                                                 .priority(NamedPriority.NORMAL)
                                                 .action(dummyAction())
@@ -104,23 +105,23 @@ class YamlGuiLoaderTests {
                                 )
                         )
                         .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                                .add(lifecycleListener -> lifecycleListener
+                                .addListener(lifecycleListener -> lifecycleListener
                                         .pointcut(afterTickPointcut())
                                         .priority(NamedPriority.HIGHEST)
                                         .action(dummyAction())
                                 )
                         )
-                )
+                ))
                 .background(background -> background
                         .addLocation(key("advancedgui:test/background"))
                 )
                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
-                        .add(lifecycleListener -> lifecycleListener
+                        .addListener(lifecycleListener -> lifecycleListener
                                 .pointcut(beforeTickPointcut())
                                 .priority(NamedPriority.NORMAL)
                                 .action(dummyAction())
                         )
-                        .add(lifecycleListener -> lifecycleListener
+                        .addListener(lifecycleListener -> lifecycleListener
                                 .pointcut(afterTickPointcut())
                                 .priority(NamedPriority.LOW)
                                 .action(dummyAction())
@@ -131,17 +132,13 @@ class YamlGuiLoaderTests {
 
     @Test
     void yamlLoad() {
-        assertEquals(
-                template,
-                loader.readString(yamlTemplate)
-        );
+        assertThat(template)
+                .isEqualTo(loader.readString(yamlTemplate));
     }
 
     @Test
     void yamlSaveAndLoad() {
-        assertEquals(
-                template,
-                loader.readString(loader.writeString(template))
-        );
+        assertThat(template)
+                .isEqualTo(loader.readString(loader.writeString(template)));
     }
 }

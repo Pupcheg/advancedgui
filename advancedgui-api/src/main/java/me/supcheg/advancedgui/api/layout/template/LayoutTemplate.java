@@ -9,9 +9,8 @@ import me.supcheg.advancedgui.api.lifecycle.Lifecycled;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
-import java.util.function.Consumer;
 
-public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends LayoutTemplate.Builder<L, T, B>>
+public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemplate<L, T, B>, B extends AbstractBuilder<T>>
         extends Buildable<T, B>, Lifecycled<L>
         permits AnvilLayoutTemplate, ChestLayoutTemplate {
 
@@ -19,21 +18,4 @@ public sealed interface LayoutTemplate<L extends Layout<L>, T extends LayoutTemp
     Set<ButtonTemplate> buttons();
 
     CoordinateTranslator coordinateTranslator();
-
-    interface Builder<L, T, B extends Builder<L, T, B>> extends AbstractBuilder<T>, Lifecycled.Builder<L, B> {
-
-        B addButton(ButtonTemplate button);
-
-        default B addButton(Consumer<ButtonTemplate.Builder> consumer) {
-            return addButton(ButtonTemplate.button(consumer));
-        }
-
-        default B addButton(ButtonTemplate.Builder button) {
-            return addButton(button.build());
-        }
-
-        B buttons(Set<ButtonTemplate> buttons);
-
-        Set<ButtonTemplate> buttons();
-    }
 }

@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,22 +52,22 @@ import java.util.concurrent.TimeUnit;
 final class PaperGuiControllerImpl implements PaperGuiController {
     private static final PointcutSupport POINTCUT_SUPPORT = PointcutSupport.pointcutSupport(
             pointcutSupport -> pointcutSupport
-                    .supports(
+                    .addSupported(Set.of(
                             // Registration
                             RegistrationPointcut.preRegisterPointcut(),
                             RegistrationPointcut.postRegisterPointcut(),
                             RegistrationPointcut.preUnregisterPointcut(),
                             RegistrationPointcut.postUnregisterPointcut()
-                    )
-                    .supports(
+                    ))
+                    .addSupported(Set.of(
                             // Tick
                             TickPointcut.beforeTickPointcut(),
                             TickPointcut.afterTickPointcut()
-                    )
-                    .supports(
+                    ))
+                    .addSupported(Set.of(
                             // Object
                             ObjectPointcut.objectConstructPointcut()
-                    )
+                    ))
     );
 
     private final ComponentRenderer<ComponentRenderContext> componentRenderer;

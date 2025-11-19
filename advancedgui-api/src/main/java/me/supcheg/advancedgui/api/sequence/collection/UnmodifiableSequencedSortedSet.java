@@ -27,6 +27,11 @@ final class UnmodifiableSequencedSortedSet<E extends Sequenced<E>> implements Se
     }
 
     @Override
+    public boolean containsAll(Collection<?> c) {
+        return delegate.containsAll(c);
+    }
+
+    @Override
     public Iterator<E> iterator() {
         return Iterators.unmodifiableIterator(delegate.iterator());
     }
@@ -52,11 +57,6 @@ final class UnmodifiableSequencedSortedSet<E extends Sequenced<E>> implements Se
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean addAll(Collection<? extends E> c) {
         throw new UnsupportedOperationException();
     }
@@ -77,16 +77,13 @@ final class UnmodifiableSequencedSortedSet<E extends Sequenced<E>> implements Se
     }
 
     @Override
+    public String toString() {
+        return delegate.toString();
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof UnmodifiableSequencedSortedSet<?> that)) {
-            return false;
-        }
-
-        return delegate.equals(that.delegate);
+        return this == o || delegate.equals(o);
     }
 
     @Override

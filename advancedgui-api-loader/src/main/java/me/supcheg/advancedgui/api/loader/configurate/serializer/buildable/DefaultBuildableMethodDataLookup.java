@@ -21,7 +21,7 @@ import static java.lang.reflect.Modifier.isStatic;
 
 @RequiredArgsConstructor
 public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLookup {
-    private static final String BUILDER = "builder";
+    private static final String BUILDER = "Builder";
     private static final List<String> GET_METHOD_BLACKLIST = List.of("build");
     private final MethodHandles.Lookup lookup = MethodHandles.publicLookup();
     private final NamingScheme namingScheme;
@@ -91,9 +91,10 @@ public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLook
     }
 
     private static Class<?> findBuilderClass(Class<?> buildable) {
-        return Arrays.stream(buildable.getClasses())
-                .filter(clazz -> clazz.getSimpleName().equalsIgnoreCase(BUILDER))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No builder class found for " + buildable));
+        try {
+            return Class.forName(buildable.getName() + BUILDER);
+        } catch (ClassNotFoundException exception) {
+            throw new IllegalStateException("No builder class found for " + buildable, exception);
+        }
     }
 }

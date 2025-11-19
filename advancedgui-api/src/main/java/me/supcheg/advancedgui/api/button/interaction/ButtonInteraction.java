@@ -1,39 +1,26 @@
 package me.supcheg.advancedgui.api.button.interaction;
 
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import me.supcheg.advancedgui.api.sequence.Sequenced;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import me.supcheg.advancedgui.code.RecordInterface;
 
 import java.util.function.Consumer;
 
+@RecordInterface
 public interface ButtonInteraction extends Sequenced<ButtonInteraction>,
-        Buildable<ButtonInteraction, ButtonInteraction.Builder> {
+        Buildable<ButtonInteraction, ButtonInteractionBuilder> {
 
-    static Builder buttonInteraction() {
-        return new ButtonInteractionImpl.BuilderImpl();
+    static ButtonInteractionBuilder buttonInteraction() {
+        return new ButtonInteractionBuilderImpl();
     }
 
-    static ButtonInteraction buttonInteraction(Consumer<ButtonInteraction.Builder> consumer) {
+    static ButtonInteraction buttonInteraction(Consumer<ButtonInteractionBuilder> consumer) {
         return Buildable.configureAndBuild(buttonInteraction(), consumer);
     }
 
+    @Override
+    Priority priority();
+
     ButtonInteractionAction action();
-
-    interface Builder extends AbstractBuilder<ButtonInteraction> {
-        Builder priority(Priority priority);
-
-        default Builder priority(int value) {
-            return priority(Priority.priority(value));
-        }
-
-        @Nullable
-        Priority priority();
-
-        Builder action(ButtonInteractionAction action);
-
-        @Nullable
-        ButtonInteractionAction action();
-    }
 }

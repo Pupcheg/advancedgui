@@ -1,44 +1,28 @@
 package me.supcheg.advancedgui.api.lifecycle;
 
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.sequence.Priority;
 import me.supcheg.advancedgui.api.sequence.Sequenced;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import me.supcheg.advancedgui.code.RecordInterface;
 
 import java.util.function.Consumer;
 
-public interface LifecycleListener<S> extends Sequenced<LifecycleListener<S>>, Buildable<LifecycleListener<S>, LifecycleListener.Builder<S>> {
+@RecordInterface
+public interface LifecycleListener<S> extends Sequenced<LifecycleListener<S>>, Buildable<LifecycleListener<S>, LifecycleListenerBuilder<S>> {
 
-    static <S> LifecycleListener.Builder<S> lifecycleListener() {
-        return new LifecycleListenerImpl.BuilderImpl<>();
+    static <S> LifecycleListenerBuilder<S> lifecycleListener() {
+        return new LifecycleListenerBuilderImpl<>();
     }
 
-    static <S> LifecycleListener<S> lifecycleListener(Consumer<Builder<S>> consumer) {
+    static <S> LifecycleListener<S> lifecycleListener(Consumer<LifecycleListenerBuilder<S>> consumer) {
         return Buildable.configureAndBuild(lifecycleListener(), consumer);
     }
+
+    @Override
+    Priority priority();
 
     LifecycleAction<S> action();
 
     Pointcut pointcut();
-
-    interface Builder<S> extends AbstractBuilder<LifecycleListener<S>> {
-
-        @Nullable
-        Pointcut pointcut();
-
-        Builder<S> pointcut(Pointcut pointcut);
-
-        @Nullable
-        LifecycleAction<S> action();
-
-
-        Builder<S> action(LifecycleAction<S> action);
-
-        @Nullable
-        Priority priority();
-
-        Builder<S> priority(Priority priority);
-    }
 }

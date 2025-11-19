@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 
 final class EmptySequencedSortedSet implements SequencedSortedSet {
     static final EmptySequencedSortedSet INSTANCE = new EmptySequencedSortedSet();
@@ -37,6 +38,11 @@ final class EmptySequencedSortedSet implements SequencedSortedSet {
     }
 
     @Override
+    public boolean containsAll(Collection c) {
+        return c.isEmpty();
+    }
+
+    @Override
     public Iterator iterator() {
         return ITERATOR;
     }
@@ -65,7 +71,7 @@ final class EmptySequencedSortedSet implements SequencedSortedSet {
 
     @Override
     public boolean addAll(Collection c) {
-        return c.isEmpty();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -75,17 +81,17 @@ final class EmptySequencedSortedSet implements SequencedSortedSet {
 
     @Override
     public boolean removeAll(Collection c) {
-        return c.isEmpty();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean retainAll(Collection c) {
-        return c.isEmpty();
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean containsAll(Collection c) {
-        return c.isEmpty();
+    public boolean removeIf(Predicate filter) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
