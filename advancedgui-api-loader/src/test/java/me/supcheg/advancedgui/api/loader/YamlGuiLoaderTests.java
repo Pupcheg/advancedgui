@@ -3,16 +3,15 @@ package me.supcheg.advancedgui.api.loader;
 import me.supcheg.advancedgui.api.gui.template.GuiTemplate;
 import me.supcheg.advancedgui.api.loader.yaml.YamlGuiLoader;
 import me.supcheg.advancedgui.api.sequence.NamedPriority;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
+import java.time.Duration;
 
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
-import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
+import static me.supcheg.advancedgui.api.button.display.LoopedButtonDisplayProvider.loopedButtonDisplayProvider;
 import static me.supcheg.advancedgui.api.coordinate.Coordinate.coordinate;
 import static me.supcheg.advancedgui.api.gui.template.GuiTemplate.gui;
 import static me.supcheg.advancedgui.api.layout.template.AnvilLayoutTemplate.anvilLayout;
@@ -47,19 +46,23 @@ class YamlGuiLoaderTests {
                       interactions:
                         - priority: 'normal'
                           action: 'dummy'
-                      texture: 'advancedgui:test/interaction'
-                      name: '<bold>Hi!'
-                      description:
-                        lines:
-                          - '<red>eee'
-                          - 'eEe'
+                      display-provider:
+                        switch-duration: '1s'
+                        displays:
+                        - texture: 'advancedgui:test/interaction'
+                          name: '<bold>TXT'
+                          description:
+                            lines:
+                          attributes: 'glowing'
+                        - texture: 'advancedgui:test/interaction'
+                          name: 'TXT'
+                          description:
+                            lines:
+                          attributes: 'glowing'
                       lifecycle-listener-registry:
                         before_tick:
                           - priority: 'normal'
                             action: 'dummy'
-                      attributes:
-                        - 'glowing'
-                        - 'hidden'
                   lifecycle-listener-registry:
                     after_tick:
                       - priority: 'highest'
@@ -89,13 +92,21 @@ class YamlGuiLoaderTests {
                                         .priority(NamedPriority.NORMAL)
                                         .action(dummyAction())
                                 )
-                                .texture(key("advancedgui:test/interaction"))
-                                .name(text("Hi!", style(TextDecoration.BOLD)))
-                                .description(description -> description
-                                        .addLine(text("eee", NamedTextColor.RED))
-                                        .addLine(text("eEe"))
-                                )
-                                .attributes(Set.of(glowing(), hidden()))
+                                .displayProvider(loopedButtonDisplayProvider(looped -> looped
+                                        .switchDuration(Duration.ofSeconds(1))
+                                        .addDisplay(display -> display
+                                                .texture(key("advancedgui:test/interaction"))
+                                                .name(text("TXT", style(TextDecoration.BOLD)))
+                                                .description(description -> {})
+                                                .addAttribute(glowing())
+                                        )
+                                        .addDisplay(display -> display
+                                                .texture(key("advancedgui:test/interaction"))
+                                                .name(text("TXT"))
+                                                .description(description -> {})
+                                                .addAttribute(glowing())
+                                        )
+                                ))
                                 .lifecycleListenerRegistry(lifecycleListenerRegistry -> lifecycleListenerRegistry
                                         .addListener(lifecycleListener -> lifecycleListener
                                                 .pointcut(beforeTickPointcut())

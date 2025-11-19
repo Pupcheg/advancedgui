@@ -22,21 +22,24 @@ import static java.lang.reflect.Modifier.isStatic;
 @RequiredArgsConstructor
 public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLookup {
     private static final String BUILDER = "Builder";
+    private static final String IMPLEMENTATION = "Impl";
     private static final List<String> GET_METHOD_BLACKLIST = List.of("build");
     private final MethodHandles.Lookup lookup = MethodHandles.publicLookup();
     private final NamingScheme namingScheme;
 
     @Override
     public MethodDataReport buildReport(Class<?> buildableClass) {
-        Class<?> builderClass = findBuilderClass(buildableClass);
+        var interfaceClass = interfaceIfImplementation(buildableClass);
 
-        MethodHandle builderFactory = Arrays.stream(buildableClass.getMethods())
+        Class<?> builderClass = findBuilderClass(interfaceClass);
+
+        MethodHandle builderFactory = Arrays.stream(interfaceClass.getMethods())
                 .filter(method -> isStatic(method.getModifiers()))
                 .filter(method -> builderClass.equals(method.getReturnType()))
                 .map(this::unreflect)
                 .peek(DefaultBuildableMethodDataLookup::validateBuilderFactory)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No builder factory found for " + buildableClass));
+                .orElseThrow(() -> new IllegalStateException("No builder factory found for " + interfaceClass));
 
         Method[] builderClassMethods = builderClass.getMethods();
 
@@ -88,6 +91,19 @@ public class DefaultBuildableMethodDataLookup implements BuildableMethodDataLook
     @SneakyThrows
     private MethodHandle unreflect(Method method) {
         return lookup.unreflect(method);
+    }
+
+    private static Class<?> interfaceIfImplementation(Class<?> candidate) {
+        if (!candidate.getName().endsWith(IMPLEMENTATION)) {
+            return candidate;
+        }
+
+        try {
+            var classname = candidate.getName();
+            return Class.forName(classname.substring(0, classname.length() - IMPLEMENTATION.length()));
+        } catch (ClassNotFoundException exception) {
+            throw new IllegalStateException("No interface class found for " + candidate, exception);
+        }
     }
 
     private static Class<?> findBuilderClass(Class<?> buildable) {

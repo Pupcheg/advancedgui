@@ -1,6 +1,5 @@
 package me.supcheg.advancedgui.fabric;
 
-import lombok.SneakyThrows;
 import me.supcheg.advancedgui.api.loader.base64.Base64GuiLoader;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -29,7 +28,6 @@ public class AdvancedguiFabricSupport implements ClientModInitializer {
         }
     }
 
-    @SneakyThrows
     private ScreenEvents.AfterRender appendWithDebugInfo(DebugInfoCustomPayload payload) {
         List<String> lines = List.of(yamlGuiLoader().writeString(payload.template()).split("\n"));
 

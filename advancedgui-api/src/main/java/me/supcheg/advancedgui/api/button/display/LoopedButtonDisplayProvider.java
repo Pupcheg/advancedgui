@@ -1,46 +1,39 @@
 package me.supcheg.advancedgui.api.button.display;
 
-import com.google.common.collect.Lists;
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
+import com.google.common.collect.Iterators;
 import me.supcheg.advancedgui.api.builder.Buildable;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import me.supcheg.advancedgui.code.RecordInterface;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.Duration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface LoopedButtonDisplayProvider extends ButtonDisplayProvider, Buildable<LoopedButtonDisplayProvider, LoopedButtonDisplayProvider.Builder> {
+@RecordInterface
+public interface LoopedButtonDisplayProvider extends UpdatableButtonDisplayProvider, Buildable<LoopedButtonDisplayProvider, LoopedButtonDisplayProviderBuilder> {
 
-    static Builder loopedButtonDisplayProvider() {
-        return new LoopedButtonDisplayProviderImpl.BuilderImpl();
+    static LoopedButtonDisplayProviderBuilder loopedButtonDisplayProvider() {
+        return new LoopedButtonDisplayProviderBuilderImpl();
     }
 
-    static LoopedButtonDisplayProvider loopedButtonDisplayProvider(Consumer<Builder> consumer) {
+    static LoopedButtonDisplayProvider loopedButtonDisplayProvider(Consumer<LoopedButtonDisplayProviderBuilder> consumer) {
         return Buildable.configureAndBuild(loopedButtonDisplayProvider(), consumer);
     }
 
     @Unmodifiable
-    List<? extends ButtonDisplay> displays();
+    List<ButtonDisplay> displays();
 
+    @Override
     Duration switchDuration();
 
-    interface Builder extends AbstractBuilder<LoopedButtonDisplayProvider> {
-        Builder addDisplay(ButtonDisplay display);
+    @Override
+    default Iterator<ButtonDisplay> displaysLoop() {
+        return Iterators.cycle(displays());
+    }
 
-        default Builder addDisplays(ButtonDisplay first, ButtonDisplay second, ButtonDisplay... displays) {
-            return addDisplays(Lists.asList(first, second, displays));
-        }
-
-        Builder addDisplays(List<ButtonDisplay> displays);
-
-        Builder displays(List<ButtonDisplay> displays);
-
-        List<ButtonDisplay> displays();
-
-        Builder switchDuration(Duration switchDuration);
-
-        @Nullable
-        Duration switchDuration();
+    @Override
+    default boolean updatable() {
+        return displays().size() > 1;
     }
 }

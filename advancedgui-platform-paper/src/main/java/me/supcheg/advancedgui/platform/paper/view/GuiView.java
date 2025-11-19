@@ -2,11 +2,14 @@ package me.supcheg.advancedgui.platform.paper.view;
 
 import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.api.button.Button;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import me.supcheg.advancedgui.api.coordinate.Coordinate;
 import me.supcheg.advancedgui.api.gui.background.Background;
 import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
 import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
+import me.supcheg.advancedgui.platform.paper.render.ButtonDisplayRenderController;
 import me.supcheg.advancedgui.platform.paper.render.Renderer;
+import me.supcheg.advancedgui.platform.paper.tick.Tickable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -19,13 +22,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 @RequiredArgsConstructor
-public class GuiView {
+public class GuiView implements Tickable {
     private final DefaultGuiViewer viewer;
     private final GuiImpl gui;
     private final ServerPlayer serverPlayer;
     private final Renderer<Background, Component> backgroundComponentRenderer;
     private final Renderer<LayoutImpl<?>, NonNullList<ItemStack>> layoutNonNullListRenderer;
-    private final Renderer<Button, ItemStack> buttonItemStackRenderer;
+    private final ButtonDisplayRenderController displayRenderController;
+    private final Renderer<ButtonDisplay, ItemStack> buttonDisplayRenderer;
     private final ContainerState containerState;
 
     private boolean closed;
@@ -59,6 +63,10 @@ public class GuiView {
         send(slotPacket(index));
     }
 
+    public void sendSlotWith(Coordinate coordinate, ButtonDisplay display) {
+        send(slotPacket(coordinate, display));
+    }
+
     public void sendButton(Button button) {
         send(slotPacket(button));
     }
@@ -71,7 +79,7 @@ public class GuiView {
         send(closePacket());
     }
 
-    private void send(Packet<?> packet) {
+    public void send(Packet<?> packet) {
         if (closed) {
             throw new IllegalStateException("GuiView is closed");
         }
@@ -102,7 +110,7 @@ public class GuiView {
                 containerState.nextStateId(),
                 gui.layout().coordinateTranslator().toIndex(coordinate),
                 gui.layout().buttonAt(coordinate)
-                        .map(buttonItemStackRenderer::render)
+                        .map(displayRenderController::render)
                         .orElse(ItemStack.EMPTY)
         );
     }
@@ -113,7 +121,7 @@ public class GuiView {
                 containerState.nextStateId(),
                 index,
                 gui.layout().buttonAt(index)
-                        .map(buttonItemStackRenderer::render)
+                        .map(displayRenderController::render)
                         .orElse(ItemStack.EMPTY)
         );
     }
@@ -123,7 +131,16 @@ public class GuiView {
                 containerState.containerId(),
                 containerState.nextStateId(),
                 gui.layout().coordinateTranslator().toIndex(button.coordinate()),
-                buttonItemStackRenderer.render(button)
+                displayRenderController.render(button)
+        );
+    }
+
+    private Packet<?> slotPacket(Coordinate coordinate, ButtonDisplay display) {
+        return new ClientboundContainerSetSlotPacket(
+                containerState.nextContainerId(),
+                containerState.nextStateId(),
+                gui.layout().coordinateTranslator().toIndex(coordinate),
+                buttonDisplayRenderer.render(display)
         );
     }
 
@@ -144,5 +161,10 @@ public class GuiView {
         }
         closed = true;
         viewer.remove(this);
+    }
+
+    @Override
+    public void tick() {
+        displayRenderController.tick();
     }
 }

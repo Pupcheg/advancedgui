@@ -2,6 +2,7 @@ package me.supcheg.advancedgui.platform.paper.network.message;
 
 import io.netty.buffer.ByteBufAllocator;
 import lombok.RequiredArgsConstructor;
+import me.supcheg.advancedgui.api.messaging.DebugSentPacket;
 import me.supcheg.advancedgui.api.messaging.DebugViewGuiTemplate;
 import me.supcheg.advancedgui.api.messaging.Message;
 import net.kyori.adventure.key.Key;
@@ -25,7 +26,8 @@ public class AdvancedguiPluginChannel implements Closeable {
     private final Plugin plugin;
 
     public void register() {
-        register(DebugViewGuiTemplate.KEY,  this::writeViewGuiTemplate);
+        register(DebugViewGuiTemplate.KEY, this::writeViewGuiTemplate);
+        register(DebugSentPacket.KEY, this::writeSentPacket);
     }
 
     private <T extends Message> void register(Key key, BiConsumer<T, FriendlyByteBuf> writer) {
@@ -36,7 +38,7 @@ public class AdvancedguiPluginChannel implements Closeable {
     public void sendMessage(Player player, Message message) {
         FriendlyByteBuf buf = new FriendlyByteBuf(ByteBufAllocator.DEFAULT.buffer());
         registeredMessages.get(message.key())
-                        .accept(uncheckedMessageCast(message), buf);
+                .accept(uncheckedMessageCast(message), buf);
 
         byte[] bytes = new byte[buf.readableBytes()];
         buf.readBytes(bytes);
@@ -50,6 +52,10 @@ public class AdvancedguiPluginChannel implements Closeable {
 
     private void writeViewGuiTemplate(DebugViewGuiTemplate message, FriendlyByteBuf buffer) {
         buffer.writeUtf(jsonDownstreamBase64GuiLoader().writeString(message.template()));
+    }
+
+    private void writeSentPacket(DebugSentPacket packet, FriendlyByteBuf buffer) {
+        buffer.writeUtf(packet.representation());
     }
 
     @Override

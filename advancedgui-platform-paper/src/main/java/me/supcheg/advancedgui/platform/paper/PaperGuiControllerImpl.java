@@ -2,7 +2,6 @@ package me.supcheg.advancedgui.platform.paper;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import lombok.extern.slf4j.Slf4j;
-import me.supcheg.advancedgui.api.button.Button;
 import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import me.supcheg.advancedgui.api.component.ComponentRenderContext;
 import me.supcheg.advancedgui.api.component.ComponentRenderers;
@@ -23,7 +22,6 @@ import me.supcheg.advancedgui.platform.paper.network.NmsNetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
 import me.supcheg.advancedgui.platform.paper.render.DefaultBackgroundComponentRenderer;
 import me.supcheg.advancedgui.platform.paper.render.DefaultButtonDisplayItemStackRenderer;
-import me.supcheg.advancedgui.platform.paper.render.DefaultLayoutNonNullListItemStackRenderer;
 import me.supcheg.advancedgui.platform.paper.render.Renderer;
 import me.supcheg.advancedgui.platform.paper.resourcepack.DefaultBackgroundImageMetaLookup;
 import me.supcheg.advancedgui.platform.paper.view.DefaultGuiViewer;
@@ -94,7 +92,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
         this.registry = new ConcurrentHashMap<>();
         this.unmodifiableRegistryView = Collections.unmodifiableMap(registry);
 
-        Renderer<ButtonDisplay, ItemStack> buttonItemStackRenderer = new DefaultButtonDisplayItemStackRenderer();
+        Renderer<ButtonDisplay, ItemStack> displayItemStackRenderer = new DefaultButtonDisplayItemStackRenderer();
 
         this.channel = new AdvancedguiPluginChannel(plugin);
         channel.register();
@@ -104,10 +102,7 @@ final class PaperGuiControllerImpl implements PaperGuiController {
                 new DefaultBackgroundComponentRenderer(
                         new DefaultBackgroundImageMetaLookup()
                 ),
-                new DefaultLayoutNonNullListItemStackRenderer(
-                        buttonItemStackRenderer
-                ),
-                buttonItemStackRenderer,
+                displayItemStackRenderer,
                 (DelegatingNetworkInjection) () -> PaperGuiControllerImpl.this.networkInjection,
                 channel
         );

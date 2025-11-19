@@ -9,6 +9,7 @@ import me.supcheg.advancedgui.api.lifecycle.LifecycleListenerRegistry;
 import me.supcheg.advancedgui.api.lifecycle.pointcut.Pointcut;
 import me.supcheg.advancedgui.api.loader.GuiLoader;
 import me.supcheg.advancedgui.api.loader.configurate.interpret.YamlClasspathActionInterpreterSource;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.DurationTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.ActionTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.action.factory.EnvironmentActionFactoryProvider;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.CustomNamespaceKeyTypeSerializer;
@@ -17,6 +18,7 @@ import me.supcheg.advancedgui.api.loader.configurate.serializer.adventure.String
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.BuildableInterfaceTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.CacheBuildableMethodDataLookup;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.buildable.DefaultBuildableMethodDataLookup;
+import me.supcheg.advancedgui.api.loader.configurate.serializer.button.display.ButtonDisplayProviderTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.coordinate.CoordinateTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.layout.LayoutTemplateTypeSerializer;
 import me.supcheg.advancedgui.api.loader.configurate.serializer.lifecycle.LifecycleListenerRegistryTypeSerializer;
@@ -113,6 +115,10 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
                         new LayoutTemplateTypeSerializer()
                 )
                 .register(
+                        ButtonDisplayProviderTypeSerializer::isExactButtonDisplayProvider,
+                        new ButtonDisplayProviderTypeSerializer()
+                )
+                .register(
                         new PriorityTypeSerializer()
                 )
                 .register(
@@ -125,6 +131,9 @@ public abstract class ConfigurateGuiLoader<L extends AbstractConfigurationLoader
                 .register(
                         Pointcut.class,
                         (KeyedTypeSerializer<Pointcut>) Pointcut::pointcut
+                )
+                .register(
+                        new DurationTypeSerializer()
                 )
                 .register(
                         Coordinate.class,

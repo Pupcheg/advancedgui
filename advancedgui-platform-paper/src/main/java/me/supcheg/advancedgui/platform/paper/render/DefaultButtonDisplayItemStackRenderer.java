@@ -13,16 +13,10 @@ import net.minecraft.world.item.component.ItemLore;
 
 import static io.papermc.paper.adventure.PaperAdventure.asVanilla;
 import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.glowing;
-import static me.supcheg.advancedgui.api.button.attribute.ButtonAttribute.hidden;
 
 public class DefaultButtonDisplayItemStackRenderer implements Renderer<ButtonDisplay, ItemStack> {
     @Override
     public ItemStack render(ButtonDisplay input) {
-
-        if (input.hasAttribute(hidden())) {
-            return ItemStack.EMPTY;
-        }
-
         ItemStack itemStack = new ItemStack(Items.PAPER);
         itemStack.set(DataComponents.ITEM_MODEL, model(input.texture()));
         itemStack.set(DataComponents.ITEM_NAME, name(input.name()));

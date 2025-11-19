@@ -11,6 +11,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.serialize.TypeSerializer;
 
 import java.lang.reflect.Type;
+import java.util.NoSuchElementException;
 
 import static io.leangen.geantyref.GenericTypeReflector.erase;
 
@@ -27,8 +28,17 @@ public final class BuildableInterfaceTypeSerializer implements TypeSerializer<Bu
         AbstractBuilder builder = (AbstractBuilder) report.builderFactory().invoke();
 
         for (ValueMethodData valueMethodData : report.values()) {
-            Object value = node.node(valueMethodData.name())
-                    .require(valueMethodData.type());
+            Object value;
+            try {
+                value = node.node(valueMethodData.name())
+                        .require(valueMethodData.type());
+            } catch (NoSuchElementException ex) {
+                throw new SerializationException(
+                        node,
+                        valueMethodData.type(),
+                        "Property %s not found".formatted(valueMethodData.name()), ex
+                );
+            }
             valueMethodData.setter()
                     .invokeExact((Object) builder, (Object) value);
         }

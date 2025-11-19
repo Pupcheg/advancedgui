@@ -3,18 +3,20 @@ package me.supcheg.advancedgui.platform.paper.view;
 import com.google.common.cache.CacheBuilder;
 import lombok.RequiredArgsConstructor;
 import me.supcheg.advancedgui.api.Advancedgui;
-import me.supcheg.advancedgui.api.button.Button;
+import me.supcheg.advancedgui.api.button.display.ButtonDisplay;
 import me.supcheg.advancedgui.api.gui.background.Background;
+import me.supcheg.advancedgui.api.messaging.DebugSentPacket;
 import me.supcheg.advancedgui.api.messaging.DebugViewGuiTemplate;
 import me.supcheg.advancedgui.platform.paper.PlatformAudienceConverter;
 import me.supcheg.advancedgui.platform.paper.gui.GuiImpl;
-import me.supcheg.advancedgui.platform.paper.gui.LayoutImpl;
 import me.supcheg.advancedgui.platform.paper.network.NetworkInjection;
 import me.supcheg.advancedgui.platform.paper.network.message.AdvancedguiPluginChannel;
+import me.supcheg.advancedgui.platform.paper.render.ButtonDisplayRenderController;
+import me.supcheg.advancedgui.platform.paper.render.DefaultLayoutNonNullListItemStackRenderer;
 import me.supcheg.advancedgui.platform.paper.render.Renderer;
 import net.kyori.adventure.audience.Audience;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -26,8 +28,7 @@ import java.util.concurrent.ConcurrentMap;
 public class DefaultGuiViewer implements GuiViewer, GuiViewLookup {
     private final PlatformAudienceConverter audienceConverter;
     private final Renderer<Background, Component> backgroundComponentRenderer;
-    private final Renderer<LayoutImpl<?>, NonNullList<ItemStack>> layoutNonNullListRenderer;
-    private final Renderer<Button, ItemStack> buttonItemStackRenderer;
+    private final Renderer<ButtonDisplay, ItemStack> buttonItemStackRenderer;
     private final NetworkInjection networkInjection;
     private final AdvancedguiPluginChannel channel;
 
@@ -39,15 +40,40 @@ public class DefaultGuiViewer implements GuiViewer, GuiViewLookup {
     @Override
     public GuiView open(Audience audience, GuiImpl gui) {
         ServerPlayer serverPlayer = audienceConverter.verifyAndConvert(audience);
+
+        var lazy = new Object() {
+            GuiView view;
+        };
+        var displayRenderController = new ButtonDisplayRenderController(
+                gui.layout(),
+                buttonItemStackRenderer,
+                (button, display) -> lazy.view.sendSlotWith(button.coordinate(), display)
+        );
+
+        var layoutNonNullListRenderer = new DefaultLayoutNonNullListItemStackRenderer(
+                displayRenderController
+        );
+
         GuiView view = new GuiView(
                 this,
                 gui,
                 serverPlayer,
                 backgroundComponentRenderer,
                 layoutNonNullListRenderer,
+                displayRenderController,
                 buttonItemStackRenderer,
                 new ContainerState(serverPlayer::nextContainerCounter)
-        );
+        ) {
+            @Override
+            public void send(Packet<?> packet) {
+                super.send(packet);
+                CraftPlayer bukkitEntity = serverPlayer.getBukkitEntity();
+                if (bukkitEntity.hasPermission(Advancedgui.NAMESPACE + ".debug")) {
+                    channel.sendMessage(bukkitEntity, new DebugSentPacket(String.valueOf(packet)));
+                }
+            }
+        };
+        lazy.view = view;
 
         networkInjection.inject(serverPlayer);
 
@@ -76,5 +102,10 @@ public class DefaultGuiViewer implements GuiViewer, GuiViewLookup {
     @Override
     public Optional<GuiView> lookupGuiView(ServerPlayer serverPlayer) {
         return Optional.ofNullable(viewByServerPlayer.get(serverPlayer));
+    }
+
+    @Override
+    public void tick() {
+        viewByServerPlayer.values().forEach(GuiView::tick);
     }
 }
