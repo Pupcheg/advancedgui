@@ -52,19 +52,19 @@ import java.util.concurrent.TimeUnit;
 final class PaperGuiControllerImpl implements PaperGuiController {
     private static final PointcutSupport POINTCUT_SUPPORT = PointcutSupport.pointcutSupport(
             pointcutSupport -> pointcutSupport
-                    .supported(Set.of(
+                    .addSupported(Set.of(
                             // Registration
                             RegistrationPointcut.preRegisterPointcut(),
                             RegistrationPointcut.postRegisterPointcut(),
                             RegistrationPointcut.preUnregisterPointcut(),
                             RegistrationPointcut.postUnregisterPointcut()
                     ))
-                    .supported(Set.of(
+                    .addSupported(Set.of(
                             // Tick
                             TickPointcut.beforeTickPointcut(),
                             TickPointcut.afterTickPointcut()
                     ))
-                    .supported(Set.of(
+                    .addSupported(Set.of(
                             // Object
                             ObjectPointcut.objectConstructPointcut()
                     ))
