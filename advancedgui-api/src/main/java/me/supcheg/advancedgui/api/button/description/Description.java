@@ -1,49 +1,24 @@
 package me.supcheg.advancedgui.api.button.description;
 
-import com.google.common.collect.Lists;
-import me.supcheg.advancedgui.api.builder.AbstractBuilder;
 import me.supcheg.advancedgui.api.builder.Buildable;
+import me.supcheg.advancedgui.code.RecordInterface;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface Description extends Buildable<Description, Description.Builder> {
+@RecordInterface
+public interface Description extends Buildable<Description, DescriptionBuilder> {
 
-    static Builder description() {
-        return new DescriptionImpl.BuilderImpl();
+    static DescriptionBuilder description() {
+        return new DescriptionBuilderImpl();
     }
 
-    static Description description(Consumer<Builder> consumer) {
+    static Description description(Consumer<DescriptionBuilder> consumer) {
         return Buildable.configureAndBuild(description(), consumer);
     }
 
     @Unmodifiable
     List<Component> lines();
-
-    interface Builder extends AbstractBuilder<Description> {
-
-        List<Component> lines();
-
-        Builder addLines(List<Component> lines);
-
-        default Builder addLines(Component line) {
-            return addLines(List.of(line));
-        }
-
-        default Builder addLines(Component first, Component second, Component... other) {
-            return addLines(Lists.asList(first, second, other));
-        }
-
-        Builder lines(List<Component> lines);
-
-        default Builder lines(Component line) {
-            return lines(List.of(line));
-        }
-
-        default Builder lines(Component first, Component second, Component... other) {
-            return lines(Lists.asList(first, second, other));
-        }
-    }
 }

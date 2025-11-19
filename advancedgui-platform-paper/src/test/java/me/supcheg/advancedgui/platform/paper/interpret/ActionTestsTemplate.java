@@ -15,6 +15,9 @@ import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 abstract class ActionTestsTemplate {
     static SimpleYamlConfigurationLoader LOADER;
 
+    GuiAudience audience;
+    HumanEntity humanEntity;
+
     AudienceActionContext emptyAudienceContext;
     HumanEntityActionContext humanEntityContext;
 
@@ -25,9 +28,9 @@ abstract class ActionTestsTemplate {
 
     @BeforeEach
     void setup() {
-        GuiAudience audience = Mockito.mock(GuiAudience.class);
+        audience = Mockito.mock(GuiAudience.class);
         emptyAudienceContext = () -> audience;
-        HumanEntity humanEntity = Mockito.mock(HumanEntity.class);
+        humanEntity = Mockito.mock(HumanEntity.class);
         humanEntityContext = () -> humanEntity;
     }
 

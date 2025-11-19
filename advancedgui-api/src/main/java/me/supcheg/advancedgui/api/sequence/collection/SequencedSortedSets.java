@@ -3,8 +3,10 @@ package me.supcheg.advancedgui.api.sequence.collection;
 import com.google.common.collect.Multimaps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import me.supcheg.advancedgui.api.sequence.Priority;
 import me.supcheg.advancedgui.api.sequence.Sequenced;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,7 +17,13 @@ import java.util.TreeMap;
 public final class SequencedSortedSets {
 
     public static <E extends Sequenced<E>> SequencedSortedSet<E> create() {
-        return new GuavaBackedSequencedSortedSet<E>(Multimaps.newSetMultimap(new TreeMap<>(), HashSet::new));
+        return new GuavaBackedSequencedSortedSet<>(Multimaps.newSetMultimap(new TreeMap<Priority, Collection<E>>(), HashSet::new));
+    }
+
+    public static <E extends Sequenced<E>> SequencedSortedSet<E> create(E element) {
+        SequencedSortedSet<E> set = create();
+        set.add(element);
+        return set;
     }
 
     @SafeVarargs
@@ -33,21 +41,36 @@ public final class SequencedSortedSets {
     }
 
     @Unmodifiable
+    @SuppressWarnings("unchecked")
     public static <E extends Sequenced<E>> SequencedSortedSet<E> of() {
-        return EmptySequencedSortedSet.INSTANCE;
+        return (SequencedSortedSet<E>) EmptySequencedSortedSet.INSTANCE;
+    }
+
+    @Unmodifiable
+    public static <E extends Sequenced<E>> SequencedSortedSet<E> of(E element) {
+        return unmodifiableSequencedSortedSet(create(element));
     }
 
     @Unmodifiable
     @SafeVarargs
     public static <E extends Sequenced<E>> SequencedSortedSet<E> of(E first, E... rest) {
-        return SequencedSortedSets.unmodifiableSequencedSortedSet(create(first, rest));
+        return unmodifiableSequencedSortedSet(create(first, rest));
     }
 
     @Unmodifiable
     public static <E extends Sequenced<E>> SequencedSortedSet<E> copyOf(Collection<E> collection) {
+        if (collection instanceof UnmodifiableSequencedSortedSet<E> unmodifiable) {
+            return unmodifiable;
+        }
+
+        if (collection.isEmpty()) {
+            return of();
+        }
+
         return unmodifiableSequencedSortedSet(createCopy(collection));
     }
 
+    @UnmodifiableView
     public static <E extends Sequenced<E>> SequencedSortedSet<E> unmodifiableSequencedSortedSet(SequencedSortedSet<E> set) {
         if (set instanceof UnmodifiableSequencedSortedSet<E>) {
             return set;

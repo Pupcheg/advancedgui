@@ -15,3 +15,5 @@ include 'advancedgui-platform-paper'
 include 'advancedgui-platform-paper:platform-paper-test-plugin'
 include 'advancedgui-fabric-support'
 
+
+include 'advancedgui-code-generator'
