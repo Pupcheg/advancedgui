@@ -1,5 +1,3 @@
-import io.freefair.gradle.plugins.lombok.LombokPlugin
-
 plugins {
     `java-library`
     alias(libs.plugins.lombok) apply false
@@ -7,7 +5,7 @@ plugins {
 
 allprojects {
     apply<JavaLibraryPlugin>()
-    apply<LombokPlugin>()
+    apply<io.freefair.gradle.plugins.lombok.LombokPlugin>()
 
     group = "me.supcheg.advancedgui"
     version = "1.0.0"
@@ -31,8 +29,10 @@ allprojects {
         testRuntimeOnly(rootProject.libs.slf4j.simple)
     }
 
-    tasks.withType<Test> {
-        useJUnitPlatform()
+    tasks {
+        test {
+            useJUnitPlatform()
+        }
     }
 
     java {
