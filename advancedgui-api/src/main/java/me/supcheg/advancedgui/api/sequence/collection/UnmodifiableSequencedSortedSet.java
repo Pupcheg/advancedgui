@@ -81,6 +81,7 @@ final class UnmodifiableSequencedSortedSet<E extends Sequenced<E>> implements Se
         return delegate.toString();
     }
 
+    @SuppressWarnings("EqualsDoesntCheckParameterClass")
     @Override
     public boolean equals(Object o) {
         return this == o || delegate.equals(o);

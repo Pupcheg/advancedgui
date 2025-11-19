@@ -58,7 +58,7 @@ final class ProxyActionFactory implements ActionFactory {
                 default -> proxiedMethod.invoke(interpretedContext, args);
             };
         }
-
+        @SuppressWarnings("unchecked")
         private static <C extends ActionContext> C uncheckedCast(Object ctx) {
             return (C) ctx;
         }

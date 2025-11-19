@@ -17,6 +17,7 @@ import java.util.TreeMap;
 public final class SequencedSortedSets {
 
     public static <E extends Sequenced<E>> SequencedSortedSet<E> create() {
+        //noinspection Convert2Diamond - won't compile
         return new GuavaBackedSequencedSortedSet<>(Multimaps.newSetMultimap(new TreeMap<Priority, Collection<E>>(), HashSet::new));
     }
 

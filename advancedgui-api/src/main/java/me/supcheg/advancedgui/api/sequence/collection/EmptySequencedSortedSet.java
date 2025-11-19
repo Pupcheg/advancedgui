@@ -1,6 +1,5 @@
 package me.supcheg.advancedgui.api.sequence.collection;
 
-
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
@@ -8,6 +7,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
+@SuppressWarnings("rawtypes")
 final class EmptySequencedSortedSet implements SequencedSortedSet {
     static final EmptySequencedSortedSet INSTANCE = new EmptySequencedSortedSet();
     static final Iterator ITERATOR = new Iterator() {

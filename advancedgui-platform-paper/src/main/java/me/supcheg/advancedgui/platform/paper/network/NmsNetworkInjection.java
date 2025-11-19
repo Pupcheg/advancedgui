@@ -15,7 +15,6 @@ import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
@@ -97,7 +96,7 @@ public class NmsNetworkInjection implements NetworkInjection {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         MinecraftServer.getServer().getPlayerList().getPlayers().forEach(this::uninject);
     }
 }

@@ -3,11 +3,9 @@ package me.supcheg.advancedgui.platform.paper.network;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import me.supcheg.advancedgui.api.Advancedgui;
 import me.supcheg.advancedgui.platform.paper.view.GuiViewLookup;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.PacketType;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.concurrent.Executor;
@@ -27,7 +25,7 @@ public class AdvancedGuiChannelInboundHandler extends SimpleChannelInboundHandle
     }
 
     private <T extends Packet<?>> void handlePacket(ChannelHandlerContext ctx, T packet) {
-        packetHandlerLookup.findPacketHandler((PacketType<T>) packet.type())
+        packetHandlerLookup.findPacketHandler(packet.type())
                 .ifPresentOrElse(
                         handler ->
                                 guiViewLookup.lookupGuiView(targetPlayer)

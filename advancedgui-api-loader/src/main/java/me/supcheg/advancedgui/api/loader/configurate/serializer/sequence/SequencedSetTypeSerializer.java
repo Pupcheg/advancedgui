@@ -50,9 +50,14 @@ public final class SequencedSetTypeSerializer extends AbstractListChildSerialize
     }
 
     @Override
-    protected void deserializeSingle(int index, SequencedSortedSet collection, @Nullable Object deserialized) {
+    protected void deserializeSingle(int index, SequencedSortedSet<?> collection, @Nullable Object deserialized) {
         if (deserialized != null) {
-            collection.add(deserialized);
+            collection.add(uncheckedCast(deserialized));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Sequenced<?>> T uncheckedCast(Object obj) {
+        return (T) obj;
     }
 }

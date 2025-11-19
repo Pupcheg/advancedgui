@@ -6,5 +6,5 @@ import net.minecraft.network.protocol.PacketType;
 import java.util.Optional;
 
 public interface PacketHandlerLookup {
-    <T extends Packet<?>> Optional<PacketHandler<T>> findPacketHandler(PacketType<T> type);
+    <T extends Packet<?>> Optional<PacketHandler<T>> findPacketHandler(PacketType<?> type);
 }

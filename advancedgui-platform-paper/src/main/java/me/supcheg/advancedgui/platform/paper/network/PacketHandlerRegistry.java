@@ -2,6 +2,7 @@ package me.supcheg.advancedgui.platform.paper.network;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketType;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,14 @@ class PacketHandlerRegistry implements PacketHandlerLookup {
     }
 
     @Override
-    public <T extends Packet<?>> Optional<PacketHandler<T>> findPacketHandler(PacketType<T> type) {
-        return Optional.ofNullable((PacketHandler<T>) handlers.get(type));
+    public <T extends Packet<?>> Optional<PacketHandler<T>> findPacketHandler(PacketType<?> type) {
+        return Optional.ofNullable(uncheckedCast(handlers.get(type)));
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    private static <T extends Packet<?>> PacketHandler<T> uncheckedCast(@Nullable PacketHandler<?> handler) {
+        return (PacketHandler<T>) handler;
     }
 }
