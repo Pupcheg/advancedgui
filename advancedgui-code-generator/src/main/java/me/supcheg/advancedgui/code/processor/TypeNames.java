@@ -45,13 +45,13 @@ final class TypeNames {
         return TypeVariableName.get(nameModifier.apply(source.name()), source.bounds().toArray(TypeName[]::new));
     }
 
-    @SuppressWarnings("DeprecatedIsStillUsed")
+    @SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
     @Deprecated
     static WildcardTypeName rename(WildcardTypeName source, UnaryOperator<String> nameModifier) {
         return source;
     }
 
-    @SuppressWarnings("DeprecatedIsStillUsed")
+    @SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
     @Deprecated
     static ArrayTypeName rename(ArrayTypeName source, UnaryOperator<String> nameModifier) {
         return source;
@@ -83,6 +83,11 @@ final class TypeNames {
             case ParameterizedTypeName parameterizedTypeName -> parameterizedTypeName.rawType().simpleName();
             default -> throw new IllegalStateException("Unexpected value: " + typename);
         };
+    }
+
+    static String withoutPackage(TypeName typename) {
+        var stringValue = typename.toString();
+        return stringValue.substring(stringValue.lastIndexOf('.') + 1);
     }
 
     static boolean isSameType(TypeMirror typeMirror, TypeName typename) {
